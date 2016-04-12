@@ -1,0 +1,74 @@
+JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_45" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq t {space :::p, comp buttonPanel:::p::p, space :::p, comp canvas::::514:x, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, par l {comp canvas::::421:x, comp buttonPanel:::::x}, space :::p}}"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :p:18:p, comp toolBar1:::p::p, space :::x}}"
+				"$verticalGroup": "par l {seq l {space :p:143:p, comp toolBar1:::p:107:p, space ::171:x}}"
+			} ) {
+				name: "buttonPanel"
+				add( new FormContainer( "javax.swing.JToolBar", new FormLayoutManager( class javax.swing.JToolBar ) ) {
+					name: "toolBar1"
+					"orientation": 1
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "toggleButton1"
+						"text": "Wall"
+					} )
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "toggleButton3"
+						"text": "Delete"
+					} )
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "toggleButton2"
+						"text": "Door"
+					} )
+				} )
+			} )
+			add( new FormComponent( "com.coursework.windows.Canvas" ) {
+				name: "canvas"
+			} )
+			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+				name: "menuBar"
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "file"
+					"text": "File"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "fileOpen"
+						"text": "Open"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "fileOpenActionClick", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "fileSave"
+						"text": "Save"
+					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "fileSeparator1"
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "fileExit"
+						"text": "Exit"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "fileExitClick", true ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "help"
+					"text": "Help"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "helpAbout"
+						"text": "About"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "helpAboutClick", true ) )
+					} )
+				} )
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 690, 500 )
+		} )
+	}
+}
