@@ -4,30 +4,26 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq t {space :::p, comp buttonPanel:::p::p, space :::p, comp canvas::::514:x, space :::p}}"
-			"$verticalGroup": "par l {seq l {space :::p, par l {comp canvas::::421:x, comp buttonPanel:::::x}, space :::p}}"
+			"$horizontalGroup": "par l {seq t {space :::p, comp buttonPanel:::p::p, space :::p, comp canvas::::565:x, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, par l {comp buttonPanel:::::x, comp canvas::::421:x}, space :::p}}"
 		} ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-				"$horizontalGroup": "par l {seq {space :p:18:p, comp toolBar1:::p::p, space :::x}}"
-				"$verticalGroup": "par l {seq l {space :p:143:p, comp toolBar1:::p:107:p, space ::171:x}}"
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp drawWall::l:p:63:p, comp drawDoor::l:p:63:p, comp drawDelete::l:p::p}, space :::x}}"
+				"$verticalGroup": "par l {seq {space :::p, comp drawWall:::p::p, space :::p, comp drawDoor:::p::p, space ::324:x, comp drawDelete:::p::p, space :::p}}"
 			} ) {
 				name: "buttonPanel"
-				add( new FormContainer( "javax.swing.JToolBar", new FormLayoutManager( class javax.swing.JToolBar ) ) {
-					name: "toolBar1"
-					"orientation": 1
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "toggleButton1"
-						"text": "Wall"
-					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "toggleButton3"
-						"text": "Delete"
-					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "toggleButton2"
-						"text": "Door"
-					} )
+				add( new FormComponent( "javax.swing.JToggleButton" ) {
+					name: "drawWall"
+					"text": "Wall"
+				} )
+				add( new FormComponent( "javax.swing.JToggleButton" ) {
+					name: "drawDelete"
+					"text": "Delete"
+				} )
+				add( new FormComponent( "javax.swing.JToggleButton" ) {
+					name: "drawDoor"
+					"text": "Door"
 				} )
 			} )
 			add( new FormComponent( "com.coursework.windows.Canvas" ) {

@@ -7,11 +7,9 @@ package com.coursework.windows;
 import java.awt.*;
 import java.util.ArrayList;
 import java.awt.event.*;
-import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.GroupLayout;
 
 /**
  * @author D PUpkin
