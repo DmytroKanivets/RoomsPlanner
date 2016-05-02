@@ -1,65 +1,92 @@
 package com.coursework.main;
 
-import javax.swing.JFrame;
+import java.awt.Graphics2D;
+
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.event.MouseInputAdapter;
 
+import com.coursework.editor.FiguresManager;
+import com.coursework.editor.SceneManager;
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;
 
 public class Main {
 
-	static JFrame mainWindow;
-	static JFrame aboutWindow;
+	static MainWindow mainWindow;
+	static AboutWindow aboutWindow;
 	static DebugWindow debugWindow;
 	
+	static SceneManager currentSceneManager;
 	
 	public static void main(String[] args) {
-
+		
+		//Set window style
 		try { 
 		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
 		
-		Debug.clear();
-		
+		//Init settings and debug and start main window
 		SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
+	        		Debug.clear();
 	            	Settings.init();
 	            	Debug.log("Settings loaded");
+	            	
+	       		 	debugWindow = new DebugWindow();
+	            	aboutWindow = new AboutWindow();
 	            	mainWindow = new MainWindow();
+	            	Debug.log("Windows created");
+	            	
+	            	FiguresManager.getInstance().initList(mainWindow.getFiguresList());
+	            	Debug.log("Default figures loaded");
+	            	
+	            	currentSceneManager = new SceneManager();
+	            	Debug.log("Scene manager initialised");
+	            	
 	            	mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	            	mainWindow.setVisible(true);
 	            	Debug.log("Application started");
 	            }
-	        });
-		SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	            	aboutWindow = new AboutWindow();
-	            }
-	        });
-		SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	       		 debugWindow = new DebugWindow();
-	            }
-	        });
-		 
-
+	        });		
 	}
 
-
+	public static void redraw() {
+		mainWindow.getCanvas().repaint();
+	}
+	
+	public static void resetScene() {
+		currentSceneManager.clear();
+		redraw();
+	}
+	
+	public static void drawFigures(Graphics2D g) {
+		if (currentSceneManager != null)
+			currentSceneManager.drawScene(g);
+	}
+	
+	public static void addCanvasMouseListener(MouseInputAdapter mouse) {
+		mainWindow.getCanvas().addMouseListener(mouse);
+		mainWindow.getCanvas().addMouseMotionListener(mouse);
+		mainWindow.getCanvas().addMouseWheelListener(mouse);
+	}
+	
+	public static SceneManager getCurrentScene() {
+		return currentSceneManager;
+	}
+	
 	public static void showAboutWindow() {
 		if (aboutWindow != null) {
 			aboutWindow.setVisible(true);
 		} else {
-			//TODO add debug
+			Debug.log("About window");
 		}	
 	}
-
-
+	
 	public static void showDebugWindow() {
 		if (debugWindow != null) {
 			debugWindow.renew();

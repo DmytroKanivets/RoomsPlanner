@@ -25,21 +25,33 @@ public class Debug {
 		}
 	}
 	
-	public static void log(String message) {
+	private static void writeMessage(String message, String prefix) {
 		FileWriter out;
 		try {
-			Calendar now = Calendar.getInstance();
-			
-			String time = "[" + dateFormat.format(now.getTime()) + "] ";
-			
 			out = new FileWriter(logFilename, true);
-			out.append(time + message + "\n");
+			out.append(prefix + message + "\n");
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//cant write
 			e.printStackTrace();
 		}
+	}
+	
+	public static void error(String message) {
+		Calendar now = Calendar.getInstance();
+			
+		String time = "[" + dateFormat.format(now.getTime()) + "]";
+			
+		writeMessage(message, time + "[ERR] ");
+	}
+	
+	public static void log(String message) {
+		Calendar now = Calendar.getInstance();
+		
+		String time = "[" + dateFormat.format(now.getTime()) + "]";
+			
+		writeMessage(message, time + "[LOG] ");
 	}
 	
 	public static String getAll() {

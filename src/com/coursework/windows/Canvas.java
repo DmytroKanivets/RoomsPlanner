@@ -1,19 +1,12 @@
-/*
- * Created by JFormDesigner on Tue Apr 12 14:40:42 EEST 2016
- */
-
 package com.coursework.windows;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.awt.event.*;
 import java.awt.geom.*;
-import java.util.List;
 import javax.swing.*;
 
-/**
- * @author D PUpkin
- */
+import com.coursework.editor.Figure;
+import com.coursework.main.Main;
+
 public class Canvas extends JPanel {
 	/**
 	 * 
@@ -21,12 +14,52 @@ public class Canvas extends JPanel {
 	private static final long serialVersionUID = 5431118052073932479L;
 
 	public Canvas() {
+		super();
+		setOpaque(true);
+		setBackground(Color.white);
+	}
+	
+	Iterable<Figure> figures;
+	public void paintFigures(Iterable<Figure> figures) {
+		this.figures = figures;
+		repaint();
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		
+		Graphics2D graphics = (Graphics2D)g;
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		/*
+		
+		Area a = new Area(new Arc2D.Double(100, 100, 200, 200, 90, 10, Arc2D.PIE));
+		//Area a = new Area(new Rectangle(100, 100, 100, 100));
+		//a.add(new Area(new Rectangle2D.Double(200, 200, 100, 100)));
+		//a.add(new Area(new Ellipse2D.Double(100, 100, 200, 200)));
+		//a.add(new Area);
+		graphics.draw(a);
+		
+        /*
+		if (figures != null) {
+			for (Figure f : figures) {
+				f.selfPaint(graphics);
+			}
+		}
+		*/
+	
+		Main.drawFigures(graphics);
+	}
+	
+	/// OLD LOGIC
+	/*
+	public Canvas() {
 		initListeners();
 		setBackground(Color.white);
 	}
 
-	int size = 40;
-	
+	int size = 40;*/
+	/*
 	private void initListeners() {
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseClicked (MouseEvent e) {
@@ -55,9 +88,8 @@ public class Canvas extends JPanel {
         	  drawEnd = new Point(e.getX(), e.getY());
           	  System.out.println("MU");
           	  repaint();
-          } */
+          } *
 		});
-		
 		this.addMouseMotionListener(new MouseMotionListener() {
 
 			public void mouseDragged(MouseEvent e) {}
@@ -65,7 +97,7 @@ public class Canvas extends JPanel {
 			public void mouseMoved(MouseEvent e) {
 				tempShape = new Rectangle(e.getX() -size, e.getY() -size, size*2, size*2);
 	        	  //drawEnd = new Point(e.getX(), e.getY());
-	          	  System.out.println("MM");
+	          	  //System.out.println("MM");
 	          	  repaint();
 			}
 			
@@ -80,8 +112,10 @@ public class Canvas extends JPanel {
 			}
 		});
 		
-	}
-    
+		this.addMouseListener(new MouseListener());
+		
+	}*/
+    /*
     Point drawStart, drawEnd, location;
 	private Graphics2D graphSettings;
 	Shape tempShape;
@@ -96,32 +130,34 @@ public class Canvas extends JPanel {
 			   col = col || !areaA.isEmpty();
 		}
 		return !col;
-	}
+	}*/
+	///OLD LOGIC END
 	
+	/*
 	@Override
     public void paint(Graphics g) {
 
 		location = this.getLocation();
 
-		System.out.println("PAINT");
+		//System.out.println("PAINT");
         
         graphSettings = (Graphics2D)g;
         graphSettings.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         graphSettings.setPaint(Color.white); //red?
-        graphSettings.fillRect(0, 0, this.getSize().width, this.getSize().height);
+//        graphSettings.fillRect(0, 0, this.getSize().width, this.getSize().height);
         //graphSettings.draw(drawRectangle(drawStart.x, drawStart.y, drawEnd.x, drawEnd.y));
 		
 /*
       	  System.out.println("NP");
       	  System.out.println(drawStart);
-      	  System.out.println(drawEnd);*/
+      	  System.out.println(drawEnd);*
 		
 			//graphSettings.drawArc(drawEnd.x - location.x, drawEnd.y - location.y, 100, 100, 0, 90);
 			graphSettings.setPaint(Color.black);
 			//graphSettings.drawRect(drawEnd.x, drawEnd.y, 100, 100);
 			for (Shape s : shapes) {
-				System.out.println("DRAW");
+				//System.out.println("DRAW");
 				graphSettings.draw(s);
 			}
 			
@@ -140,6 +176,7 @@ public class Canvas extends JPanel {
 			}
 			//=========== END COLLISION ================
     }
+*/
  /*   
     private Rectangle2D.Float drawRectangle(
             int x1, int y1, int x2, int y2)

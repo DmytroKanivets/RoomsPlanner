@@ -4,26 +4,24 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq t {space :::p, comp buttonPanel:::p::p, space :::p, comp canvas::::565:x, space :::p}}"
-			"$verticalGroup": "par l {seq l {space :::p, par l {comp buttonPanel:::::x, comp canvas::::421:x}, space :::p}}"
+			"$horizontalGroup": "par l {seq t {space :p::p, comp buttonPanel:::p::p, space :p::p, comp canvas::::552:x, space :p::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, par l {comp canvas::::421:x, comp buttonPanel:::::x}, space :::p}}"
 		} ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-				"$horizontalGroup": "par l {seq {space :::p, par l {comp drawWall::l:p:63:p, comp drawDoor::l:p:63:p, comp drawDelete::l:p::p}, space :::x}}"
-				"$verticalGroup": "par l {seq {space :::p, comp drawWall:::p::p, space :::p, comp drawDoor:::p::p, space ::324:x, comp drawDelete:::p::p, space :::p}}"
+				"$horizontalGroup": "par l {comp figuresScroll::t::96:x}"
+				"$verticalGroup": "par l {seq l {comp figuresScroll:::p:139:p, space :0:282:x}}"
 			} ) {
 				name: "buttonPanel"
-				add( new FormComponent( "javax.swing.JToggleButton" ) {
-					name: "drawWall"
-					"text": "Wall"
-				} )
-				add( new FormComponent( "javax.swing.JToggleButton" ) {
-					name: "drawDelete"
-					"text": "Delete"
-				} )
-				add( new FormComponent( "javax.swing.JToggleButton" ) {
-					name: "drawDoor"
-					"text": "Door"
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "figuresScroll"
+					"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "figuresList"
+						"enabled": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"selectionMode": 0
+					} )
 				} )
 			} )
 			add( new FormComponent( "com.coursework.windows.Canvas" ) {
@@ -35,16 +33,36 @@ new FormModel {
 					name: "file"
 					"text": "File"
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "newFile"
+						"text": "New file"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "newFileClick", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "fileSeparator3"
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "fileOpen"
-						"text": "Open"
+						"text": "Open file"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "fileOpenActionClick", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "fileSave"
-						"text": "Save"
+						"text": "Save file"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveSchemeClick", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
 						name: "fileSeparator1"
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "loadPackage"
+						"text": "Load figures package"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "loadPackageActionClick", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "fileSeparator2"
+						auxiliary() {
+							"JavaCodeGenerator.variableName": "fileSeparator2"
+						}
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "fileExit"

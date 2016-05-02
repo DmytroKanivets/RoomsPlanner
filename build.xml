@@ -1,14 +1,14 @@
-<project name="Coursework" default="createJAR" basedir=".">
+<project name="Coursework" default="run" basedir=".">
 
 <!-- ================== Application Properties =================== -->  
-  <property name="app.name" value="template" />    
+  <property name="app.name" value="BuildingsPlanner" />    
   <property name="app.version" value="0.1" />
-  <property name="app.title" value="Template Application" />
+  <property name="app.title" value="Buildings Planner" />
   <property name="app.author" value="Dmytro Kanivets" />
-  <property name="app.company" value="Lab111 - http://www.comsys.ntu-kpi.kiev.ua/lab111" />
+ <!-- <property name="app.company" value="Lab111 - http://www.comsys.ntu-kpi.kiev.ua/lab111" />-->
 
   <property name="sourceDir" value="src/" />
-  <property name="outputDir" value="out/eclipse-classes" />
+  <property name="outputDir" value="out/classes" />
   <property name="buildDir" value="out/build" />
   <property name="resourceDir" value="src/res" />
   <property name="libDir" value="lib" />
@@ -16,10 +16,8 @@
 
 <!-- ================== JAR Properties =================== --> 
 
-  <property name="taskJar" value="task.jar" />
-	
   <property name="jar.mainClass" value="com.coursework.main.Main" />
-  <property name="jar.name" value="prog.jar" />
+  <property name="jar.name" value="BuildingsPlanner.jar" />
   <property name="jar.keyStore" value="${basedir}/out/tempKey.store" />
   <property name="jar.keyPass" value="telpat" />
   <property name="jar.keyAlias" value="tempAlias" />
@@ -123,6 +121,11 @@
         </exec>
         <delete file="${buildDir}/myKeystore" />
     </target>
+
+	<target name="run"
+		depends="signJAR">
+		<java jar="${buildDir}/${jar.name}" fork="true"/>
+	</target>
 
    
 <!-- ==================== Lab Task Target ================================== -->

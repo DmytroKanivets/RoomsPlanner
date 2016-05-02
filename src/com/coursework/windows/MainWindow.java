@@ -4,6 +4,10 @@
 
 package com.coursework.windows;
 
+import com.coursework.editor.FiguresManager;
+import com.coursework.editor.SceneManager;
+import com.coursework.files.PackageLoader;
+import com.coursework.files.SceneLoader;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
@@ -11,7 +15,11 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
-import java.io.File; 
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.io.File;
+import java.io.IOException;
 
 import com.coursework.main.Settings;
 
@@ -63,30 +71,91 @@ public class MainWindow extends JFrame {
 	}
 
 	private void fileOpenActionClick(ActionEvent e) {
+		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home"));
+		
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Drawings file", "scene");
+		fileChooser.addChoosableFileFilter(filter);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		int result = fileChooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			SceneManager scene =  Main.getCurrentScene();
+			scene = new SceneManager();
+			SceneLoader.loadScene(fileChooser.getSelectedFile().getAbsolutePath());
+			Main.redraw();
+			/*
+			String fileName = fileChooser.getSelectedFile().getAbsolutePath();
+			Main.getCurrentScene().saveToFile(fileName + ".scene");*/
+		}
+		/*
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		int result = fileChooser.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
-			Debug.log("File chosen: " + selectedFile.getName());
+			Debug.log("Scene file chosen: " + selectedFile.getAbsolutePath());
 			//TODO file open
+		}*/
+	}
+	
+	private void saveSchemeClick(ActionEvent e) {
+		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home"));
+		
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Drawings file", "scene");
+		fileChooser.addChoosableFileFilter(filter);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		int result = fileChooser.showSaveDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			String fileName = fileChooser.getSelectedFile().getAbsolutePath();
+			Main.getCurrentScene().saveToFile(fileName + ".scene");
 		}
 	}
 	
+	private void loadPackageActionClick(ActionEvent e) {
+		String path = System.getProperty("user.home");
+		try {
+			path = new File(".").getCanonicalPath() + "/data";
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} 
+		JFileChooser fileChooser = new JFileChooser(path);
+
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Furniture package", "figures");
+		fileChooser.addChoosableFileFilter(filter);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		int result = fileChooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+			Debug.log("Figures file chosen: " + selectedFile.getAbsolutePath());
+			FiguresManager.getInstance().addPackage(selectedFile.getAbsolutePath());
+		}
+	}
+	
+	public JList<String> getFiguresList() {
+		return figuresList;
+	}
+
+	private void newFileClick(ActionEvent e) {
+		Main.resetScene();
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner Evaluation license - D PUpkin
+		// Generated using JFormDesigner Evaluation license - D Pupkin
 		menuBar = new JMenuBar();
 		file = new JMenu();
+		newFile = new JMenuItem();
 		fileOpen = new JMenuItem();
 		fileSave = new JMenuItem();
+		loadPackage = new JMenuItem();
 		fileExit = new JMenuItem();
 		help = new JMenu();
 		helpAbout = new JMenuItem();
 		buttonPanel = new JPanel();
-		drawWall = new JToggleButton();
-		drawDelete = new JToggleButton();
-		drawDoor = new JToggleButton();
+		figuresScroll = new JScrollPane();
+		figuresList = new JList();
 		canvas = new Canvas();
 
 		//======== this ========
@@ -99,14 +168,27 @@ public class MainWindow extends JFrame {
 			{
 				file.setText("File");
 
+				//---- newFile ----
+				newFile.setText("New file");
+				newFile.addActionListener(e -> newFileClick(e));
+				file.add(newFile);
+				file.addSeparator();
+
 				//---- fileOpen ----
-				fileOpen.setText("Open");
+				fileOpen.setText("Open file");
 				fileOpen.addActionListener(e -> fileOpenActionClick(e));
 				file.add(fileOpen);
 
 				//---- fileSave ----
-				fileSave.setText("Save");
+				fileSave.setText("Save file");
+				fileSave.addActionListener(e -> saveSchemeClick(e));
 				file.add(fileSave);
+				file.addSeparator();
+
+				//---- loadPackage ----
+				loadPackage.setText("Load figures package");
+				loadPackage.addActionListener(e -> loadPackageActionClick(e));
+				file.add(loadPackage);
 				file.addSeparator();
 
 				//---- fileExit ----
@@ -140,37 +222,28 @@ public class MainWindow extends JFrame {
 					java.awt.Color.red), buttonPanel.getBorder())); buttonPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
 
-			//---- drawWall ----
-			drawWall.setText("Wall");
+			//======== figuresScroll ========
+			{
+				figuresScroll.setViewportBorder(null);
 
-			//---- drawDelete ----
-			drawDelete.setText("Delete");
-
-			//---- drawDoor ----
-			drawDoor.setText("Door");
+				//---- figuresList ----
+				figuresList.setEnabled(false);
+				figuresList.setBorder(null);
+				figuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+				figuresScroll.setViewportView(figuresList);
+			}
 
 			GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
 			buttonPanel.setLayout(buttonPanelLayout);
 			buttonPanelLayout.setHorizontalGroup(
 				buttonPanelLayout.createParallelGroup()
-					.addGroup(buttonPanelLayout.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(buttonPanelLayout.createParallelGroup()
-							.addComponent(drawWall, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
-							.addComponent(drawDoor, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
-							.addComponent(drawDelete))
-						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addComponent(figuresScroll, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
 			);
 			buttonPanelLayout.setVerticalGroup(
 				buttonPanelLayout.createParallelGroup()
 					.addGroup(buttonPanelLayout.createSequentialGroup()
-						.addContainerGap()
-						.addComponent(drawWall)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(drawDoor)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 324, Short.MAX_VALUE)
-						.addComponent(drawDelete)
-						.addContainerGap())
+						.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+						.addGap(0, 282, Short.MAX_VALUE))
 			);
 		}
 
@@ -182,7 +255,7 @@ public class MainWindow extends JFrame {
 					.addContainerGap()
 					.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
+					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		contentPaneLayout.setVerticalGroup(
@@ -190,30 +263,38 @@ public class MainWindow extends JFrame {
 				.addGroup(contentPaneLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(contentPaneLayout.createParallelGroup()
-						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE))
+						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
+						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
+		figuresScroll.setBorder(BorderFactory.createEmptyBorder());
+		figuresList.setEnabled(true);
 	}
-
+	
+	public Canvas getCanvas() {
+		return canvas;
+	}
+	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner Evaluation license - D PUpkin
+	// Generated using JFormDesigner Evaluation license - D Pupkin
 	private JMenuBar menuBar;
 	private JMenu file;
+	private JMenuItem newFile;
 	private JMenuItem fileOpen;
 	private JMenuItem fileSave;
+	private JMenuItem loadPackage;
 	private JMenuItem fileExit;
 	private JMenu help;
 	private JMenuItem helpAbout;
 	private JPanel buttonPanel;
-	private JToggleButton drawWall;
-	private JToggleButton drawDelete;
-	private JToggleButton drawDoor;
+	private JScrollPane figuresScroll;
+	private JList figuresList;
 	private Canvas canvas;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	private JMenu debug;
 	private JMenuItem debugShow;
+	//private JList<String> figuresList;
 }
