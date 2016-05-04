@@ -3,16 +3,16 @@ package com.coursework.editor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.files.XMLReader;
+import com.coursework.figures.Figure;
 import com.coursework.files.XMLTag;
 import com.coursework.files.XMLWriter;
+import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
 public class SceneManager {
@@ -22,10 +22,13 @@ public class SceneManager {
 	List<Drawable> figures;
 	boolean mouseOnCanvas = false;
 	
+	Stack<AddToSceneCommand> commands;
+	
 	int mouseX;
 	int mouseY;
 	
 	private void init() {
+		commands = new Stack<>();
 		figures = new LinkedList<Drawable>();
 		Main.addCanvasMouseListener(new MouseInputAdapter() {
 			@Override
@@ -41,7 +44,7 @@ public class SceneManager {
 			@Override
 		    public void mouseDragged(MouseEvent e){
 				if (selectedFigure != null) {
-					selectedFigure.positionChanged(e.getX(), e.getY());
+					selectedFigure.mousePositionChanged(e.getX(), e.getY());
 				}
 				redraw();
 //				mouseX = e.getX();
@@ -50,7 +53,7 @@ public class SceneManager {
 			@Override
 		    public void mouseMoved(MouseEvent e){
 				if (selectedFigure != null) {
-					selectedFigure.positionChanged(e.getX(), e.getY());
+					selectedFigure.mousePositionChanged(e.getX(), e.getY());
 				}
 				redraw();
 //				mouseX = e.getX();
@@ -83,6 +86,8 @@ public class SceneManager {
 	
 	public void clear() {
 		figures = new LinkedList<Drawable>();
+		commands = new Stack<>();
+		
 		FiguresManager.getInstance().clearSelection();
 	}
 	
@@ -93,7 +98,17 @@ public class SceneManager {
 	private void redraw() {
 		Main.redraw();
 	}
-		
+	
+	public void undo() {
+		if (commands.size() > 0) {
+			AddToSceneCommand c = commands.pop();
+			c.reverse();
+			Debug.log("Action reversed");
+		} else {
+			Debug.log("Nothing to undo");
+		}
+	} 
+	
 	public void selectFigure(Figure f) {
 		selectedFigure = f;
 	}
@@ -109,10 +124,7 @@ public class SceneManager {
 			selectedFigure.selfPaint(g);
 		}
 	}
-	
-	public void addDrawable(Drawable d) {
-		figures.add(d);
-	}
+
 	
 	public void saveToFile(String fileName) {
 		
@@ -129,5 +141,33 @@ public class SceneManager {
 		}
 		
 		writer.write();
+	}
+
+	
+	public CommandFactory getAddFactory() {
+		return new CommandFactory() {
+			
+			@Override
+			public AddToSceneCommand getCommand() {
+				return new AddToSceneCommand() {
+					
+					private Drawable d;
+					
+					@Override
+					public void reverse() {
+						figures.remove(d);
+						redraw();
+					}	
+					
+					@Override
+					public void execute(Drawable d) {
+						this.d = d;
+						commands.add(this);
+						figures.add(d);
+						redraw();	
+					}
+				};
+			}
+		};
 	}
 }

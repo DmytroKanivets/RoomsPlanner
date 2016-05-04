@@ -2,8 +2,8 @@ package com.coursework.files;
 
 import java.io.FileNotFoundException;
 
-import com.coursework.editor.Figure;
 import com.coursework.editor.FiguresManager;
+import com.coursework.figures.Figure;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
@@ -19,7 +19,7 @@ public class SceneLoader {
 					Figure f = FiguresManager.getInstance().getFigure(
 							tag.getInnerTag("figurePackage").getContent(), 
 							tag.getInnerTag("figureName").getContent());
-					f.load(tag);
+					f.loadAtScene(tag);
 				} else {
 					Debug.error("Unrecognised tag " + tag.getName());
 				}

@@ -12,6 +12,7 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.coursework.figures.Figure;
 import com.coursework.files.PackageLoader;
 import com.coursework.main.Main;
 import com.coursework.main.Settings;

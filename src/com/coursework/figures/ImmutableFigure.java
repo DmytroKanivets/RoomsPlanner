@@ -1,46 +1,31 @@
-package com.coursework.editor;
+package com.coursework.figures;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
+import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
-import com.coursework.main.Main;
 
 public class ImmutableFigure extends Figure {
 
-//	public static 
-		
+	private Area area;
+	
+	private int prevX;
+	private int prevY;
+	
 	public ImmutableFigure(String figurePackage, String figureClass, String figureName) {
 		super(figurePackage, figureClass, figureName);
-		transform = new AffineTransform();
 	}
 
-	Area area;
-	AffineTransform transform;
-	
-	int x;
-	int y;
-	/*
-	public ImmutableFigure(String pack, String name) {
-		this.name = name;
-		this.pack = pack;
-		transform = new AffineTransform();
-	}
-	*/
-	
-	
-	@Override
 	public void addArea(Area a) {
 		if (area == null) {
 			area = a;
 		} else {
 			area.add(a);
 		}
-
 	}
 
-	@Override
 	public void subtractArea(Area a) {
 		if (area == null) {
 			//Ignore
@@ -55,62 +40,16 @@ public class ImmutableFigure extends Figure {
 	}
 	
 	@Override
-	public void positionChanged(int x, int y) {
+	public void mousePositionChanged(int x, int y) {
+		AffineTransform transform = new AffineTransform();;
 		transform.setToIdentity();
-		transform.translate(x - this.x, y - this.y);
-		this.x = x;
-		this.y = y;
+		transform.translate(x - this.prevX, y - this.prevY);
+		this.prevX = x;
+		this.prevY = y;
 		area.transform(transform);
 	}
-/*
-	@Override
-	public void mouseClicked() {
-	}
-*/
-	private void addToScene() {
-		Main.getCurrentScene().addDrawable(new DrawableRepresentation(area, x, y));
-	}
-	
-	@Override
-	public void mouseDown() {
-		this.addToScene();
-	}
 
-	@Override
-	public void mouseUp() {
-		//Ignore
-		
-	}
-
-	@Override
-	public XMLTag getXMLTag() {
-		XMLTag tag = new XMLTag(null);
-		tag.setName("figure");
-		
-		XMLTag name = new XMLTag(tag);
-		name.setName("figureName");
-		name.addContent(getName());
-		tag.addInnerTag(name);
-	
-		XMLTag pack = new XMLTag(tag);
-		pack.setName("figurePackage");
-		pack.addContent(getPackageName());
-		tag.addInnerTag(pack);
-	
-		XMLTag xTag = new XMLTag(tag);
-		xTag.setName("x");
-		xTag.addContent(Integer.toString(x));
-		tag.addInnerTag(xTag);
-	
-		XMLTag yTag = new XMLTag(tag);
-		yTag.setName("y");
-		yTag.addContent(Integer.toString(y));
-		tag.addInnerTag(yTag);
-		
-		return tag;
-	}
-
-	private class DrawableRepresentation implements Drawable {
+private class DrawableRepresentation implements Drawable {
 		
 		int x;
 		int y;
@@ -157,15 +96,54 @@ public class ImmutableFigure extends Figure {
 		}
 		
 	}
+	
+	private void addToScene() {
+		commandFactory.getCommand().execute(new DrawableRepresentation(area, prevX, prevY));
+	}
+	
+	@Override
+	public void mouseDown() {
+		this.addToScene();
+	}
 
 	@Override
-	public void load(XMLTag t) {
-		this.positionChanged(
+	public void mouseUp() {
+		//Ignore
+	}
+
+	@Override
+	public XMLTag getXMLTag() {
+		XMLTag tag = new XMLTag(null);
+		tag.setName("figure");
+		
+		XMLTag name = new XMLTag(tag);
+		name.setName("figureName");
+		name.addContent(getName());
+		tag.addInnerTag(name);
+	
+		XMLTag pack = new XMLTag(tag);
+		pack.setName("figurePackage");
+		pack.addContent(getPackageName());
+		tag.addInnerTag(pack);
+	
+		XMLTag xTag = new XMLTag(tag);
+		xTag.setName("x");
+		xTag.addContent(Integer.toString(prevX));
+		tag.addInnerTag(xTag);
+	
+		XMLTag yTag = new XMLTag(tag);
+		yTag.setName("y");
+		yTag.addContent(Integer.toString(prevY));
+		tag.addInnerTag(yTag);
+		
+		return tag;
+	}
+
+	@Override
+	public void loadAtScene(XMLTag t) {
+		this.mousePositionChanged(
 				Integer.parseInt(t.getInnerTag("x").getContent()),
 				Integer.parseInt(t.getInnerTag("y").getContent()));
 		this.addToScene();
 	}
-
-
-
 }

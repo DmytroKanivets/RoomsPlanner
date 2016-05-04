@@ -1,14 +1,17 @@
-package com.coursework.editor;
+package com.coursework.figures;
 
-import java.awt.geom.Area;
-
+import com.coursework.editor.AddToSceneCommand;
+import com.coursework.editor.CommandFactory;
+import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
 
 public abstract class Figure implements Drawable {
 	
-	String figureName;
-	String figurePackage;
-	String figureClass;
+	private String figureName;
+	private String figurePackage;
+	private String figureClass;
+	
+	protected CommandFactory commandFactory;
 	
 	public Figure(String figurePackage, String figureClass, String figureName) {
 		this.figurePackage = figurePackage;
@@ -27,15 +30,15 @@ public abstract class Figure implements Drawable {
 	public String get—lassName() {
 		return figureClass;				
 	}
-		
-	public abstract void addArea(Area a);
-	public abstract void subtractArea(Area a);
-
-	//public abstract Drawable getDrawableComponent();
-	public abstract void load(XMLTag t);
 	
-	//public abstract void mouseClicked();
+	public void setAddToSceneOperation(CommandFactory factory) {
+		commandFactory = factory;
+	}
+
+	//TODO remove it
+	public abstract void loadAtScene(XMLTag t);
+	
 	public abstract void mouseDown();
 	public abstract void mouseUp();
-	public abstract void positionChanged(int x, int y);
+	public abstract void mousePositionChanged(int x, int y);
 }

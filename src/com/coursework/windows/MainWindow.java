@@ -33,6 +33,7 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	public MainWindow() {
+	
 		initComponents();
 		if (Settings.getInstance().get("debug").equals("true")) {
 			initDebug();
@@ -79,8 +80,6 @@ public class MainWindow extends JFrame {
 		
 		int result = fileChooser.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
-			SceneManager scene =  Main.getCurrentScene();
-			scene = new SceneManager();
 			SceneLoader.loadScene(fileChooser.getSelectedFile().getAbsolutePath());
 			Main.redraw();
 			/*
@@ -157,6 +156,7 @@ public class MainWindow extends JFrame {
 		figuresScroll = new JScrollPane();
 		figuresList = new JList();
 		canvas = new Canvas();
+		infoPanel = new JPanel();
 
 		//======== this ========
 		Container contentPane = getContentPane();
@@ -243,7 +243,22 @@ public class MainWindow extends JFrame {
 				buttonPanelLayout.createParallelGroup()
 					.addGroup(buttonPanelLayout.createSequentialGroup()
 						.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-						.addGap(0, 282, Short.MAX_VALUE))
+						.addGap(0, 352, Short.MAX_VALUE))
+			);
+		}
+
+		//======== infoPanel ========
+		{
+
+			GroupLayout infoPanelLayout = new GroupLayout(infoPanel);
+			infoPanel.setLayout(infoPanelLayout);
+			infoPanelLayout.setHorizontalGroup(
+				infoPanelLayout.createParallelGroup()
+					.addGap(0, 135, Short.MAX_VALUE)
+			);
+			infoPanelLayout.setVerticalGroup(
+				infoPanelLayout.createParallelGroup()
+					.addGap(0, 491, Short.MAX_VALUE)
 			);
 		}
 
@@ -255,7 +270,9 @@ public class MainWindow extends JFrame {
 					.addContainerGap()
 					.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
+					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					.addComponent(infoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
 		contentPaneLayout.setVerticalGroup(
@@ -263,8 +280,9 @@ public class MainWindow extends JFrame {
 				.addGroup(contentPaneLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(contentPaneLayout.createParallelGroup()
-						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
-						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(infoPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		pack();
@@ -293,6 +311,7 @@ public class MainWindow extends JFrame {
 	private JScrollPane figuresScroll;
 	private JList figuresList;
 	private Canvas canvas;
+	private JPanel infoPanel;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	private JMenu debug;
 	private JMenuItem debugShow;

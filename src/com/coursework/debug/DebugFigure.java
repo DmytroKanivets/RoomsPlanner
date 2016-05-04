@@ -3,7 +3,7 @@ package com.coursework.debug;
 import java.awt.Graphics2D;
 import java.awt.geom.Area;
 
-import com.coursework.editor.Figure;
+import com.coursework.figures.Figure;
 
 public class DebugFigure  {
 

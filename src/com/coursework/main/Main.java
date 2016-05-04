@@ -1,7 +1,14 @@
 package com.coursework.main;
 
 import java.awt.Graphics2D;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -40,13 +47,31 @@ public class Main {
 	       		 	debugWindow = new DebugWindow();
 	            	aboutWindow = new AboutWindow();
 	            	mainWindow = new MainWindow();
-	            	Debug.log("Windows created");
 	            	
-	            	FiguresManager.getInstance().initList(mainWindow.getFiguresList());
-	            	Debug.log("Default figures loaded");
+	            	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+	            	manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+						
+						@Override
+						public boolean dispatchKeyEvent(KeyEvent e) {
+							//Ctrl z keycode
+							int code = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()).getKeyCode();
+							if  (e.getID() == e.KEY_PRESSED && e.getKeyCode() == code && e.isControlDown()) {
+								currentSceneManager.undo();
+								return true;
+							}
+							return false;
+						}
+					});
+	            	
+	            	Debug.log("Windows created");
+
+	            	
 	            	
 	            	currentSceneManager = new SceneManager();
 	            	Debug.log("Scene manager initialised");
+	            	
+	            	FiguresManager.getInstance().initList(mainWindow.getFiguresList());
+	            	Debug.log("Default figures loaded");
 	            	
 	            	mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	            	mainWindow.setVisible(true);

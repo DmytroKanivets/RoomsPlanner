@@ -1,10 +1,9 @@
 package com.coursework.windows;
 
 import java.awt.*;
-import java.awt.geom.*;
 import javax.swing.*;
 
-import com.coursework.editor.Figure;
+import com.coursework.figures.Figure;
 import com.coursework.main.Main;
 
 public class Canvas extends JPanel {

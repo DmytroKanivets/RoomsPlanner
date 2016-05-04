@@ -7,5 +7,6 @@ import com.coursework.files.XMLTag;
 public interface Drawable {
 
 	public void selfPaint(Graphics2D g);
+//	TODO remove?
 	public XMLTag getXMLTag(); 
 }

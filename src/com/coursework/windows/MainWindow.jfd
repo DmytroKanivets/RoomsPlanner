@@ -4,13 +4,13 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq t {space :p::p, comp buttonPanel:::p::p, space :p::p, comp canvas::::552:x, space :p::p}}"
-			"$verticalGroup": "par l {seq l {space :::p, par l {comp canvas::::421:x, comp buttonPanel:::::x}, space :::p}}"
+			"$horizontalGroup": "par l {seq t {space :p::p, comp buttonPanel:::p::p, space :p::p, comp canvas::::606:x, space :::p, comp infoPanel:::p::p, space :::p}}"
+			"$verticalGroup": "par l {seq {space :::p, par l {comp canvas::::491:x, comp buttonPanel:::::x, comp infoPanel::l:::x}, space :::p}}"
 		} ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 				"$horizontalGroup": "par l {comp figuresScroll::t::96:x}"
-				"$verticalGroup": "par l {seq l {comp figuresScroll:::p:139:p, space :0:282:x}}"
+				"$verticalGroup": "par l {seq l {comp figuresScroll:::p:139:p, space :0:352:x}}"
 			} ) {
 				name: "buttonPanel"
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
@@ -26,6 +26,12 @@ new FormModel {
 			} )
 			add( new FormComponent( "com.coursework.windows.Canvas" ) {
 				name: "canvas"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {space :0:135:x}"
+				"$verticalGroup": "par l {space :0:491:x}"
+			} ) {
+				name: "infoPanel"
 			} )
 			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
 				name: "menuBar"
@@ -82,7 +88,7 @@ new FormModel {
 			}
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 690, 500 )
+			"size": new java.awt.Dimension( 885, 570 )
 		} )
 	}
 }
