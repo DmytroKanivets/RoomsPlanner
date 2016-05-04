@@ -22,6 +22,7 @@ public class FiguresManager {
 	private static FiguresManager instance;
 	
 	private JList<String> figuresList;
+	
 	private Set<String> loadedPackages;
 	private List<Figure> figures;
 

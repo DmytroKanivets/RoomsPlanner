@@ -24,13 +24,40 @@ public class FiguresFactory {
 		return instance;
 	}
 	
+	private LineFigure createLineFigure(String figurePackage, XMLTag tag) {
+
+		LineFigure result = new LineFigure(figurePackage, tag.getInnerTag("name").getContent());
+		
+		result.setWidth(Integer.parseInt(tag.getInnerTag("width").getContent()));
+		
+		return result;
+	}
 	
-	private ExtensibleFigure createExtensibleFigure(String figurePackage, XMLTag tag)  {
+	private RectangleFigure createRectangleFigure(String figurePackage, XMLTag tag) {
+		//TODO implement
 		return null;
 	}
 	
+	private ExtensibleFigure createExtensibleFigure(String figurePackage, XMLTag tag)  {
+		ExtensibleFigure result = null;
+		
+		switch (tag.getInnerTag("extensibleType").getContent()) {
+		case "line":
+			result = createLineFigure(figurePackage, tag);
+			break;
+		case "rect":
+			result = createRectangleFigure(figurePackage, tag);
+			break;
+		default:
+			Debug.error("Can't load figure, unknown extensible type");
+			break;
+		}
+		
+		return result;
+	}
+	
 	private ImmutableFigure createImmutableFigure(String figurePackage, XMLTag tag) {
-		ImmutableFigure newFigure = new ImmutableFigure(figurePackage, tag.getInnerTag("class").getContent(),tag.getInnerTag("name").getContent());
+		ImmutableFigure newFigure = new ImmutableFigure(figurePackage, tag.getInnerTag("name").getContent());
 		
 		Collection<XMLTag> figureContent = tag.getInnerTags();
 		for (XMLTag area: figureContent) {
@@ -100,6 +127,14 @@ public class FiguresFactory {
 		
 		if (f != null) {
 			f.setAddToSceneOperation(Main.getCurrentScene().getAddFactory());
+		
+			Collection<XMLTag> tags = tag.getInnerTags();
+			
+			for (XMLTag t : tags) {
+				if (t.getName().equals("tag")) {
+					f.addTag(t.getContent());
+				}
+			}
 		}
 		
 		return f;

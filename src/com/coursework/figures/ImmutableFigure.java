@@ -14,8 +14,8 @@ public class ImmutableFigure extends Figure {
 	private int prevX;
 	private int prevY;
 	
-	public ImmutableFigure(String figurePackage, String figureClass, String figureName) {
-		super(figurePackage, figureClass, figureName);
+	public ImmutableFigure(String figurePackage, String figureName) {
+		super(figurePackage, figureName);
 	}
 
 	public void addArea(Area a) {
@@ -49,7 +49,7 @@ public class ImmutableFigure extends Figure {
 		area.transform(transform);
 	}
 
-private class DrawableRepresentation implements Drawable {
+	private class DrawableRepresentation implements Drawable {
 		
 		int x;
 		int y;
@@ -68,7 +68,7 @@ private class DrawableRepresentation implements Drawable {
 		}
 
 		@Override
-		public XMLTag getXMLTag() {
+		public XMLTag saveAtScene() {
 			XMLTag tag = new XMLTag(null);
 			tag.setName("figure");
 			
@@ -112,7 +112,7 @@ private class DrawableRepresentation implements Drawable {
 	}
 
 	@Override
-	public XMLTag getXMLTag() {
+	public XMLTag saveAtScene() {
 		XMLTag tag = new XMLTag(null);
 		tag.setName("figure");
 		

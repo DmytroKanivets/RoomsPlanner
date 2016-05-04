@@ -103,9 +103,6 @@ public class SceneManager {
 		if (commands.size() > 0) {
 			AddToSceneCommand c = commands.pop();
 			c.reverse();
-			Debug.log("Action reversed");
-		} else {
-			Debug.log("Nothing to undo");
 		}
 	} 
 	
@@ -114,10 +111,12 @@ public class SceneManager {
 	}
 	
 	public void drawScene(Graphics2D g) {
-		g.setColor(Color.BLACK);
 		for (Drawable d : figures) {
+			g.setColor(Color.BLACK);
 			d.selfPaint(g);
 		}
+		
+		//System.out.println(figures.size());
 		
 		if (selectedFigure != null && mouseOnCanvas) {
 			g.setColor(Color.BLUE);
@@ -135,7 +134,7 @@ public class SceneManager {
 		writer.setRoot(root);
 		
 		for (Drawable f : figures) {
-			XMLTag tag = f.getXMLTag();
+			XMLTag tag = f.saveAtScene();
 			
 			writer.addToRoot(tag);
 		}
