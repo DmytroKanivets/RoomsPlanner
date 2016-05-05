@@ -12,17 +12,16 @@ import javax.swing.event.MouseInputAdapter;
 import com.coursework.figures.Figure;
 import com.coursework.files.XMLTag;
 import com.coursework.files.XMLWriter;
-import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
-public class SceneManager {
+public class Scene {
 
 	Figure selectedFigure;
 	
 	List<Drawable> figures;
 	boolean mouseOnCanvas = false;
 	
-	Stack<AddToSceneCommand> commands;
+	Stack<Command> commands;
 	
 	int mouseX;
 	int mouseY;
@@ -91,7 +90,7 @@ public class SceneManager {
 		FiguresManager.getInstance().clearSelection();
 	}
 	
-	public SceneManager() {
+	public Scene() {
 		init();
 	}
 	
@@ -101,7 +100,7 @@ public class SceneManager {
 	
 	public void undo() {
 		if (commands.size() > 0) {
-			AddToSceneCommand c = commands.pop();
+			Command c = commands.pop();
 			c.reverse();
 		}
 	} 
@@ -116,14 +115,11 @@ public class SceneManager {
 			d.selfPaint(g);
 		}
 		
-		//System.out.println(figures.size());
-		
 		if (selectedFigure != null && mouseOnCanvas) {
 			g.setColor(Color.BLUE);
 			selectedFigure.selfPaint(g);
 		}
 	}
-
 	
 	public void saveToFile(String fileName) {
 		
@@ -147,20 +143,20 @@ public class SceneManager {
 		return new CommandFactory() {
 			
 			@Override
-			public AddToSceneCommand getCommand() {
-				return new AddToSceneCommand() {
+			public Command getCommand(Drawable d) {
+				return new Command() {
 					
-					private Drawable d;
+					private Drawable drawable;
 					
 					@Override
 					public void reverse() {
-						figures.remove(d);
+						figures.remove(drawable);
 						redraw();
 					}	
 					
 					@Override
-					public void execute(Drawable d) {
-						this.d = d;
+					public void execute() {
+						this.drawable = d;
 						commands.add(this);
 						figures.add(d);
 						redraw();	

@@ -4,10 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -15,7 +13,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.MouseInputAdapter;
 
 import com.coursework.editor.FiguresManager;
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.Scene;
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;
@@ -26,7 +24,7 @@ public class Main {
 	static AboutWindow aboutWindow;
 	static DebugWindow debugWindow;
 	
-	static SceneManager currentSceneManager;
+	static Scene currentScene;
 	
 	public static void main(String[] args) {
 		
@@ -55,8 +53,8 @@ public class Main {
 						public boolean dispatchKeyEvent(KeyEvent e) {
 							//Ctrl z keycode
 							int code = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()).getKeyCode();
-							if  (e.getID() == e.KEY_PRESSED && e.getKeyCode() == code && e.isControlDown()) {
-								currentSceneManager.undo();
+							if  (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == code && e.isControlDown()) {
+								currentScene.undo();
 								return true;
 							}
 							return false;
@@ -67,7 +65,7 @@ public class Main {
 
 	            	
 	            	
-	            	currentSceneManager = new SceneManager();
+	            	currentScene = new Scene();
 	            	Debug.log("Scene manager initialised");
 	            	
 	            	FiguresManager.getInstance().initList(mainWindow.getFiguresList());
@@ -85,13 +83,13 @@ public class Main {
 	}
 	
 	public static void resetScene() {
-		currentSceneManager.clear();
+		currentScene.clear();
 		redraw();
 	}
 	
 	public static void drawFigures(Graphics2D g) {
-		if (currentSceneManager != null)
-			currentSceneManager.drawScene(g);
+		if (currentScene != null)
+			currentScene.drawScene(g);
 	}
 	
 	public static void addCanvasMouseListener(MouseInputAdapter mouse) {
@@ -100,8 +98,8 @@ public class Main {
 		mainWindow.getCanvas().addMouseWheelListener(mouse);
 	}
 	
-	public static SceneManager getCurrentScene() {
-		return currentSceneManager;
+	public static Scene getCurrentScene() {
+		return currentScene;
 	}
 	
 	public static void showAboutWindow() {

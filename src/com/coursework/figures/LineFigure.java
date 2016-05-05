@@ -5,7 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
@@ -16,7 +17,7 @@ public class LineFigure extends ExtensibleFigure {
 		super(figurePackage, figureName);
 	}
 
-	private Area getArea() {
+	public Area getArea() {
 		if (mouseDown) {
 			//System.out.println("NOT NULL AREA");
 			double deltaX = currentX - startX;
@@ -86,6 +87,7 @@ public class LineFigure extends ExtensibleFigure {
 		int endY;
 		
 		Area a;
+		List<String> tags;
 		
 		public DrawableRepresentation(Area area, int startX, int startY, int endX, int endY) {
 			a = new Area(area);
@@ -97,10 +99,13 @@ public class LineFigure extends ExtensibleFigure {
 			
 			this.endX = endX;
 			this.endY = endY;
+
+			tags = new LinkedList<>();
+			tags.addAll(getTags());
 		}
 		
 		@Override
-		public void selfPaint(Graphics2D g) {
+		public void selfPaint(Graphics2D g) { 
 			g.fill(a);
 		}
 
@@ -141,6 +146,11 @@ public class LineFigure extends ExtensibleFigure {
 			
 			return tag;
 		}
+
+		@Override
+		public List<String> getTags() {
+			return tags;
+		}
 		
 	}
 	
@@ -148,7 +158,7 @@ public class LineFigure extends ExtensibleFigure {
 	public void mouseUp() {
 		Area a = getArea();
 		//System.out.println(a.getBounds2D().toString());
-		commandFactory.getCommand().execute(new DrawableRepresentation(a, startX, startY, currentX, currentY));
+		commandFactory.getCommand(new DrawableRepresentation(a, startX, startY, currentX, currentY)).execute();
 		
 		mouseDown = false;
 	}

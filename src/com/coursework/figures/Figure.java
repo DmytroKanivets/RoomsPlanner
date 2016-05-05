@@ -1,5 +1,6 @@
 package com.coursework.figures;
 
+import java.awt.geom.Area;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +26,10 @@ public abstract class Figure implements Drawable {
 	public String getPackageName() {
 		return figurePackage; 
 	}
+	
+	public List<String> getTags() {
+		return tags;
+	}
 
 	public String getName() {
 		return figureName;
@@ -42,6 +47,8 @@ public abstract class Figure implements Drawable {
 		commandFactory = factory;
 	}
 
+	public abstract Area getArea();
+	
 	//TODO remove it
 	public abstract void loadAtScene(XMLTag t);
 	

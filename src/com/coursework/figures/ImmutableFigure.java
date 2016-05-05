@@ -3,6 +3,8 @@ package com.coursework.figures;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
@@ -14,10 +16,12 @@ public class ImmutableFigure extends Figure {
 	private int prevX;
 	private int prevY;
 	
+
 	public ImmutableFigure(String figurePackage, String figureName) {
 		super(figurePackage, figureName);
 	}
 
+	
 	public void addArea(Area a) {
 		if (area == null) {
 			area = a;
@@ -54,12 +58,15 @@ public class ImmutableFigure extends Figure {
 		int x;
 		int y;
 		
+		List<String> tags;
 		Area a;
 		
 		public DrawableRepresentation(Area area, int xPos, int yPos) {
 			a = new Area(area);
 			x = xPos;
 			y = yPos;
+			tags = new LinkedList<>();
+			tags.addAll(getTags());
 		}
 		
 		@Override
@@ -94,11 +101,16 @@ public class ImmutableFigure extends Figure {
 			
 			return tag;
 		}
+
+		@Override
+		public List<String> getTags() {
+			return tags;
+		}
 		
 	}
 	
 	private void addToScene() {
-		commandFactory.getCommand().execute(new DrawableRepresentation(area, prevX, prevY));
+		commandFactory.getCommand(new DrawableRepresentation(area, prevX, prevY)).execute();
 	}
 	
 	@Override
@@ -145,5 +157,11 @@ public class ImmutableFigure extends Figure {
 				Integer.parseInt(t.getInnerTag("x").getContent()),
 				Integer.parseInt(t.getInnerTag("y").getContent()));
 		this.addToScene();
+	}
+
+
+	@Override
+	public Area getArea() {
+		return area;
 	}
 }

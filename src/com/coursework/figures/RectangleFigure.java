@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 
 import com.coursework.files.XMLTag;
 
-public class RectangleFigure extends ExtensibleFigure {
+public abstract class RectangleFigure extends ExtensibleFigure {
 
 	public RectangleFigure(String figurePackage, String figureName) {
 		super(figurePackage, figureName);

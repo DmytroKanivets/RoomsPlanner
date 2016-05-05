@@ -5,7 +5,7 @@
 package com.coursework.windows;
 
 import com.coursework.editor.FiguresManager;
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.Scene;
 import com.coursework.files.PackageLoader;
 import com.coursework.files.SceneLoader;
 import com.coursework.main.Debug;

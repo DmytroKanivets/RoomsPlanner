@@ -1,5 +1,5 @@
 package com.coursework.editor;
 
 public interface CommandFactory {
-	public AddToSceneCommand getCommand();
+	public Command getCommand(Drawable d);
 }
