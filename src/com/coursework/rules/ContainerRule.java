@@ -2,7 +2,7 @@ package com.coursework.rules;
 
 import java.util.Collection;
 
-import com.coursework.editor.Drawable;
+import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
 
 public class ContainerRule extends PlacementRule{

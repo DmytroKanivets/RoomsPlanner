@@ -5,10 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.coursework.editor.CommandFactory;
-import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
 
-public abstract class Figure implements Drawable {
+public abstract class Figure extends Drawable {
 	
 	private String figureName;
 	private String figurePackage;

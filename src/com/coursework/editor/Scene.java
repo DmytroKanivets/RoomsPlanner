@@ -9,7 +9,9 @@ import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
 
+import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
+import com.coursework.figures.FiguresManager;
 import com.coursework.files.XMLTag;
 import com.coursework.files.XMLWriter;
 import com.coursework.main.Main;
@@ -161,9 +163,11 @@ public class Scene {
 					@Override
 					public void execute() {
 						this.drawable = d;
-						commands.add(this);
-						figures.add(d, RulesManager.getInstance().getPriority(d));
-						redraw();	
+						if (drawable != null) {
+							commands.add(this);
+							figures.add(d, d.getPriority());
+							redraw();
+						}
 					}
 				};
 			}

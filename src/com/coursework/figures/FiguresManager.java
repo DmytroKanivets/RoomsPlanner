@@ -1,4 +1,4 @@
-package com.coursework.editor;
+package com.coursework.figures;
 
 import java.io.FileNotFoundException;
 import java.util.HashSet;
@@ -12,10 +12,10 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.coursework.figures.Figure;
-import com.coursework.files.PackageLoader;
+import com.coursework.files.FiguresLoader;
 import com.coursework.main.Main;
 import com.coursework.main.Settings;
+import com.coursework.rules.RulesManager;
 
 public class FiguresManager {
 	
@@ -48,12 +48,13 @@ public class FiguresManager {
 	 * */
 	public void initList(JList<String> figuresList) {
 		this.figuresList = figuresList;
+		/*
 		String name = Settings.getInstance().get("defaultPackageName");
 		if (name.equals(""))
 			name = DEFAULT_PACKAGE_NAME;
 		
 		addPackage(name);
-		
+		*/
 		figuresList.addListSelectionListener(new ListSelectionListener() {
 			@SuppressWarnings("unchecked")
 			@Override
@@ -73,8 +74,8 @@ public class FiguresManager {
 	public void addPackage(String fileName) {
 
 		try {
-			PackageLoader loader;
-			loader = new PackageLoader(fileName);
+			FiguresLoader loader;
+			loader = new FiguresLoader(fileName);
 			String name = loader.getPackageName();
 			
 			if (loadedPackages.contains(name)) {
@@ -84,6 +85,8 @@ public class FiguresManager {
 			}
 		
 			figures.addAll(loader.getFigures());
+			
+			RulesManager.getInstance().loadRules(fileName);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

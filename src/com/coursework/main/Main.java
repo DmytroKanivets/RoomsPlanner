@@ -12,8 +12,9 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.editor.FiguresManager;
 import com.coursework.editor.Scene;
+import com.coursework.figures.FiguresManager;
+import com.coursework.rules.RulesManager;
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;
@@ -62,13 +63,13 @@ public class Main {
 					});
 	            	
 	            	Debug.log("Windows created");
-
-	            	
-	            	
+            	
 	            	currentScene = new Scene();
 	            	Debug.log("Scene manager initialised");
 	            	
 	            	FiguresManager.getInstance().initList(mainWindow.getFiguresList());
+	            	//TODO move to settings
+	            	FiguresManager.getInstance().addPackage("data/default.figures");
 	            	Debug.log("Default figures loaded");
 	            	
 	            	mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

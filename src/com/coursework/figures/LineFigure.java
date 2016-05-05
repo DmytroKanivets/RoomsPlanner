@@ -8,7 +8,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
 
 public class LineFigure extends ExtensibleFigure {
@@ -79,7 +78,7 @@ public class LineFigure extends ExtensibleFigure {
 		mouseDown = true;
 	}
 
-	private class DrawableRepresentation implements Drawable {
+	private class DrawableRepresentation extends Drawable {
 		
 		int startX;
 		int startY;
@@ -87,7 +86,6 @@ public class LineFigure extends ExtensibleFigure {
 		int endY;
 		
 		Area a;
-		List<String> tags;
 		
 		public DrawableRepresentation(Area area, int startX, int startY, int endX, int endY) {
 			a = new Area(area);
@@ -99,9 +97,6 @@ public class LineFigure extends ExtensibleFigure {
 			
 			this.endX = endX;
 			this.endY = endY;
-
-			tags = new LinkedList<>();
-			tags.addAll(getTags());
 		}
 		
 		@Override
@@ -145,20 +140,16 @@ public class LineFigure extends ExtensibleFigure {
 			tag.addInnerTag(yeTag);
 			
 			return tag;
-		}
-
-		@Override
-		public boolean hasTag(String tag) {
-			return tags.contains(tag);
-		}
-		
+		}		
 	}
 	
 	@Override
 	public void mouseUp() {
 		Area a = getArea();
 		//System.out.println(a.getBounds2D().toString());
-		commandFactory.getCommand(new DrawableRepresentation(a, startX, startY, currentX, currentY)).execute();
+		Drawable d = new DrawableRepresentation(a, startX, startY, currentX, currentY);
+		d.addAllTags(getTags());
+		commandFactory.getCommand(d).execute();
 		
 		mouseDown = false;
 	}

@@ -9,14 +9,14 @@ import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresFactory;
 import com.coursework.main.Debug;
 
-public class PackageLoader {
+public class FiguresLoader {
 	
 	String fileName;
 	String packageName;
 	
 	List<Figure> figures;
 	
-	public PackageLoader(String fileName) throws FileNotFoundException {
+	public FiguresLoader(String fileName) throws FileNotFoundException {
 		this.fileName = fileName;
 		figures = new LinkedList<Figure>();
 
@@ -42,7 +42,7 @@ public class PackageLoader {
 
 		packageName = root.getInnerTag("name").getContent();
 		
-		Collection<XMLTag> figs = root.getInnerTags();
+		Collection<XMLTag> figs = root.getInnerTag("figures").getInnerTags();
 				
 		for (XMLTag tag: figs) {
 			if (tag.getName().equals("figure")) {

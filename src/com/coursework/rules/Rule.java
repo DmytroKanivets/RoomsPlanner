@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.coursework.editor.Drawable;
+import com.coursework.figures.Drawable;
 
 public abstract class Rule {
 	protected Set<String> tags;

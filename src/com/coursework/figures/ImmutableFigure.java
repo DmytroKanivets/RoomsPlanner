@@ -6,7 +6,6 @@ import java.awt.geom.Area;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.Drawable;
 import com.coursework.files.XMLTag;
 
 public class ImmutableFigure extends Figure {
@@ -53,20 +52,17 @@ public class ImmutableFigure extends Figure {
 		area.transform(transform);
 	}
 
-	private class DrawableRepresentation implements Drawable {
+	private class DrawableRepresentation extends Drawable {
 		
 		int x;
 		int y;
 		
-		List<String> tags;
 		Area a;
 		
 		public DrawableRepresentation(Area area, int xPos, int yPos) {
 			a = new Area(area);
 			x = xPos;
 			y = yPos;
-			tags = new LinkedList<>();
-			tags.addAll(getTags());
 		}
 		
 		@Override
@@ -101,16 +97,13 @@ public class ImmutableFigure extends Figure {
 			
 			return tag;
 		}
-
-		@Override
-		public boolean hasTag(String tag) {
-			return tags.contains(tag);
-		}
 		
 	}
 	
 	private void addToScene() {
-		commandFactory.getCommand(new DrawableRepresentation(area, prevX, prevY)).execute();
+		Drawable d = new DrawableRepresentation(area, prevX, prevY);
+		d.addAllTags(getTags());
+		commandFactory.getCommand(d).execute();
 	}
 	
 	@Override

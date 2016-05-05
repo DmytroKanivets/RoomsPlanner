@@ -3,8 +3,8 @@ package com.coursework.rules;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.Drawable;
 import com.coursework.editor.Scene;
+import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
 
 public class RulesManager {
@@ -32,18 +32,9 @@ public class RulesManager {
 	public int getPriority(Drawable f) {
 		int priority = Integer.MIN_VALUE;
 		for (PriorityRule rule : priorityRules) {
-			
 			if (rule.applicable(f)) {
 				priority = Math.max(priority, rule.getPriority());
 			}
-			/*
-			 * 
-			List<String> tags = f.getTags();
-			for (String tag: tags) {
-				if (rule.containsTag(tag)) {
-					priority = Math.max(priority, rule.getPriority());
-				}
-			}*/
 		}
 		System.out.println(priority == Integer.MIN_VALUE ? DEFAULT_PRIORITY : priority);
 		return priority == Integer.MIN_VALUE ? DEFAULT_PRIORITY : priority;
@@ -58,5 +49,9 @@ public class RulesManager {
 			}
 		}
 		return canPlace;
+	}
+	
+	public void loadRules(String fileName) {
+		
 	}
 }

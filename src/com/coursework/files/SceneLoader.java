@@ -2,8 +2,8 @@ package com.coursework.files;
 
 import java.io.FileNotFoundException;
 
-import com.coursework.editor.FiguresManager;
 import com.coursework.figures.Figure;
+import com.coursework.figures.FiguresManager;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
