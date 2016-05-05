@@ -103,8 +103,8 @@ public class ImmutableFigure extends Figure {
 		}
 
 		@Override
-		public List<String> getTags() {
-			return tags;
+		public boolean hasTag(String tag) {
+			return tags.contains(tag);
 		}
 		
 	}

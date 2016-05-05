@@ -13,12 +13,16 @@ import com.coursework.figures.Figure;
 import com.coursework.files.XMLTag;
 import com.coursework.files.XMLWriter;
 import com.coursework.main.Main;
+import com.coursework.rules.PriorityRule;
+import com.coursework.rules.RulesManager;
+import com.coursework.util.PriorityQueue;
 
 public class Scene {
 
 	Figure selectedFigure;
 	
-	List<Drawable> figures;
+	//List<Drawable> figures;
+	PriorityQueue<Drawable> figures;
 	boolean mouseOnCanvas = false;
 	
 	Stack<Command> commands;
@@ -28,7 +32,7 @@ public class Scene {
 	
 	private void init() {
 		commands = new Stack<>();
-		figures = new LinkedList<Drawable>();
+		figures = new PriorityQueue<Drawable>();
 		Main.addCanvasMouseListener(new MouseInputAdapter() {
 			@Override
 		    public void mouseEntered(MouseEvent e) {
@@ -84,7 +88,7 @@ public class Scene {
 	}
 	
 	public void clear() {
-		figures = new LinkedList<Drawable>();
+		figures = new PriorityQueue<Drawable>();
 		commands = new Stack<>();
 		
 		FiguresManager.getInstance().clearSelection();
@@ -158,7 +162,7 @@ public class Scene {
 					public void execute() {
 						this.drawable = d;
 						commands.add(this);
-						figures.add(d);
+						figures.add(d, RulesManager.getInstance().getPriority(d));
 						redraw();	
 					}
 				};

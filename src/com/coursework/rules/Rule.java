@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.coursework.figures.Figure;
+import com.coursework.editor.Drawable;
 
 public abstract class Rule {
 	protected Set<String> tags;
@@ -25,8 +25,13 @@ public abstract class Rule {
 		return tags.contains(tag);
 	}
 	
-	public boolean applicable(Figure f) {
+	public boolean applicable(Drawable f) {
 		
+		for (String tag : tags) {
+			if (f.hasTag(tag))
+				return true;
+		}
+		/*
 		List<String> tags = f.getTags();
 		
 		for (String tag : tags) {
@@ -34,7 +39,7 @@ public abstract class Rule {
 				return true;
 			}
 		}
-		
+		*/
 		return false;
 	}
 }

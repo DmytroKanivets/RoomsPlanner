@@ -2,6 +2,7 @@ package com.coursework.rules;
 
 import java.util.Collection;
 
+import com.coursework.editor.Drawable;
 import com.coursework.figures.Figure;
 
 public class ContainerRule extends PlacementRule{
@@ -17,7 +18,7 @@ public class ContainerRule extends PlacementRule{
 	}
 
 	@Override
-	public boolean applicable(Figure f) {
+	public boolean applicable(Drawable f) {
 		return f.hasTag(current);
 		
 	}

@@ -39,7 +39,7 @@ public class PriorityQueue<T> implements Iterable<T> {
 		size++;
 	}
 	
-	public void remove(T element) {
+	public void remove(T element) {		
 		if (head == null)
 			return;
 		
@@ -50,7 +50,7 @@ public class PriorityQueue<T> implements Iterable<T> {
 		}
 		
 		Node current = head;
-		while (!(current.next == null || current.next == element)) {
+		while (!(current.next == null || current.next.element == element)) {
 			current = current.next;
 		}
 		
