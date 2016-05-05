@@ -14,7 +14,6 @@ import javax.swing.event.ListSelectionListener;
 
 import com.coursework.files.FiguresLoader;
 import com.coursework.main.Main;
-import com.coursework.main.Settings;
 import com.coursework.rules.RulesManager;
 
 public class FiguresManager {
@@ -26,8 +25,6 @@ public class FiguresManager {
 	private Set<String> loadedPackages;
 	private List<Figure> figures;
 
-	private static final String DEFAULT_PACKAGE_NAME = "data/default.figures";
-	
 	public static FiguresManager getInstance() {
 		if (instance == null)
 			instance = new FiguresManager();

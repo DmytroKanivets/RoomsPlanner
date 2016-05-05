@@ -25,6 +25,8 @@ public class SceneLoader {
 				}
 			}
 			
+			Main.getCurrentScene().clearUndoStack();
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -3,8 +3,6 @@ package com.coursework.figures;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.util.LinkedList;
-import java.util.List;
 
 import com.coursework.files.XMLTag;
 
@@ -114,34 +112,6 @@ public class ImmutableFigure extends Figure {
 	@Override
 	public void mouseUp() {
 		//Ignore
-	}
-
-	@Override
-	public XMLTag saveAtScene() {
-		XMLTag tag = new XMLTag(null);
-		tag.setName("figure");
-		
-		XMLTag name = new XMLTag(tag);
-		name.setName("figureName");
-		name.addContent(getName());
-		tag.addInnerTag(name);
-	
-		XMLTag pack = new XMLTag(tag);
-		pack.setName("figurePackage");
-		pack.addContent(getPackageName());
-		tag.addInnerTag(pack);
-	
-		XMLTag xTag = new XMLTag(tag);
-		xTag.setName("x");
-		xTag.addContent(Integer.toString(prevX));
-		tag.addInnerTag(xTag);
-	
-		XMLTag yTag = new XMLTag(tag);
-		yTag.setName("y");
-		yTag.addContent(Integer.toString(prevY));
-		tag.addInnerTag(yTag);
-		
-		return tag;
 	}
 
 	@Override

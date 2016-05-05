@@ -1,18 +1,15 @@
 package com.coursework.rules;
 
+import java.util.Collection;
+
+import com.coursework.figures.Drawable;
+
 public class PriorityRule extends Rule {
-	
-	private int priority;
-	
-	public PriorityRule(int p) {
-		priority = p;
+
+	@Override
+	public Drawable processDrawable(Drawable d, Collection<Drawable> context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
-	public void setPriority(int p) {
-		priority = p;
-	}
-	
-	public int getPriority() {
-		return priority;
-	}
+
 }

@@ -3,8 +3,6 @@ package com.coursework.editor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
@@ -15,15 +13,12 @@ import com.coursework.figures.FiguresManager;
 import com.coursework.files.XMLTag;
 import com.coursework.files.XMLWriter;
 import com.coursework.main.Main;
-import com.coursework.rules.PriorityRule;
-import com.coursework.rules.RulesManager;
 import com.coursework.util.PriorityQueue;
 
 public class Scene {
 
 	Figure selectedFigure;
 	
-	//List<Drawable> figures;
 	PriorityQueue<Drawable> figures;
 	boolean mouseOnCanvas = false;
 	
@@ -89,9 +84,12 @@ public class Scene {
 		});
 	}
 	
-	public void clear() {
+	public void clear() { /*
 		figures = new PriorityQueue<Drawable>();
 		commands = new Stack<>();
+		*/
+		commands.clear();
+		figures.clear();
 		
 		FiguresManager.getInstance().clearSelection();
 	}
@@ -172,5 +170,9 @@ public class Scene {
 				};
 			}
 		};
+	}
+
+	public void clearUndoStack() {
+		commands.clear();
 	}
 }

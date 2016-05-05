@@ -1,5 +1,6 @@
 package com.coursework.figures;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Area;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 import com.coursework.editor.CommandFactory;
 import com.coursework.files.XMLTag;
 
-public abstract class Figure extends Drawable {
+public abstract class Figure/* extends Drawable */{
 	
 	private String figureName;
 	private String figurePackage;
@@ -54,4 +55,6 @@ public abstract class Figure extends Drawable {
 	public abstract void mouseDown();
 	public abstract void mouseUp();
 	public abstract void mousePositionChanged(int x, int y);
+
+	public abstract void selfPaint(Graphics2D g);
 }

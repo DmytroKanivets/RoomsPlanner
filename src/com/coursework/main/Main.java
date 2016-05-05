@@ -14,7 +14,6 @@ import javax.swing.event.MouseInputAdapter;
 
 import com.coursework.editor.Scene;
 import com.coursework.figures.FiguresManager;
-import com.coursework.rules.RulesManager;
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;

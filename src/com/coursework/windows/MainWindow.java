@@ -4,9 +4,7 @@
 
 package com.coursework.windows;
 
-import com.coursework.editor.Scene;
 import com.coursework.figures.FiguresManager;
-import com.coursework.files.FiguresLoader;
 import com.coursework.files.SceneLoader;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
@@ -15,7 +13,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;

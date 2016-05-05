@@ -5,12 +5,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.main.Debug;
-import com.coursework.rules.ContainerRule;
-import com.coursework.rules.IntersectionRule;
 import com.coursework.rules.PlacementRule;
 import com.coursework.rules.PriorityRule;
-import com.coursework.rules.Rule;
 
 public class RulesLoader {
 	String filename;
@@ -32,22 +28,6 @@ public class RulesLoader {
 		return placementRules;
 	}
 	
-	private PriorityRule createPriorityRule(XMLTag root) {
-		return null;
-	}
-	
-	private PlacementRule createPlacementRule(XMLTag root) {
-		return null;
-	}
-	
-	private ContainerRule createContainerRule(XMLTag root) {
-		return null;
-	}
-	
-	private IntersectionRule createIntersectionRule(XMLTag root) {
-		return null;
-	}
-	
 	private void loadRules() throws FileNotFoundException {
 		priorityRules = new LinkedList<>();
 		placementRules = new LinkedList<>();
@@ -58,7 +38,7 @@ public class RulesLoader {
 		
 		for (XMLTag tag : rulesTags) {
 			if (tag.getName().equals("rule")) {
-				Collection<XMLTag> innerTags = tag.getInnerTags();
+				//Collection<XMLTag> innerTags = tag.getInnerTags();
 				/*
 				Rule rule = null;
 				

@@ -5,9 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.coursework.files.XMLTag;
 
 public class LineFigure extends ExtensibleFigure {
@@ -18,7 +15,6 @@ public class LineFigure extends ExtensibleFigure {
 
 	public Area getArea() {
 		if (mouseDown) {
-			//System.out.println("NOT NULL AREA");
 			double deltaX = currentX - startX;
 			double deltaY = currentY - startY;
 			
@@ -26,21 +22,12 @@ public class LineFigure extends ExtensibleFigure {
 					Math.pow(deltaX, 2) +  
 					Math.pow(deltaY, 2));
 			Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
-			//Area a = new Area(new Rectangle2D.Double(startX - width/2, startY + length + width/2,startX + width/2, startY - width/2));
-	
 			
 			AffineTransform transform = new AffineTransform();
-			//transform.setToIdentity();
-			/*
-			double theta = Math.atan2(deltaY, deltaX);
-			transform.rotate(theta, startX, startY);*/
 			transform.rotate(deltaX, deltaY, startX, startY);
-			//transform.translate(startX, startY);
 			a.transform(transform);
-			//System.out.println(a.getBounds2D().toString());
 			return a;
 		} else {
-			//System.out.println("NULL AREA");
 			return new Area();
 		}
 	}
@@ -50,17 +37,30 @@ public class LineFigure extends ExtensibleFigure {
 		g.setColor(Color.GRAY);
 		g.fill(getArea());
 	}
-	
-	@Override
-	public XMLTag saveAtScene() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void loadAtScene(XMLTag t) {
-		// TODO Auto-generated method stub
+
+		int startX = Integer.parseInt(t.getInnerTag("startX").getContent());
+		int startY = Integer.parseInt(t.getInnerTag("startY").getContent());
+		int endX = Integer.parseInt(t.getInnerTag("endX").getContent());
+		int endY = Integer.parseInt(t.getInnerTag("endY").getContent());
 		
+		double deltaX = endX - startX;
+		double deltaY = endY - startY;
+		
+		double length = Math.sqrt(
+				Math.pow(deltaX, 2) +  
+				Math.pow(deltaY, 2));
+		Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
+		
+		AffineTransform transform = new AffineTransform();
+		transform.rotate(deltaX, deltaY, startX, startY);
+		a.transform(transform);
+		
+		Drawable d = new DrawableRepresentation(a, startX, startY, endX, endY);
+		d.addAllTags(getTags());
+		commandFactory.getCommand(d).execute();
 	}
 
 	private int startX = 0;
@@ -89,8 +89,6 @@ public class LineFigure extends ExtensibleFigure {
 		
 		public DrawableRepresentation(Area area, int startX, int startY, int endX, int endY) {
 			a = new Area(area);
-			
-			//System.out.println(a.getBounds2D().toString());
 			
 			this.startX = startX;
 			this.startY = startY;
@@ -146,7 +144,6 @@ public class LineFigure extends ExtensibleFigure {
 	@Override
 	public void mouseUp() {
 		Area a = getArea();
-		//System.out.println(a.getBounds2D().toString());
 		Drawable d = new DrawableRepresentation(a, startX, startY, currentX, currentY);
 		d.addAllTags(getTags());
 		commandFactory.getCommand(d).execute();

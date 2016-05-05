@@ -16,13 +16,13 @@ public abstract class RectangleFigure extends ExtensibleFigure {
 		// TODO Auto-generated method stub
 
 	}
-
+/*
 	@Override
 	public XMLTag saveAtScene() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+*/
 	@Override
 	public void loadAtScene(XMLTag t) {
 		// TODO Auto-generated method stub

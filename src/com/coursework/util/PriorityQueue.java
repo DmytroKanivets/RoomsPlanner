@@ -85,4 +85,9 @@ public class PriorityQueue<T> implements Iterable<T> {
 		return new MyIterator();
 	}
 
+	public void clear() {
+		size = 0;
+		head = null;
+	}
+
 }
