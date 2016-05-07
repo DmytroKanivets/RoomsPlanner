@@ -7,14 +7,13 @@ import com.coursework.figures.Figure;
 
 public class IntersectionRule extends PlacementRule {
 
-	@Override
-	public boolean isAllowed(Figure figure, Collection<Figure> context) {
-		// TODO Auto-generated method stub
-		return false;
+	public IntersectionRule(boolean allowed) {
+		super(allowed);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public Drawable processDrawable(Drawable d, Collection<Drawable> context) {
+	public Drawable processDrawable(Drawable d, Iterable<Drawable> context) {
 		// TODO Auto-generated method stub
 		return null;
 	}

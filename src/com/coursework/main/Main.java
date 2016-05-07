@@ -4,19 +4,28 @@ import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.MouseInputAdapter;
 
+import com.coursework.editor.KeyboardState;
 import com.coursework.editor.Scene;
 import com.coursework.figures.FiguresManager;
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;
+
+import sun.management.snmp.jvmmib.JvmCompilationMeta;
 
 public class Main {
 
@@ -25,6 +34,8 @@ public class Main {
 	static DebugWindow debugWindow;
 	
 	static Scene currentScene;
+	
+	static KeyboardState currentKeyboardState;	
 	
 	public static void main(String[] args) {
 		
@@ -46,21 +57,8 @@ public class Main {
 	            	aboutWindow = new AboutWindow();
 	            	mainWindow = new MainWindow();
 	            	
-	            	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-	            	manager.addKeyEventDispatcher(new KeyEventDispatcher() {
-						
-						@Override
-						public boolean dispatchKeyEvent(KeyEvent e) {
-							//Ctrl z keycode
-							int code = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()).getKeyCode();
-							if  (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == code && e.isControlDown()) {
-								currentScene.undo();
-								return true;
-							}
-							return false;
-						}
-					});
-	            	
+	            	currentKeyboardState = new KeyboardState();
+	            		            	        	            	
 	            	Debug.log("Windows created");
             	
 	            	currentScene = new Scene();
@@ -78,6 +76,15 @@ public class Main {
 	        });		
 	}
 
+	public static void addKeyboardEventDispatcher(KeyEventDispatcher k) {
+		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+    	manager.addKeyEventDispatcher(k);
+	}
+	
+	public static KeyboardState getKeyboardState() {
+		return currentKeyboardState;
+	}
+	
 	public static void redraw() {
 		mainWindow.getCanvas().repaint();
 	}
@@ -119,5 +126,29 @@ public class Main {
 		}
 		
 	}
-
+	
+	/*
+	 
+class CustomKeyListener implements KeyListener {
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+		}
+	
+		@Override
+		public void keyPressed(KeyEvent e) {
+			// TODO Auto-generated method stub
+			int keyCode = e.getKeyCode();
+			if (keyCode == KeyEvent.VK_SHIFT) {
+				System.out.println("Shift down");
+			}
+		}
+	
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	} 
+	 */
 }

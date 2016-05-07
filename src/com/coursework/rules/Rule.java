@@ -1,6 +1,5 @@
 package com.coursework.rules;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +15,17 @@ public abstract class Rule {
 	public void addTag(String tag) {
 		tags.add(tag);
 	}
-	
-	public abstract Drawable processDrawable(Drawable d, Collection<Drawable> context);
+	/*
+	public boolean isApplicable(Drawable d) {
+		if (d == null)
+			return false;
+		
+		boolean result = false;
+		for (String tag : tags) {
+			result |= d.hasTag(tag);
+		}
+		return result;
+	}
+	*/
+	public abstract Drawable processDrawable(Drawable d, Iterable<Drawable> context);
 }

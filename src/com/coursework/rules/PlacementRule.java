@@ -1,9 +1,20 @@
 package com.coursework.rules;
 
-import java.util.Collection;
-
-import com.coursework.figures.Figure;
-
 public abstract class PlacementRule extends Rule {
-	public abstract boolean isAllowed(Figure figure, Collection<Figure> context);
+	protected boolean allowed;
+	
+	public PlacementRule(boolean allowed) {
+		this.allowed = allowed;
+	}
+	
+	String containerTag;
+	String contentTag;
+	
+	@Override 
+	public void addTag(String tag) {
+		if (containerTag == null)
+			containerTag = tag;
+		else 
+			contentTag = tag;	
+	}
 }

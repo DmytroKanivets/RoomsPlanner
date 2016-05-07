@@ -29,7 +29,9 @@ public class Canvas extends JPanel {
 		super.paintComponent(g);
 		
 		Graphics2D graphics = (Graphics2D)g;
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		//TODO add it
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
 		/*
 		
 		Area a = new Area(new Arc2D.Double(100, 100, 200, 200, 90, 10, Arc2D.PIE));
@@ -209,8 +211,8 @@ public class Canvas extends JPanel {
         graphSettings.setStroke(new BasicStroke(4));
 
 graphSettings.setComposite(AlphaComposite.getInstance(
-                    AlphaComposite.SRC_OVER, transparency from 0 tp 1);
-graphSettings.setPaint(Color);
+            AlphaComposite.SRC_OVER, transparency from 0 tp 1);
+			graphSettings.setPaint(Color);
         	
         	graphSettings.draw(Shape);
  */

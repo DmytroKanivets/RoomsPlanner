@@ -5,26 +5,50 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
+
+import com.coursework.editor.KeyboardState;
+import com.coursework.editor.Scene;
 import com.coursework.files.XMLTag;
 
 public class LineFigure extends ExtensibleFigure {
 
+	boolean shiftPressed;
+	
 	public LineFigure(String figurePackage, String figureName) {
 		super(figurePackage, figureName);
 	}
 
 	public Area getArea() {
 		if (mouseDown) {
+			
 			double deltaX = currentX - startX;
 			double deltaY = currentY - startY;
-			
+			/*
+			if (shiftPressed) {
+				//System.out.println("try");
+				if (Math.abs(deltaX) > Math.abs(deltaY)) {
+					deltaY = 0;
+				} else {
+					deltaX = 0;
+				}
+			}
+			*/
 			double length = Math.sqrt(
 					Math.pow(deltaX, 2) +  
 					Math.pow(deltaY, 2));
 			Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
 			
 			AffineTransform transform = new AffineTransform();
-			transform.rotate(deltaX, deltaY, startX, startY);
+			//transform.rotate(deltaX, deltaY, startX, startY);
+			double theta = Math.atan2(deltaY, deltaX);
+			if (shiftPressed) {
+				//TODO Remove magic *2
+				double step = Math.toRadians(Scene.ROTATION_STEP *2);
+				double proportion = theta/step;
+				theta = Math.round(proportion) * step;
+				System.out.println("Angle: " + Math.toDegrees(theta));
+			}
+			transform.rotate(theta, startX, startY);
 			a.transform(transform);
 			return a;
 		} else {
@@ -97,8 +121,11 @@ public class LineFigure extends ExtensibleFigure {
 			this.endY = endY;
 		}
 		
+		
+		
 		@Override
-		public void selfPaint(Graphics2D g) { 
+		public void selfPaint(Graphics2D g, Color primaryColor) { 
+			g.setColor(primaryColor);
 			g.fill(a);
 		}
 
@@ -138,6 +165,13 @@ public class LineFigure extends ExtensibleFigure {
 			tag.addInnerTag(yeTag);
 			
 			return tag;
+		}
+
+
+
+		@Override
+		public Area getArea() {
+			return a;
 		}		
 	}
 	
@@ -164,6 +198,24 @@ public class LineFigure extends ExtensibleFigure {
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+	
+	@Override
+	public void keybardEvent(KeyboardState state) {
+		shiftPressed = state.isShiftPressed();
+		/*
+		if (!shiftPressed)
+			System.out.println("ev");*/
+	}
+
+	@Override
+	public void rotateLeft(double degree) {
+		//Ignore, rotated by mouse dragging
+	}
+
+	@Override
+	public void rotateRight(double degree) {
+		//Ignore, rotated by mouse dragging
 	}
 
 }

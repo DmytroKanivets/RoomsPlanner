@@ -25,15 +25,21 @@ public class PriorityQueue<T> implements Iterable<T> {
 		if (head == null) {
 			head = new Node(element, priority);
 		} else  {
-			Node current = head;
-			
-			while (current.next != null && priority < current.priority) {
-				current = current.next;
+			if (priority > head.priority) {
+				Node next = head;
+				head = new Node (element, priority);
+				head.next = next;
+			} else {
+				Node current = head;
+				
+				while (current.next != null && priority <= current.next.priority) {
+					current = current.next;
+				}
+				
+				Node next = current.next;
+				current.next = new Node (element, priority);
+				current.next.next = next;
 			}
-			
-			Node next = current.next;
-			current.next = new Node (element, priority);
-			current.next.next = next;
 		}
 		
 		size++;

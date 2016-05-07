@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.coursework.editor.CommandFactory;
+import com.coursework.editor.KeyboardState;
 import com.coursework.files.XMLTag;
 
 public abstract class Figure/* extends Drawable */{
@@ -47,14 +48,19 @@ public abstract class Figure/* extends Drawable */{
 		commandFactory = factory;
 	}
 
-	public abstract Area getArea();
+	public abstract void rotateLeft(double degree);
+	public abstract void rotateRight(double degree);
 	
-	//TODO remove it
+	//protected abstract Area ggetArea();
+	
+	//TODO move it
 	public abstract void loadAtScene(XMLTag t);
 	
-	public abstract void mouseDown();
-	public abstract void mouseUp();
-	public abstract void mousePositionChanged(int x, int y);
+	public void mouseDown() {}
+	public void mouseUp() {}
+	public void mousePositionChanged(int x, int y) {}
 
+	public void keybardEvent(KeyboardState state) {}
+	
 	public abstract void selfPaint(Graphics2D g);
 }

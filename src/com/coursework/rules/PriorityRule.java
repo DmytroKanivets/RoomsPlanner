@@ -1,15 +1,36 @@
 package com.coursework.rules;
 
-import java.util.Collection;
-
 import com.coursework.figures.Drawable;
 
 public class PriorityRule extends Rule {
 
+	int priority;
+	
+	public PriorityRule(int priority) {
+		this.priority = priority;
+	}
+	
+	/*
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+	*/
+	public boolean isApplicable(Drawable d) {
+		if (d == null)
+			return false;
+		
+		boolean result = false;
+		for (String tag : tags) {
+			result |= d.hasTag(tag);
+		}
+		return result;
+	}
+	
 	@Override
-	public Drawable processDrawable(Drawable d, Collection<Drawable> context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Drawable processDrawable(Drawable d, Iterable<Drawable> context) {
+		if (isApplicable(d) && priority > d.getPriority())
+			d.setPriority(priority);
+		return d;
 	}
 
 }

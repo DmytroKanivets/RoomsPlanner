@@ -8,6 +8,7 @@ import java.util.List;
 import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresFactory;
 import com.coursework.main.Debug;
+import com.coursework.rules.RulesManager;
 
 public class FiguresLoader {
 	
@@ -23,6 +24,7 @@ public class FiguresLoader {
 		Debug.log("Loading " + fileName);
 		
 		loadPackage();
+		RulesManager.getInstance().loadRules(fileName);
 	}
 	
 	public String getPackageName() {

@@ -1,6 +1,8 @@
 package com.coursework.figures;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Area;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,11 +11,11 @@ import com.coursework.files.XMLTag;
 
 public abstract class Drawable {
 
-	private int priority;
+	private int priority = Integer.MIN_VALUE;
 	
 	private Set<String> tags;
 	
-	public abstract void selfPaint(Graphics2D g);
+	public abstract void selfPaint(Graphics2D g, Color primaryColor);
 	
 //	TODO remove?
 	public abstract XMLTag saveAtScene();
@@ -40,4 +42,5 @@ public abstract class Drawable {
 	public void setPriority(int p) {
 		priority = p;
 	}
+	public abstract Area getArea();
 }
