@@ -12,6 +12,7 @@ import java.awt.event.KeyListener;
 import javax.swing.AbstractAction;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -36,6 +37,10 @@ public class Main {
 	static Scene currentScene;
 	
 	static KeyboardState currentKeyboardState;	
+	
+	public static void showMessage(String message) {
+		JOptionPane.showMessageDialog(mainWindow, message);
+	}
 	
 	public static void main(String[] args) {
 		

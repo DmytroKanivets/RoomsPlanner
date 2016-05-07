@@ -23,7 +23,7 @@ public class MouseListener extends MouseAdapter {
 		/*
 		tempShape = new Rectangle(e.getX() -size, e.getY() -size, size*2, size*2);
     	  //drawEnd = new Point(e.getX(), e.getY());
-      	  System.out.println("MM");
+      	  //System.out.println("MM");
       	  repaint();*/
 	}
 	

@@ -100,7 +100,7 @@ public class FiguresManager {
 		while (it.hasNext()) {
 			Figure f = it.next();
 			if (f.getPackageName().equals(packageName)) {
-				System.out.println("Remove");
+				//System.out.println("Remove");
 				it.remove();
 			}
 		}

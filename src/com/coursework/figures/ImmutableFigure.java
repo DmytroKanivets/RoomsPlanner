@@ -44,7 +44,7 @@ public class ImmutableFigure extends Figure {
 	private Area getArea() {
 		Area a = new  Area(area);
 		AffineTransform transform = new AffineTransform();
-		System.out.println("deg: " + rotationDegree * 2);
+		//System.out.println("deg: " + rotationDegree * 2);
 		//transform.rotate(Math.toRadians(rotationDegree));
 		
 		//transform.rotate(Math.toRadians(rotationDegree), 0, 0);
@@ -65,7 +65,7 @@ public class ImmutableFigure extends Figure {
 		//System.out.println("Rot  " + rotationDegree);
 		//System.out.println(String.format("Coord %d %d", prevX, prevY));
 		//transform.rotate(Math.toRadians(rotationDegree), prevX/2, prevY/2);
-		a.transform(transform);
+		//a.transform(transform);
 		
 		return a;
 	}
@@ -121,12 +121,15 @@ public class ImmutableFigure extends Figure {
 		int x;
 		int y;
 		
+		double rotation;
+		
 		Area a;
 		
 		public DrawableRepresentation(Area area, int xPos, int yPos) {
 			a = new Area(area);
 			x = xPos;
 			y = yPos;
+			rotation = rotationDegree;
 			addAllTags(getTags());
 		}
 		
@@ -164,6 +167,11 @@ public class ImmutableFigure extends Figure {
 			yTag.addContent(Integer.toString(y));
 			tag.addInnerTag(yTag);
 			
+			XMLTag rot = new XMLTag(tag);
+			rot.setName("rotation");
+			rot.addContent(Double.toString(rotation));
+			tag.addInnerTag(rot);
+			
 			return tag;
 		}
 
@@ -187,19 +195,18 @@ public class ImmutableFigure extends Figure {
 
 	@Override
 	public void loadAtScene(XMLTag t) {
+		
+		rotationDegree = Double.parseDouble(t.getInnerTag("rotation").getContent());
+		
 		this.mousePositionChanged(
 				Integer.parseInt(t.getInnerTag("x").getContent()),
 				Integer.parseInt(t.getInnerTag("y").getContent()));
 		this.addToScene();
 	}
 
-	@Override
-	public void rotateLeft(double degree) {
-		rotationDegree -= degree;
-	}
 
 	@Override
-	public void rotateRight(double degree) {
+	public void rotate(double degree) {
 		rotationDegree += degree;
 	}
 

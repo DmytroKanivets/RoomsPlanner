@@ -6,6 +6,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -87,6 +88,14 @@ public class Scene {
 					selectedFigure.mouseUp();
 				
 			}
+
+		    public void mouseWheelMoved(MouseWheelEvent e) {
+		    	//System.out.println("move");
+		    	if (selectedFigure != null) {
+		    		selectedFigure.rotate(e.getWheelRotation() * ROTATION_STEP);
+		    		redraw();
+		    	}
+		    }
 			/*
 			  	public void mouseClicked(MouseEvent e)
 			    public void mousePressed(MouseEvent e) {}
@@ -146,12 +155,12 @@ public class Scene {
 				
 				if (selectedFigure != null) {
 					if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_Q) {
-						System.out.println("try to rotate");
-						selectedFigure.rotateLeft(ROTATION_STEP);
+						//System.out.println("try to rotate");
+						selectedFigure.rotate(-ROTATION_STEP);
 					}
 					
 					if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_E) {
-						selectedFigure.rotateRight(ROTATION_STEP);
+						selectedFigure.rotate(ROTATION_STEP);
 					}
 				}
 				
@@ -190,7 +199,8 @@ public class Scene {
 		
 		if (!unchanged) {
 			undo();
-			System.out.println("You cant perform this action");
+			Main.showMessage("You cant perform this action");
+			//System.out.println("You cant perform this action");
 		}
 		
 		return unchanged;
@@ -211,7 +221,7 @@ public class Scene {
 			public void execute() {
 				//this.d = drawable;
 				if (drawable != null) {
-					System.out.println("remove");
+					//System.out.println("remove");
 					commands.add(this);
 					figures.remove(drawable);
 					redraw();
@@ -309,10 +319,12 @@ public class Scene {
 					public void execute() {
 						this.drawable = result;
 						if (drawable != null) {
-							System.out.println("add");
+							System.out.println("Load");
 							commands.add(this);
 							figures.add(drawable, -(drawable.getPriority()+1));
 							redraw();
+						} else {
+							System.out.println("Deny " + d.toString());
 						}
 					}
 				};

@@ -48,8 +48,7 @@ public abstract class Figure/* extends Drawable */{
 		commandFactory = factory;
 	}
 
-	public abstract void rotateLeft(double degree);
-	public abstract void rotateRight(double degree);
+	public abstract void rotate(double degree);
 	
 	//protected abstract Area ggetArea();
 	

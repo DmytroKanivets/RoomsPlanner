@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import com.coursework.editor.KeyboardState;
 import com.coursework.editor.Scene;
 import com.coursework.files.XMLTag;
+import com.coursework.rules.RulesManager;
 
 public class LineFigure extends ExtensibleFigure {
 
@@ -19,59 +20,96 @@ public class LineFigure extends ExtensibleFigure {
 	}
 
 	public Area getArea() {
-		if (mouseDown) {
-			
-			double deltaX = currentX - startX;
-			double deltaY = currentY - startY;
-			/*
-			if (shiftPressed) {
-				//System.out.println("try");
-				if (Math.abs(deltaX) > Math.abs(deltaY)) {
-					deltaY = 0;
-				} else {
-					deltaX = 0;
-				}
+
+		double deltaX = currentX - startX;
+		double deltaY = currentY - startY;
+		/*
+		if (shiftPressed) {
+			//System.out.println("try");
+			if (Math.abs(deltaX) > Math.abs(deltaY)) {
+				deltaY = 0;
+			} else {
+				deltaX = 0;
 			}
-			*/
-			double length = Math.sqrt(
-					Math.pow(deltaX, 2) +  
-					Math.pow(deltaY, 2));
-			Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
-			
-			AffineTransform transform = new AffineTransform();
-			//transform.rotate(deltaX, deltaY, startX, startY);
-			double theta = Math.atan2(deltaY, deltaX);
-			if (shiftPressed) {
-				//TODO Remove magic *2
-				double step = Math.toRadians(Scene.ROTATION_STEP *2);
-				double proportion = theta/step;
-				theta = Math.round(proportion) * step;
-				System.out.println("Angle: " + Math.toDegrees(theta));
-			}
-			transform.rotate(theta, startX, startY);
-			a.transform(transform);
-			return a;
-		} else {
-			return new Area();
 		}
+		*/
+		double length = Math.sqrt(
+				Math.pow(deltaX, 2) +  
+				Math.pow(deltaY, 2));
+		
+		System.out.println("l: " + length);
+		Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
+		
+		AffineTransform transform = new AffineTransform();
+		//transform.rotate(deltaX, deltaY, startX, startY);
+		double theta = Math.atan2(deltaY, deltaX);
+		if (shiftPressed) {
+			//TODO Remove magic *2
+			double step = Math.toRadians(Scene.ROTATION_STEP);
+			double proportion = theta/step;
+			theta = Math.round(proportion) * step;
+			//System.out.println("Angle: " + Math.toDegrees(theta));
+		}
+		transform.rotate(theta, startX, startY);
+		a.transform(transform);
+		return a;
 	}
 	
 	@Override
 	public void selfPaint(Graphics2D g) {
+		
+		/*
+		//Drawable newArea = null;
+		Area current = getArea();
+
+		Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation(current, prevX, prevY));
+				//newArea = null;
+		
+		//System.out.println("try");
+		if (newArea == null) {
+			//System.out.println("null");
+			g.setColor(Color.WHITE);
+			g.fill(current);
+			g.setColor(Color.RED);
+			g.draw(current);
+		} else {
+			g.setColor(Color.WHITE);
+			g.fill(newArea.getArea());
+			g.setColor(Color.BLUE);
+			g.draw(newArea.getArea());
+		}
+		*/
+		if (mouseDown) {
+			Area current = getArea();
+		
+			Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation());
+			//System.out.println(newArea);
+			if (newArea == null) {
+				//System.out.println("null");
+				g.setColor(new Color(128, 0, 0));
+				g.fill(current);
+			} else {
+				g.setColor(Color.GRAY);
+				g.fill(newArea.getArea());
+			}
+		}
+		/*
 		g.setColor(Color.GRAY);
-		g.fill(getArea());
+		g.fill(getArea());*/
 	}
 
 	@Override
 	public void loadAtScene(XMLTag t) {
 
-		int startX = Integer.parseInt(t.getInnerTag("startX").getContent());
-		int startY = Integer.parseInt(t.getInnerTag("startY").getContent());
-		int endX = Integer.parseInt(t.getInnerTag("endX").getContent());
-		int endY = Integer.parseInt(t.getInnerTag("endY").getContent());
+		startX = Integer.parseInt(t.getInnerTag("startX").getContent());
+		startY = Integer.parseInt(t.getInnerTag("startY").getContent());
+		currentX = Integer.parseInt(t.getInnerTag("endX").getContent());
+		currentY = Integer.parseInt(t.getInnerTag("endY").getContent());
 		
-		double deltaX = endX - startX;
-		double deltaY = endY - startY;
+		shiftPressed = Boolean.parseBoolean(t.getInnerTag("isStraighten").getContent());
+		/*
+		double deltaX = currentX - startX;
+		double deltaY = currentY - startY;
 		
 		double length = Math.sqrt(
 				Math.pow(deltaX, 2) +  
@@ -81,9 +119,9 @@ public class LineFigure extends ExtensibleFigure {
 		AffineTransform transform = new AffineTransform();
 		transform.rotate(deltaX, deltaY, startX, startY);
 		a.transform(transform);
-		
-		Drawable d = new DrawableRepresentation(a, startX, startY, endX, endY);
-		d.addAllTags(getTags());
+		*/
+		Drawable d = new DrawableRepresentation();
+		//d.addAllTags(getTags());
 		commandFactory.getCommand(d).execute();
 	}
 
@@ -109,8 +147,21 @@ public class LineFigure extends ExtensibleFigure {
 		int endX;
 		int endY;
 		
-		Area a;
+		Area area;
 		
+		boolean isStraighten;
+		
+		public DrawableRepresentation() {
+			area = new Area(LineFigure.this.getArea());
+			startX = LineFigure.this.startX;
+			startY = LineFigure.this.startY;
+			endX = LineFigure.this.currentX;
+			endY = LineFigure.this.currentY;
+			isStraighten = LineFigure.this.shiftPressed;
+			addAllTags(LineFigure.this.getTags());
+		}
+		
+		/*
 		public DrawableRepresentation(Area area, int startX, int startY, int endX, int endY) {
 			a = new Area(area);
 			
@@ -120,13 +171,13 @@ public class LineFigure extends ExtensibleFigure {
 			this.endX = endX;
 			this.endY = endY;
 		}
-		
+		+*/
 		
 		
 		@Override
 		public void selfPaint(Graphics2D g, Color primaryColor) { 
 			g.setColor(primaryColor);
-			g.fill(a);
+			g.fill(area);
 		}
 
 		@Override
@@ -164,6 +215,11 @@ public class LineFigure extends ExtensibleFigure {
 			yeTag.addContent(Integer.toString(endY));
 			tag.addInnerTag(yeTag);
 			
+			XMLTag shTag = new XMLTag(tag);
+			shTag.setName("isStraighten");
+			shTag.addContent(Boolean.toString(isStraighten));
+			tag.addInnerTag(shTag);
+			
 			return tag;
 		}
 
@@ -171,15 +227,16 @@ public class LineFigure extends ExtensibleFigure {
 
 		@Override
 		public Area getArea() {
-			return a;
+			return area;
 		}		
 	}
 	
 	@Override
 	public void mouseUp() {
-		Area a = getArea();
-		Drawable d = new DrawableRepresentation(a, startX, startY, currentX, currentY);
-		d.addAllTags(getTags());
+		//Area a = getArea();
+		//Drawable d = new DrawableRepresentation(a, startX, startY, currentX, currentY);
+		Drawable d = new DrawableRepresentation();
+		//d.addAllTags(getTags());
 		commandFactory.getCommand(d).execute();
 		
 		mouseDown = false;
@@ -205,16 +262,11 @@ public class LineFigure extends ExtensibleFigure {
 		shiftPressed = state.isShiftPressed();
 		/*
 		if (!shiftPressed)
-			System.out.println("ev");*/
+			//System.out.println("ev");*/
 	}
 
 	@Override
-	public void rotateLeft(double degree) {
-		//Ignore, rotated by mouse dragging
-	}
-
-	@Override
-	public void rotateRight(double degree) {
+	public void rotate(double degree) {
 		//Ignore, rotated by mouse dragging
 	}
 

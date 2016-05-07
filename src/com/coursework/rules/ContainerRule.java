@@ -21,12 +21,18 @@ public class ContainerRule extends PlacementRule{
 					a.subtract(d.getArea());
 					//System.out.println(a.isEmpty());
 					//System.out.println(a.getBounds2D().toString());
-					
+					System.out.println("Found wall");
 					if (a.isEmpty()) {
+						
 						//System.out.println("try");//try
 						canPlace = true;
+					} else {
+						System.out.println(a.getBounds().toString());
 					}
 				}
+			}
+			if (!canPlace) {
+				System.out.println("Deny " + drawable.toString());
 			}
 			return canPlace ? drawable : null;
 				

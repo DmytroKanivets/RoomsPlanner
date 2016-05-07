@@ -30,7 +30,7 @@ public class Canvas extends JPanel {
 		
 		Graphics2D graphics = (Graphics2D)g;
 		//TODO add it
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		/*
 		
