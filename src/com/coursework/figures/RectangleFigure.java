@@ -6,11 +6,12 @@ import com.coursework.files.XMLTag;
 
 public abstract class RectangleFigure extends ExtensibleFigure {
 
-	public RectangleFigure(String figurePackage, String figureName) {
-		super(figurePackage, figureName);
+/*
+	public RectangleFigure(PropertyContainer container) {
+		super(container);
 		// TODO Auto-generated constructor stub
 	}
-
+	*/
 	@Override
 	public void draw(Graphics2D g) {
 		// TODO Auto-generated method stub

@@ -4,25 +4,40 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Arc2D;
+import java.util.Collection;
 
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.rules.RulesManager;
 
 public class ImmutableFigure extends Figure {
-
+/*
+	public ImmutableFigure(PropertyContainer container) {
+		super(container);
+		rotationDegree = 0;
+		//TODO init areas
+	}
+*/
+	public ImmutableFigure() {
+		rotationDegree = 0;
+		area = new Area();
+	}
+	
 	private Area area;
 	
 	private int posX;
 	private int posY;
 	
 	private double rotationDegree;
-
+/*
 	public ImmutableFigure(String figurePackage, String figureName) {
 		super(figurePackage, figureName);
 		rotationDegree = 0;
 	}
-	
+	*/
+	/*
 	public void addArea(Area a) {
 		if (area == null) {
 			area = a;
@@ -38,7 +53,7 @@ public class ImmutableFigure extends Figure {
 			area.subtract(a);
 		}
 	}
-
+*/
 	private Area getArea() {
 		Area a = new  Area(area);
 		AffineTransform transform = new AffineTransform();
@@ -73,6 +88,53 @@ public class ImmutableFigure extends Figure {
 		
 	}
 
+	private class ImmutableFigureBuilder extends FigureBuilder {
+		@Override
+		public void build(XMLTag root) {
+			super.build(root);
+			Collection<XMLTag> figureContent = root.getInnerTags();
+			for (XMLTag tag: figureContent) {
+				if (tag.getName().equals("area")) {
+					Area a = null;
+					
+					switch (tag.getInnerTag("type").getContent()) {
+					case "rect":
+						a = new Area(new Rectangle2D.Double(
+								Integer.parseInt(tag.getInnerTag("x").getContent()), 
+								Integer.parseInt(tag.getInnerTag("y").getContent()), 
+								Integer.parseInt(tag.getInnerTag("w").getContent()), 
+								Integer.parseInt(tag.getInnerTag("h").getContent())));
+						break;
+						
+					case "arc":
+						a = new Area(new Arc2D.Double(
+								new Rectangle2D.Double(
+									Integer.parseInt(tag.getInnerTag("x").getContent()), 
+									Integer.parseInt(tag.getInnerTag("y").getContent()), 
+									Integer.parseInt(tag.getInnerTag("w").getContent()), 
+									Integer.parseInt(tag.getInnerTag("h").getContent())), 
+								Integer.parseInt(tag.getInnerTag("start").getContent()),
+								Integer.parseInt(tag.getInnerTag("size").getContent()), 
+								Arc2D.CHORD));
+						break;
+
+					default:
+						//Cant load
+						break;
+					}
+					
+					if (tag.getInnerTag("action").getContent().equals("add")) {
+						area.add(a);
+					}
+					
+					if (tag.getInnerTag("action").getContent().equals("sub")) {
+						area.subtract(a);
+					}
+				}
+			}
+		}
+	}
+	
 	private class DrawableRepresentation extends Drawable {
 		
 		int x;
@@ -167,7 +229,13 @@ public class ImmutableFigure extends Figure {
 	
 	private void addToScene() {
 		Drawable d = new DrawableRepresentation(getArea(), posX, posY);
+		//System.out.println(addCommandFactory);
 		addCommandFactory.getCommand(d).execute();
+	}
+	
+	@Override
+	public BuilderFromXML getXMLBuilder() {
+		return new ImmutableFigureBuilder();
 	}
 	
 	@Override

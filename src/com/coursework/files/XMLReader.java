@@ -27,8 +27,8 @@ public class XMLReader {
 	public XMLReader(String filename) throws FileNotFoundException {
 		Scanner s = new Scanner(new File(filename));
 		
-		current = new XMLTag(null);
-		current.setName("root");
+		current = new XMLTag(null, "root");
+		//current.setName("root");
 		while (s.hasNextLine()) {
 			processString(s.nextLine());
 		}
@@ -73,8 +73,8 @@ public class XMLReader {
 			if (s.charAt(1) == '/') {
 				current = current.getParent();
 			} else {
-				XMLTag newTag = new XMLTag(current);
-				newTag.setName(s.substring(1, s.length()-1));
+				XMLTag newTag = new XMLTag(current, s.substring(1, s.length()-1));
+//				newTag.setName(s.substring(1, s.length()-1));
 				current.addInnerTag(newTag);
 				current = newTag;
 				if (root == null) {

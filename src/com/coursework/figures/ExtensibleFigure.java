@@ -1,9 +1,7 @@
 package com.coursework.figures;
 
-public abstract class ExtensibleFigure extends Figure{
+import com.coursework.files.PropertyContainer;
 
-	public ExtensibleFigure(String figurePackage, String figureName) {
-		super(figurePackage, figureName);
-	}
+public abstract class ExtensibleFigure extends Figure{
 
 }

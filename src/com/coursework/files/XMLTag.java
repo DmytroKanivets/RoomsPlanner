@@ -12,18 +12,19 @@ public class XMLTag {
 	private String name;
 	private String content;
 	
-	public XMLTag(XMLTag parent) {
+	public XMLTag(XMLTag parent, String name) {
 		this.parent = parent;
+		this.name = name;
 		inner = new LinkedList<XMLTag>();
 	}
 	
 	public XMLTag getParent() {
 		return parent;
 	}
-	
+	/*
 	public void setName(String name) {
 		this.name = name;
-	}
+	}*/
 	
 	public String getName() {
 		return name;

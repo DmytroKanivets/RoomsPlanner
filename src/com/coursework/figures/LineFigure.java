@@ -8,19 +8,24 @@ import java.awt.geom.Rectangle2D;
 
 import com.coursework.editor.KeyboardState;
 import com.coursework.editor.Scene;
+import com.coursework.files.PropertyContainer;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.rules.RulesManager;
 
 public class LineFigure extends ExtensibleFigure {
-
+/*
+	public LineFigure(PropertyContainer container) {
+		super(container);
+	}
+*/
 	boolean shiftPressed;
-	
+	/*
 	public LineFigure(String figurePackage, String figureName) {
 		super(figurePackage, figureName);
 	}
-
-	public Area getArea() {
+*/
+	private Area getArea() {
 
 		double deltaX = currentX - startX;
 		double deltaY = currentY - startY;
@@ -90,6 +95,19 @@ public class LineFigure extends ExtensibleFigure {
 		mouseDown = true;
 	}
 
+	private class LineFigureBuilder extends FigureBuilder {
+		@Override
+		public void build(XMLTag tag) {
+			super.build(tag);
+			width = Double.parseDouble(tag.getInnerTag("width").getContent());
+		}
+	}
+	
+	@Override
+	public BuilderFromXML getXMLBuilder() {
+		return new LineFigureBuilder();
+	}
+	
 	private class DrawableRepresentation extends Drawable {
 		
 		int startX;
@@ -151,50 +169,7 @@ public class LineFigure extends ExtensibleFigure {
 			
 			builder.closeTag();
 		}
-/*
-		@Override
-		public XMLTag saveAtScene() {
-			XMLTag tag = new XMLTag(null);
-			tag.setName("figure");
-			
-			XMLTag name = new XMLTag(tag);
-			name.setName("figureName");
-			name.addContent(getName());
-			tag.addInnerTag(name);
-		
-			XMLTag pack = new XMLTag(tag);
-			pack.setName("figurePackage");
-			pack.addContent(getPackageName());
-			tag.addInnerTag(pack);
-		
-			XMLTag xsTag = new XMLTag(tag);
-			xsTag.setName("startX");
-			xsTag.addContent(Integer.toString(startX));
-			tag.addInnerTag(xsTag);
-		
-			XMLTag ysTag = new XMLTag(tag);
-			ysTag.setName("startY");
-			ysTag.addContent(Integer.toString(startY));
-			tag.addInnerTag(ysTag);
-			
-			XMLTag xeTag = new XMLTag(tag);
-			xeTag.setName("endX");
-			xeTag.addContent(Integer.toString(endX));
-			tag.addInnerTag(xeTag);
-		
-			XMLTag yeTag = new XMLTag(tag);
-			yeTag.setName("endY");
-			yeTag.addContent(Integer.toString(endY));
-			tag.addInnerTag(yeTag);
-			
-			XMLTag shTag = new XMLTag(tag);
-			shTag.setName("isStraighten");
-			shTag.addContent(Boolean.toString(isStraighten));
-			tag.addInnerTag(shTag);
-			
-			return tag;
-		}
-*/
+
 		@Override
 		public Area getArea() {
 			return area;
@@ -221,21 +196,20 @@ public class LineFigure extends ExtensibleFigure {
 		currentY = y;
 	}
 
-	public void setWidth(int width) {
-		this.width = width;
-	}
-	
 	@Override
 	public void keyPressed(KeyboardState state) {
 		shiftPressed = state.isShiftPressed();
-		/*
-		if (!shiftPressed)
-			//System.out.println("ev");*/
 	}
 
 	@Override
 	public void rotate(double degree) {
 		//Ignore, rotated by mouse dragging
 	}
-
+/*
+	@Override
+	public BuilderFromXML getXMLBuilder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+*/
 }

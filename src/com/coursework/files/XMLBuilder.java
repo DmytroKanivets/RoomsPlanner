@@ -31,14 +31,14 @@ public class XMLBuilder {
 	
 	public void addTag(String name) {
 		if (current == null) {
-			current = new XMLTag(null);
+			current = new XMLTag(null, name);
 			writer.setRoot(current);
 		} else {
-			XMLTag tag = new XMLTag(current);
+			XMLTag tag = new XMLTag(current, name);
 			current.addInnerTag(tag);
 			current = tag;
 		}
-		current.setName(name);
+		//current.setName(name);
 	}
 	
 	public void closeTag() {

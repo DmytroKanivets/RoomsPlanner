@@ -17,12 +17,12 @@ public class Canvas extends JPanel {
 		setOpaque(true);
 		setBackground(Color.white);
 	}
-	
+	/*
 	Iterable<Figure> figures;
 	public void paintFigures(Iterable<Figure> figures) {
 		this.figures = figures;
 		repaint();
-	}
+	}*/
 	
 	@Override
 	public void paintComponent(Graphics g) {

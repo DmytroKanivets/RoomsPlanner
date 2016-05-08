@@ -22,8 +22,6 @@ import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresManager;
 import com.coursework.files.XMLBuilder;
-import com.coursework.files.XMLTag;
-import com.coursework.files.XMLWriter;
 import com.coursework.main.Main;
 import com.coursework.rules.RulesManager;
 import com.coursework.util.PriorityQueue;
@@ -282,16 +280,16 @@ public class Scene {
 			g.setColor(Color.BLUE);
 			selectedFigure.draw(g);
 		}
-		
-		//TODO remove
-		
+	}
+	
+	private void walls() {
 		//note: bad algorytm
 		Area a = new Area();
 		for (Drawable d : figures)
 			if (d.hasTag("wall")) {
 				a.add(d.getArea());
 			}
-		g.setColor(Color.magenta);
+		//g.setColor(Color.magenta);
 		//g.draw(a);
 		
 		// Use unsigned arithmetics for screens more with dimensions more than 2^16 (=65536)
@@ -330,30 +328,30 @@ public class Scene {
 				}
 			
 		}
-
-		for (Long l : checked) {
-			g.drawLine((int)(l % yShift), (int)(l / yShift), (int)(l % yShift), (int)(l / yShift));
+/*
+			for (Long l : checked) {
+				g.drawLine((int)(l % yShift), (int)(l / yShift), (int)(l % yShift), (int)(l / yShift));
+			}
+*/
+		boolean found = false;
+		long i = minX, j = minY;
+		while (i < maxX && !found) {
+			if (!a.contains(i, j) && !checked.contains(i + j * yShift)) {
+				found = true;
+			}
+			
+			if (j < maxY) {
+				j++;
+			} else {
+				j = minY;
+				i++;
+			}
 		}
-		//remove end
+		System.out.println("---------------- " + found);
 	}
 	
 	public void saveToFile(String filename) {
-		/*
-		XMLWriter writer = new XMLWriter(fileName);
-		
-		XMLTag root = new XMLTag(null);
-		root.setName("scene");
-		writer.setRoot(root);
-		
-		for (Drawable f : figures) {
-			XMLTag tag = f.saveAtScene();
-			
-			writer.addToRoot(tag);
-		}
-		
-		writer.write();
-		*/
-		
+
 		XMLBuilder builder = new XMLBuilder(filename);
 		
 		builder.addTag("scene");
@@ -383,6 +381,8 @@ public class Scene {
 					public void reverse() {
 						figures.remove(drawable);
 						redraw();
+						if (drawable.hasTag("wall"))
+							walls();
 					}	
 					
 					@Override
@@ -393,6 +393,8 @@ public class Scene {
 							commands.add(this);
 							figures.add(drawable, -(drawable.getPriority()+1));
 							redraw();
+							if (drawable.hasTag("wall"))
+								walls();
 						} else {
 							System.out.println("Deny " + d.toString());
 						}
