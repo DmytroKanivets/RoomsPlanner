@@ -9,7 +9,9 @@ import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
+//TODO rework it
 public class FiguresFactory {
+
 	private static FiguresFactory instance;
 	
 	private FiguresFactory() {

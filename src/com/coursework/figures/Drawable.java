@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 
 public abstract class Drawable {
@@ -16,9 +17,10 @@ public abstract class Drawable {
 	private Set<String> tags;
 	
 	public abstract void selfPaint(Graphics2D g, Color primaryColor);
+//	TODO needed?
+	public abstract Area getArea();
 	
-//	TODO remove?
-	public abstract XMLTag saveAtScene();
+	public abstract void save(XMLBuilder builder);
 
 	public Drawable() {
 		tags = new HashSet<>();
@@ -42,5 +44,4 @@ public abstract class Drawable {
 	public void setPriority(int p) {
 		priority = p;
 	}
-	public abstract Area getArea();
 }

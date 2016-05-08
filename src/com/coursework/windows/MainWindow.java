@@ -16,6 +16,7 @@ import javax.swing.GroupLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.coursework.main.Settings;
@@ -79,19 +80,7 @@ public class MainWindow extends JFrame {
 		if (result == JFileChooser.APPROVE_OPTION) {
 			SceneLoader.loadScene(fileChooser.getSelectedFile().getAbsolutePath());
 			Main.redraw();
-			/*
-			String fileName = fileChooser.getSelectedFile().getAbsolutePath();
-			Main.getCurrentScene().saveToFile(fileName + ".scene");*/
 		}
-		/*
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-		int result = fileChooser.showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = fileChooser.getSelectedFile();
-			Debug.log("Scene file chosen: " + selectedFile.getAbsolutePath());
-			//TODO file open
-		}*/
 	}
 	
 	private void saveSchemeClick(ActionEvent e) {
@@ -125,7 +114,11 @@ public class MainWindow extends JFrame {
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 			Debug.log("Figures file chosen: " + selectedFile.getAbsolutePath());
-			FiguresManager.getInstance().addPackage(selectedFile.getAbsolutePath());
+			try {
+				FiguresManager.getInstance().addPackage(selectedFile.getAbsolutePath());
+			} catch (FileNotFoundException e1) {
+				Main.showMessage("File not found");
+			}
 		}
 	}
 	

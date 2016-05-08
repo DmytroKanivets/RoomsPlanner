@@ -3,11 +3,16 @@ package com.coursework.editor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
+import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.swing.KeyStroke;
@@ -16,10 +21,10 @@ import javax.swing.event.MouseInputAdapter;
 import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresManager;
+import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.files.XMLWriter;
 import com.coursework.main.Main;
-import com.coursework.rules.Rule;
 import com.coursework.rules.RulesManager;
 import com.coursework.util.PriorityQueue;
 
@@ -55,7 +60,7 @@ public class Scene {
 			@Override
 		    public void mouseDragged(MouseEvent e){
 				if (selectedFigure != null) {
-					selectedFigure.mousePositionChanged(e.getX(), e.getY());
+					selectedFigure.move(e.getX(), e.getY());
 				}
 				redraw();
 //				mouseX = e.getX();
@@ -64,7 +69,7 @@ public class Scene {
 			@Override
 		    public void mouseMoved(MouseEvent e){
 				if (selectedFigure != null) {
-					selectedFigure.mousePositionChanged(e.getX(), e.getY());
+					selectedFigure.move(e.getX(), e.getY());
 				}
 				redraw();
 //				mouseX = e.getX();
@@ -74,7 +79,7 @@ public class Scene {
 			public void mousePressed(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					if (selectedFigure != null) {
-						selectedFigure.mouseDown();
+						selectedFigure.drawStart();
 					} else {
 						selectDrawableUnderCursor(e.getX(), e.getY());
 						redraw();
@@ -85,7 +90,7 @@ public class Scene {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1 && selectedFigure != null)
-					selectedFigure.mouseUp();
+					selectedFigure.drawEnd();
 				
 			}
 
@@ -177,7 +182,7 @@ public class Scene {
 				}
 				
 				if (selectedFigure != null) {
-					selectedFigure.keybardEvent(currentKeyboardState);
+					selectedFigure.keyPressed(currentKeyboardState);
 					redraw();
 				}
 				
@@ -275,12 +280,65 @@ public class Scene {
 		
 		if (selectedFigure != null && mouseOnCanvas) {
 			g.setColor(Color.BLUE);
-			selectedFigure.selfPaint(g);
+			selectedFigure.draw(g);
 		}
+		
+		//TODO remove
+		
+		//note: bad algorytm
+		Area a = new Area();
+		for (Drawable d : figures)
+			if (d.hasTag("wall")) {
+				a.add(d.getArea());
+			}
+		g.setColor(Color.magenta);
+		//g.draw(a);
+		
+		// Use unsigned arithmetics for screens more with dimensions more than 2^16 (=65536)
+		Rectangle2D rect = a.getBounds2D();
+		long minX = Math.round(rect.getX()) -1;
+		long minY = Math.round(rect.getY()) -1;
+		
+		long maxX = Math.round(rect.getX() + rect.getWidth()) +1;
+		long maxY = Math.round(rect.getY() + rect.getHeight()) +1;
+		
+		//Change for 2^32 for long
+		long yShift = (long) Math.pow(2, 16);
+		
+		
+		//create border
+		Stack<Long> stack = new Stack<>();
+		Set<Long> checked = new HashSet<>();
+		stack.push(minX + minY * yShift);
+		
+		while (!stack.empty()) {
+			long point = stack.pop();
+			checked.add(point);
+			
+			long x = point % yShift;
+			long y = point / yShift;
+			
+			long[] adjacent = new long[4];
+			adjacent[0] = x > minX ? (x - 1) + (y) * yShift : point;
+			adjacent[1] = x < maxX ? (x + 1) + (y) * yShift : point;
+			adjacent[2] = y > minY ? (x) + (y - 1) * yShift : point;
+			adjacent[3] = y < maxY ? (x) + (y + 1) * yShift : point;
+			
+			for (int i = 0;i < adjacent.length; i++)
+				if (!checked.contains(adjacent[i]) && !a.contains((adjacent[i] % yShift), (adjacent[i] / yShift))) {
+					stack.push(adjacent[i]);
+				}
+			
+		}
+
+		for (Long l : checked) {
+			g.drawLine((int)(l % yShift), (int)(l / yShift), (int)(l % yShift), (int)(l / yShift));
+		}
+		//remove end
 	}
 	
-	public void saveToFile(String fileName) {
-		
+	public void saveToFile(String filename) {
+		/*
 		XMLWriter writer = new XMLWriter(fileName);
 		
 		XMLTag root = new XMLTag(null);
@@ -294,11 +352,23 @@ public class Scene {
 		}
 		
 		writer.write();
+		*/
+		
+		XMLBuilder builder = new XMLBuilder(filename);
+		
+		builder.addTag("scene");
+		
+		for (Drawable d : figures) {
+			d.save(builder);
+		}
+		
+		builder.closeTag();
+		builder.flush();
 	}
 
 	
-	public CommandFactory getAddFactory() {
-		return new CommandFactory() {
+	public DrawCommandFactory getAddFactory() {
+		return new DrawCommandFactory() {
 			
 			@Override
 			public Command getCommand(Drawable d) {

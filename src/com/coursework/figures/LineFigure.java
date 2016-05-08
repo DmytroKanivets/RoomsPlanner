@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.coursework.editor.KeyboardState;
 import com.coursework.editor.Scene;
+import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.rules.RulesManager;
 
@@ -23,69 +24,31 @@ public class LineFigure extends ExtensibleFigure {
 
 		double deltaX = currentX - startX;
 		double deltaY = currentY - startY;
-		/*
-		if (shiftPressed) {
-			//System.out.println("try");
-			if (Math.abs(deltaX) > Math.abs(deltaY)) {
-				deltaY = 0;
-			} else {
-				deltaX = 0;
-			}
-		}
-		*/
-		double length = Math.sqrt(
-				Math.pow(deltaX, 2) +  
-				Math.pow(deltaY, 2));
+
+		double length = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 		
-		System.out.println("l: " + length);
 		Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
 		
-		AffineTransform transform = new AffineTransform();
-		//transform.rotate(deltaX, deltaY, startX, startY);
 		double theta = Math.atan2(deltaY, deltaX);
 		if (shiftPressed) {
-			//TODO Remove magic *2
 			double step = Math.toRadians(Scene.ROTATION_STEP);
 			double proportion = theta/step;
 			theta = Math.round(proportion) * step;
-			//System.out.println("Angle: " + Math.toDegrees(theta));
 		}
+
+		AffineTransform transform = new AffineTransform();
 		transform.rotate(theta, startX, startY);
 		a.transform(transform);
 		return a;
 	}
 	
 	@Override
-	public void selfPaint(Graphics2D g) {
-		
-		/*
-		//Drawable newArea = null;
-		Area current = getArea();
-
-		Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation(current, prevX, prevY));
-				//newArea = null;
-		
-		//System.out.println("try");
-		if (newArea == null) {
-			//System.out.println("null");
-			g.setColor(Color.WHITE);
-			g.fill(current);
-			g.setColor(Color.RED);
-			g.draw(current);
-		} else {
-			g.setColor(Color.WHITE);
-			g.fill(newArea.getArea());
-			g.setColor(Color.BLUE);
-			g.draw(newArea.getArea());
-		}
-		*/
+	public void draw(Graphics2D g) {
 		if (mouseDown) {
 			Area current = getArea();
 		
 			Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation());
-			//System.out.println(newArea);
 			if (newArea == null) {
-				//System.out.println("null");
 				g.setColor(new Color(128, 0, 0));
 				g.fill(current);
 			} else {
@@ -107,22 +70,9 @@ public class LineFigure extends ExtensibleFigure {
 		currentY = Integer.parseInt(t.getInnerTag("endY").getContent());
 		
 		shiftPressed = Boolean.parseBoolean(t.getInnerTag("isStraighten").getContent());
-		/*
-		double deltaX = currentX - startX;
-		double deltaY = currentY - startY;
-		
-		double length = Math.sqrt(
-				Math.pow(deltaX, 2) +  
-				Math.pow(deltaY, 2));
-		Area a = new Area(new Rectangle2D.Double(startX - width/2, startY - width/2, length +  width, width));
-		
-		AffineTransform transform = new AffineTransform();
-		transform.rotate(deltaX, deltaY, startX, startY);
-		a.transform(transform);
-		*/
+
 		Drawable d = new DrawableRepresentation();
-		//d.addAllTags(getTags());
-		commandFactory.getCommand(d).execute();
+		addCommandFactory.getCommand(d).execute();
 	}
 
 	private int startX = 0;
@@ -136,7 +86,7 @@ public class LineFigure extends ExtensibleFigure {
 	boolean mouseDown = false;
 	
 	@Override
-	public void mouseDown() {
+	public void drawStart() {
 		mouseDown = true;
 	}
 
@@ -159,27 +109,49 @@ public class LineFigure extends ExtensibleFigure {
 			endY = LineFigure.this.currentY;
 			isStraighten = LineFigure.this.shiftPressed;
 			addAllTags(LineFigure.this.getTags());
-		}
-		
-		/*
-		public DrawableRepresentation(Area area, int startX, int startY, int endX, int endY) {
-			a = new Area(area);
-			
-			this.startX = startX;
-			this.startY = startY;
-			
-			this.endX = endX;
-			this.endY = endY;
-		}
-		+*/
-		
+		}	
 		
 		@Override
 		public void selfPaint(Graphics2D g, Color primaryColor) { 
 			g.setColor(primaryColor);
 			g.fill(area);
 		}
+		
+		@Override
+		public void save(XMLBuilder builder) {
+			builder.addTag("figure");
 
+			builder.addTag("figureName");
+			builder.addContent(getName());
+			builder.closeTag();
+			
+			builder.addTag("figurePackage");
+			builder.addContent(getPackageName());
+			builder.closeTag();
+			
+			builder.addTag("startX");
+			builder.addContent(Integer.toString(startX));
+			builder.closeTag();
+			
+			builder.addTag("startY");
+			builder.addContent(Integer.toString(startY));
+			builder.closeTag();
+			
+			builder.addTag("endX");
+			builder.addContent(Integer.toString(endX));
+			builder.closeTag();
+			
+			builder.addTag("endY");
+			builder.addContent(Integer.toString(endY));
+			builder.closeTag();
+			
+			builder.addTag("isStraighten");
+			builder.addContent(Boolean.toString(isStraighten));
+			builder.closeTag();
+			
+			builder.closeTag();
+		}
+/*
 		@Override
 		public XMLTag saveAtScene() {
 			XMLTag tag = new XMLTag(null);
@@ -222,9 +194,7 @@ public class LineFigure extends ExtensibleFigure {
 			
 			return tag;
 		}
-
-
-
+*/
 		@Override
 		public Area getArea() {
 			return area;
@@ -232,18 +202,16 @@ public class LineFigure extends ExtensibleFigure {
 	}
 	
 	@Override
-	public void mouseUp() {
-		//Area a = getArea();
-		//Drawable d = new DrawableRepresentation(a, startX, startY, currentX, currentY);
+	public void drawEnd() {
 		Drawable d = new DrawableRepresentation();
-		//d.addAllTags(getTags());
-		commandFactory.getCommand(d).execute();
+		
+		addCommandFactory.getCommand(d).execute();
 		
 		mouseDown = false;
 	}
 
 	@Override
-	public void mousePositionChanged(int x, int y) {
+	public void move(int x, int y) {
 		if (!mouseDown) {
 			startX = x;
 			startY = y;
@@ -258,7 +226,7 @@ public class LineFigure extends ExtensibleFigure {
 	}
 	
 	@Override
-	public void keybardEvent(KeyboardState state) {
+	public void keyPressed(KeyboardState state) {
 		shiftPressed = state.isShiftPressed();
 		/*
 		if (!shiftPressed)

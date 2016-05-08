@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.AbstractAction;
 import javax.swing.InputMap;
@@ -69,9 +70,15 @@ public class Main {
 	            	currentScene = new Scene();
 	            	Debug.log("Scene manager initialised");
 	            	
-	            	FiguresManager.getInstance().initList(mainWindow.getFiguresList());
-	            	//TODO move to settings
-	            	FiguresManager.getInstance().addPackage("data/default.figures");
+	            	FiguresManager.getInstance().connectList(mainWindow.getFiguresList());
+	            	//TODO move to settings        
+	            	
+	            	try {
+						FiguresManager.getInstance().addPackage("data/default.figures");
+					} catch (FileNotFoundException e) {
+						showMessage("Cant load defaul pack");
+						//e.printStackTrace();
+					}
 	            	Debug.log("Default figures loaded");
 	            	
 	            	mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

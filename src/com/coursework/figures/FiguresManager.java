@@ -12,15 +12,15 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.coursework.files.FiguresLoader;
 import com.coursework.main.Main;
+import com.coursework.files.FiguresLoader;
 import com.coursework.rules.RulesManager;
 
 public class FiguresManager {
 	
 	private static FiguresManager instance;
 	
-	private JList<String> figuresList;
+	private JList<String> figuresViewList;
 	
 	private Set<String> loadedPackages;
 	private List<Figure> figures;
@@ -30,33 +30,29 @@ public class FiguresManager {
 			instance = new FiguresManager();
 		return instance;
 	}
-		
-	public void clearSelection() {
-		figuresList.clearSelection();
-	}
 	
 	private FiguresManager() {
 		loadedPackages = new HashSet<String>();
 		figures = new LinkedList<Figure>();
 	}
 		
+	public void clearSelection() {
+		figuresViewList.clearSelection();
+	}
+		
 	/*
 	 * Connect list from swing view
-	 * */
-	public void initList(JList<String> figuresList) {
-		this.figuresList = figuresList;
-		/*
-		String name = Settings.getInstance().get("defaultPackageName");
-		if (name.equals(""))
-			name = DEFAULT_PACKAGE_NAME;
-		
-		addPackage(name);
-		*/
+	 */
+	public void connectList(JList<String> figuresList) {
+		this.figuresViewList = figuresList;
+
 		figuresList.addListSelectionListener(new ListSelectionListener() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if ((((JList<String>)e.getSource()).getSelectedIndex()) != -1) {
+				//TODO move to commands
+				int selectedIndex = (((JList<String>)e.getSource()).getSelectedIndex());
+				if (selectedIndex != -1) {
 					Main.getCurrentScene().selectFigure(figures.get(((JList<String>)e.getSource()).getSelectedIndex()));
 				} else {
 					Main.getCurrentScene().selectFigure(null);
@@ -68,47 +64,42 @@ public class FiguresManager {
 	/*
 	 * Load package from specified file
 	 * */
-	public void addPackage(String fileName) {
+	public void addPackage(String fileName) throws FileNotFoundException {
 
-		try {
-			FiguresLoader loader;
-			loader = new FiguresLoader(fileName);
-			String name = loader.getPackageName();
-			
-			if (loadedPackages.contains(name)) {
-				removePackage(name);
-			} else {
-				loadedPackages.add(name);
-			}
+		FiguresLoader loader;
+		loader = new FiguresLoader(fileName);
+		String name = loader.getPackageName();
 		
-			figures.addAll(loader.getFigures());
-			
-			RulesManager.getInstance().loadRules(fileName);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (loadedPackages.contains(name)) {
+			removePackage(name);
+		} else {
+			loadedPackages.add(name);
 		}
+	
+		figures.addAll(loader.getFigures());
+		
+		RulesManager.getInstance().loadRules(fileName);
+		
 		updateListView();		
 	}
 	
 	/*
 	 * Remove package with specified name
-	 * */
+	 */
 	public void removePackage(String packageName) {
 		Iterator<Figure> it = figures.iterator();
 		
 		while (it.hasNext()) {
 			Figure f = it.next();
 			if (f.getPackageName().equals(packageName)) {
-				//System.out.println("Remove");
 				it.remove();
 			}
 		}
 	}
-	
+
 	/*
 	 * Update swing list view 
-	 * */
+	 */
 	private void updateListView() {
 		DefaultListModel<String> model = new DefaultListModel<>();
 		
@@ -116,7 +107,7 @@ public class FiguresManager {
 			model.addElement(f.getName());
 		}
 
-		figuresList.setModel(model);
+		figuresViewList.setModel(model);
 	}
 	
 	public Figure getFigure(String pack, String name) {		

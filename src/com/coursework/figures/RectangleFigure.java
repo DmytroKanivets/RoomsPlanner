@@ -12,7 +12,7 @@ public abstract class RectangleFigure extends ExtensibleFigure {
 	}
 
 	@Override
-	public void selfPaint(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		// TODO Auto-generated method stub
 
 	}
@@ -30,19 +30,19 @@ public abstract class RectangleFigure extends ExtensibleFigure {
 	}
 
 	@Override
-	public void mouseDown() {
+	public void drawStart() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void mouseUp() {
+	public void drawEnd() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void mousePositionChanged(int x, int y) {
+	public void move(int x, int y) {
 		// TODO Auto-generated method stub
 
 	}

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
+import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.rules.RulesManager;
 
@@ -12,11 +13,8 @@ public class ImmutableFigure extends Figure {
 
 	private Area area;
 	
-	private int prevX;
-	private int prevY;
-	
-	private int deltaX;
-	private int deltaY;
+	private int posX;
+	private int posY;
 	
 	private double rotationDegree;
 
@@ -44,43 +42,24 @@ public class ImmutableFigure extends Figure {
 	private Area getArea() {
 		Area a = new  Area(area);
 		AffineTransform transform = new AffineTransform();
-		//System.out.println("deg: " + rotationDegree * 2);
-		//transform.rotate(Math.toRadians(rotationDegree));
-		
-		//transform.rotate(Math.toRadians(rotationDegree), 0, 0);
-		//System.out.println(a.getBounds2D().toString());
-		
-		//System.out.println("Before: " + (a.getBounds2D().getX() + a.getBounds2D().getWidth()/2) + " " + (a.getBounds2D().getY() + a.getBounds2D().getHeight()/2));
-		
-		transform.translate(prevX, prevY);
+
+		transform.translate(posX, posY);
 		a.transform(transform);
-		//System.out.println("Move: " + (a.getBounds2D().getX() + a.getBounds2D().getWidth()/2) + " " + (a.getBounds2D().getY() + a.getBounds2D().getHeight()/2));
 		
 		transform.setToIdentity();
-		transform.rotate(Math.toRadians(rotationDegree), prevX, prevY);
+		transform.rotate(Math.toRadians(rotationDegree), posX, posY);
 		a.transform(transform);
-		//System.out.println("Rotate: " + (a.getBounds2D().getX() + a.getBounds2D().getWidth()/2) + " " + (a.getBounds2D().getY() + a.getBounds2D().getHeight()/2));
-		
-		//transform.translate(prevX, prevY);
-		//System.out.println("Rot  " + rotationDegree);
-		//System.out.println(String.format("Coord %d %d", prevX, prevY));
-		//transform.rotate(Math.toRadians(rotationDegree), prevX/2, prevY/2);
-		//a.transform(transform);
 		
 		return a;
 	}
 	
 	@Override
-	public void selfPaint(Graphics2D g) {
-		//Drawable newArea = null;
+	public void draw(Graphics2D g) {
 		Area current = getArea();
 
-		Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation(current, prevX, prevY));
-				//newArea = null;
-		
-		//System.out.println("try");
+		Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation(current, posX, posY));
+
 		if (newArea == null) {
-			//System.out.println("null");
 			g.setColor(Color.WHITE);
 			g.fill(current);
 			g.setColor(Color.RED);
@@ -92,28 +71,6 @@ public class ImmutableFigure extends Figure {
 			g.draw(newArea.getArea());
 		}
 		
-	}
-	/*
-	public static void drawAreaWithBorder(Graphics2D g, Area a, Color areaColor, Color borderColor) {
-		g.setColor(areaColor);
-		g.fill(a);
-		g.setColor(borderColor);
-		g.draw(a);
-	}
-	*/
-	@Override
-	public void mousePositionChanged(int x, int y) {
-		
-		deltaX = x - this.prevX;
-		deltaY = y - this.prevY;		
-
-		this.prevX = x;
-		this.prevY = y;
-		/*
-		AffineTransform transform = new AffineTransform();;
-		transform.setToIdentity();
-		transform.translate(x - this.prevX, y - this.prevY);
-		area.transform(transform);*/
 	}
 
 	private class DrawableRepresentation extends Drawable {
@@ -135,13 +92,39 @@ public class ImmutableFigure extends Figure {
 		
 		@Override
 		public void selfPaint(Graphics2D g, Color primaryColor) {
-			//drawAreaWithBorder(g, a);
 			g.setColor(Color.WHITE);
 			g.fill(a);
 			g.setColor(primaryColor);
 			g.draw(a);
 		}
-
+		
+		@Override 
+		public void save(XMLBuilder builder) {
+			builder.addTag("figure");
+			
+			builder.addTag("figureName");
+			builder.addContent(getName());
+			builder.closeTag();
+			
+			builder.addTag("figurePackage");
+			builder.addContent(getPackageName());
+			builder.closeTag();
+			
+			builder.addTag("x");
+			builder.addContent(Integer.toString(x));
+			builder.closeTag();
+			
+			builder.addTag("y");
+			builder.addContent(Integer.toString(y));
+			builder.closeTag();
+			
+			builder.addTag("rotation");
+			builder.addContent(Double.toString(rotation));
+			builder.closeTag();
+			
+			builder.closeTag();
+		}
+/*
 		@Override
 		public XMLTag saveAtScene() {
 			XMLTag tag = new XMLTag(null);
@@ -174,7 +157,7 @@ public class ImmutableFigure extends Figure {
 			
 			return tag;
 		}
-
+*/
 		@Override
 		public Area getArea() {
 			return a;
@@ -183,36 +166,34 @@ public class ImmutableFigure extends Figure {
 	}
 	
 	private void addToScene() {
-		Drawable d = new DrawableRepresentation(getArea(), prevX, prevY);
-		//d.addAllTags(getTags());
-		commandFactory.getCommand(d).execute();
+		Drawable d = new DrawableRepresentation(getArea(), posX, posY);
+		addCommandFactory.getCommand(d).execute();
 	}
 	
 	@Override
-	public void mouseDown() {
+	public void drawStart() {
 		this.addToScene();
 	}
 
+	@Override
+	public void move(int x, int y) {
+		this.posX = x;
+		this.posY = y;
+	}
+	
+	@Override
+	public void rotate(double degree) {
+		rotationDegree += degree;
+	}
+	
 	@Override
 	public void loadAtScene(XMLTag t) {
 		
 		rotationDegree = Double.parseDouble(t.getInnerTag("rotation").getContent());
 		
-		this.mousePositionChanged(
+		this.move(
 				Integer.parseInt(t.getInnerTag("x").getContent()),
 				Integer.parseInt(t.getInnerTag("y").getContent()));
 		this.addToScene();
 	}
-
-
-	@Override
-	public void rotate(double degree) {
-		rotationDegree += degree;
-	}
-
-/*
-	@Override
-	protected Area getArea() {
-		return area;
-	}*/
 }

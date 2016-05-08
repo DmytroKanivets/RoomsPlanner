@@ -1,22 +1,21 @@
 package com.coursework.figures;
 
 import java.awt.Graphics2D;
-import java.awt.geom.Area;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.CommandFactory;
+import com.coursework.editor.DrawCommandFactory;
 import com.coursework.editor.KeyboardState;
 import com.coursework.files.XMLTag;
 
-public abstract class Figure/* extends Drawable */{
+public abstract class Figure {
 	
 	private String figureName;
 	private String figurePackage;
 	
 	private List<String> tags;
 	
-	protected CommandFactory commandFactory;
+	protected DrawCommandFactory addCommandFactory;
 	
 	public Figure(String figurePackage, String figureName) {
 		this.figurePackage = figurePackage;
@@ -28,14 +27,14 @@ public abstract class Figure/* extends Drawable */{
 		return figurePackage; 
 	}
 	
-	public List<String> getTags() {
-		return tags;
-	}
-
 	public String getName() {
 		return figureName;
 	}
 	
+	public List<String> getTags() {
+		return tags;
+	}
+
 	public void addTag(String tag) {
 		tags.add(tag);
 	}
@@ -44,22 +43,22 @@ public abstract class Figure/* extends Drawable */{
 		return tags.contains(tag);
 	}
 	
-	public void setAddToSceneOperation(CommandFactory factory) {
-		commandFactory = factory;
+	public void setAddToSceneOperation(DrawCommandFactory factory) {
+		addCommandFactory = factory;
 	}
 
-	public abstract void rotate(double degree);
 	
 	//protected abstract Area ggetArea();
 	
 	//TODO move it
 	public abstract void loadAtScene(XMLTag t);
 	
-	public void mouseDown() {}
-	public void mouseUp() {}
-	public void mousePositionChanged(int x, int y) {}
+	public void drawStart() {}
+	public void drawEnd() {}
+	public void move(int x, int y) {}
+	public void keyPressed(KeyboardState state) {}
 
-	public void keybardEvent(KeyboardState state) {}
+	public abstract void rotate(double degree);
 	
-	public abstract void selfPaint(Graphics2D g);
+	public abstract void draw(Graphics2D g);
 }
