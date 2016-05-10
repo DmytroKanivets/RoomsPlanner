@@ -96,7 +96,7 @@ public class ImmutableFigure extends Figure {
 		transform.translate(shiftX, shiftY);
 		current.transform(transform);
 		
-		g.setColor(Color.CYAN);
+		g.setColor(Color.WHITE);
 		g.fill(current);
 		g.setColor(allowed ? Color.BLUE : Color.RED);
 		//g.draw(current);

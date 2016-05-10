@@ -12,7 +12,6 @@ import com.coursework.main.Main;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.GroupLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;
@@ -173,13 +172,12 @@ public class MainWindow extends JFrame {
 		fileExit = new JMenuItem();
 		help = new JMenu();
 		helpAbout = new JMenuItem();
-		buttonPanel = new JPanel();
 		canvas = new Canvas();
 		redoButton = new JButton();
 		undoButton = new JButton();
+		deleteButton = new JButton();
 		figuresScroll = new JScrollPane();
 		figuresTree = new JTree();
-		deleteButton = new JButton();
 
 		//======== this ========
 		Container contentPane = getContentPane();
@@ -234,19 +232,6 @@ public class MainWindow extends JFrame {
 		}
 		setJMenuBar(menuBar);
 
-		//======== buttonPanel ========
-		{
-
-			// JFormDesigner evaluation mark
-			buttonPanel.setBorder(new javax.swing.border.CompoundBorder(
-				new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-					"JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-					javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-					java.awt.Color.red), buttonPanel.getBorder())); buttonPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
-			buttonPanel.setLayout(new GridLayout());
-		}
-
 		//---- redoButton ----
 		redoButton.setText("Redo");
 		redoButton.setFocusable(false);
@@ -258,6 +243,11 @@ public class MainWindow extends JFrame {
 		undoButton.setPreferredSize(new Dimension(58, 23));
 		undoButton.addActionListener(e -> undoButtonActionPerformed(e));
 
+		//---- deleteButton ----
+		deleteButton.setText("Delete");
+		deleteButton.setFocusable(false);
+		deleteButton.addActionListener(e -> deleteButtonActionPerformed(e));
+
 		//======== figuresScroll ========
 		{
 			figuresScroll.setViewportBorder(null);
@@ -267,57 +257,49 @@ public class MainWindow extends JFrame {
 			figuresScroll.setViewportView(figuresTree);
 		}
 
-		//---- deleteButton ----
-		deleteButton.setText("Delete");
-		deleteButton.setFocusable(false);
-		deleteButton.addActionListener(e -> deleteButtonActionPerformed(e));
-
 		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
 		contentPane.setLayout(contentPaneLayout);
 		contentPaneLayout.setHorizontalGroup(
 			contentPaneLayout.createParallelGroup()
 				.addGroup(contentPaneLayout.createSequentialGroup()
 					.addGroup(contentPaneLayout.createParallelGroup()
-						.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addGap(31, 31, 31)
-							.addGroup(contentPaneLayout.createParallelGroup()
+							.addGap(35, 35, 35)
+							.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 								.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
 								.addComponent(redoButton, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
 								.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(contentPaneLayout.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 867, Short.MAX_VALUE)
+							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 860, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		contentPaneLayout.setVerticalGroup(
 			contentPaneLayout.createParallelGroup()
 				.addGroup(contentPaneLayout.createSequentialGroup()
-					.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(0, 0, Short.MAX_VALUE))
-				.addGroup(contentPaneLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(contentPaneLayout.createParallelGroup()
 						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addComponent(canvas, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addContainerGap())
-						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 416, GroupLayout.PREFERRED_SIZE)
+							.addComponent(figuresScroll, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
 							.addGap(18, 18, 18)
 							.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addComponent(redoButton)
 							.addGap(18, 18, 18)
-							.addComponent(deleteButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGap(30, 30, 30))))
+							.addComponent(deleteButton))
+						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
 		figuresScroll.setBorder(BorderFactory.createEmptyBorder());
-		//figuresList.setEnabled(true);
+		JLabel label = new JLabel("");
+		label.setHorizontalAlignment(SwingConstants.LEFT);
+		canvas.add(label);
+		ScenesManager.instance().setCanvalLabel(label);
 	}
 	
 	public Canvas getCanvas() {
@@ -335,13 +317,12 @@ public class MainWindow extends JFrame {
 	private JMenuItem fileExit;
 	private JMenu help;
 	private JMenuItem helpAbout;
-	private JPanel buttonPanel;
 	private Canvas canvas;
 	private JButton redoButton;
 	private JButton undoButton;
+	private JButton deleteButton;
 	private JScrollPane figuresScroll;
 	private JTree figuresTree;
-	private JButton deleteButton;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	private JMenu debug;
 	private JMenuItem debugShow;

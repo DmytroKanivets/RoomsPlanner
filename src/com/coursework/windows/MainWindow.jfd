@@ -4,13 +4,10 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq {par l {comp buttonPanel:::p::p, seq l {space :p:31:p, par l {comp deleteButton::l:p:74:p, comp redoButton::l:p:74:p, comp undoButton::l:p:74:p}}, seq {space :::p, comp figuresScroll:::p:117:p}}, space u:::p, comp canvas::::867:x, space :::p}}"
-			"$verticalGroup": "par l {seq l {comp buttonPanel:::p::p, space :0:0:x}, seq l {space :::p, par l {seq {comp canvas:::::x, space :::p}, seq {comp figuresScroll:::p:416:p, space s:::p, comp undoButton:::p::p, space :::p, comp redoButton:::p::p, space s:::p, comp deleteButton:::::x, space :p:30:p}}}}"
+			"$horizontalGroup": "par l {seq {par l {seq {space :p:35:p, par t {comp deleteButton::t:p:74:p, comp redoButton::t:p:74:p, comp undoButton::t:p:74:p}}, seq {space :::p, comp figuresScroll:::p:128:p}}, space :::p, comp canvas::::860:x, space :p::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, par l {seq {comp figuresScroll::::435:x, space s:::p, comp undoButton:::p::p, space :::p, comp redoButton:::p::p, space s:::p, comp deleteButton:::p::p}, comp canvas::::546:x}, space :::p}}"
 		} ) {
 			name: "this"
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) ) {
-				name: "buttonPanel"
-			} )
 			add( new FormComponent( "com.coursework.windows.Canvas" ) {
 				name: "canvas"
 			} )
@@ -27,6 +24,12 @@ new FormModel {
 				"preferredSize": new java.awt.Dimension( 58, 23 )
 				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "undoButtonActionPerformed", true ) )
 			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "deleteButton"
+				"text": "Delete"
+				"focusable": false
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteButtonActionPerformed", true ) )
+			} )
 			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 				name: "figuresScroll"
 				"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
@@ -34,12 +37,6 @@ new FormModel {
 					name: "figuresTree"
 					"focusable": false
 				} )
-			} )
-			add( new FormComponent( "javax.swing.JButton" ) {
-				name: "deleteButton"
-				"text": "Delete"
-				"focusable": false
-				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteButtonActionPerformed", true ) )
 			} )
 			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
 				name: "menuBar"

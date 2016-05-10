@@ -6,7 +6,9 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
@@ -165,8 +167,6 @@ public class Scene {
 		
 			@Override
 			public Command getCommand(Drawable d) {
-				//d.move(-sceneShiftX, -sceneShiftY);
-//				System.out.println(d.getArea().getBounds2D().toString());
 				System.out.println(sceneShiftX + " " + sceneShiftY);
 				Drawable result = RulesManager.getInstance().processDrawable(d);
 	
@@ -178,8 +178,6 @@ public class Scene {
 					public void reverse() {
 						figures.remove(drawable);
 						commands.remove(this);
-						if (drawable.hasTag("wall"))
-							walls();
 						clearRedo = false;
 						actionExecuted();
 					}	
@@ -189,10 +187,7 @@ public class Scene {
 						this.drawable = result;
 						if (drawable != null) {
 							commands.add(this);
-							//System.out.println("Adding with " + (-(drawable.getPriority()+1)));
 							figures.add(drawable, -(drawable.getPriority()+1));
-							if (drawable.hasTag("wall"))
-								walls();
 							clearRedo = true;
 							actionExecuted();
 						} else {
@@ -279,76 +274,67 @@ public class Scene {
 		}
 	} 
 	
+	public void drawGrid(Graphics2D g) {
+		g.setColor(new Color(200, 200, 200));
+		
+		int width = ScenesManager.instance().getSceneWidth();
+		int height = ScenesManager.instance().getSceneHeight();
+		
+		for (int i = sceneShiftX % 50 -50;i < width; i+=50) {
+			g.drawLine(i, 0, i, height);
+		}
+
+		for (int i = sceneShiftY % 50 -50;i < height; i+=50) {
+			g.drawLine(0, i, width, i);
+		}
+	} 
+	
+	public void drawGridNumbers(Graphics2D g) {
+
+		int width = ScenesManager.instance().getSceneWidth();
+		int height = ScenesManager.instance().getSceneHeight();
+
+
+		int maxTextWidth = 0;
+		for (int i = sceneShiftY % 50 -50;i < height; i+=50) {
+			String s = Integer.toString((i - sceneShiftY) / 50);
+			maxTextWidth = Math.max(maxTextWidth, g.getFontMetrics().stringWidth(s));
+		}
+		maxTextWidth += 8;
+		
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, width, 15);
+		g.fillRect(0, 0, maxTextWidth, height);
+		g.setColor(Color.BLACK);
+		
+		
+		for (int i = sceneShiftX % 50 -50;i < width; i+=50) {
+			String s = Integer.toString((i - sceneShiftX) / 50);
+			int size = g.getFontMetrics().stringWidth(s);
+			g.drawString(s, i - size/2, 12);
+		}
+
+		for (int i = sceneShiftY % 50 -50;i < height; i+=50) {
+			g.drawString(Integer.toString((i - sceneShiftY) / 50), 5, i + 5);
+		}
+
+		g.setColor(Color.BLACK);
+		g.drawLine(0, 15, width, 15);
+		g.drawLine(maxTextWidth, 0, maxTextWidth, height);
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, maxTextWidth, 15);
+	} 
+	
 	public void drawScene(Graphics2D g) {
+		drawGrid(g);
+		
 		for (Drawable d : figures) {
 			d.selfPaint(g, ((d == selectedDrawable) ? Color.BLUE : Color.BLACK), sceneShiftX, sceneShiftY);
 		}
+		
+		drawGridNumbers(g);
 	}
-	
-	private void walls() {
-		//System.out.println("walls");
-		/*
-		//note: bad algorytm
-		Area a = new Area();
-		for (Drawable d : figures)
-			if (d.hasTag("wall")) {
-				a.add(d.getArea());
-			}
-		//g.setColor(Color.magenta);
-		//g.draw(a);
-		
-		// Use unsigned arithmetics for screens more with dimensions more than 2^16 (=65536)
-		Rectangle2D rect = a.getBounds2D();
-		long minX = Math.round(rect.getX()) -1;
-		long minY = Math.round(rect.getY()) -1;
-		
-		long maxX = Math.round(rect.getX() + rect.getWidth()) +1;
-		long maxY = Math.round(rect.getY() + rect.getHeight()) +1;
-		
-		//Change for 2^32 for long
-		long yShift = (long) Math.pow(2, 16);
-		
-		
-		//create border
-		Stack<Long> stack = new Stack<>();
-		Set<Long> checked = new HashSet<>();
-		stack.push(minX + minY * yShift);
-		
-		while (!stack.empty()) {
-			long point = stack.pop();
-			checked.add(point);
-			
-			long x = point % yShift;
-			long y = point / yShift;
-			
-			long[] adjacent = new long[4];
-			adjacent[0] = x > minX ? (x - 1) + (y) * yShift : point;
-			adjacent[1] = x < maxX ? (x + 1) + (y) * yShift : point;
-			adjacent[2] = y > minY ? (x) + (y - 1) * yShift : point;
-			adjacent[3] = y < maxY ? (x) + (y + 1) * yShift : point;
-			
-			for (int i = 0;i < adjacent.length; i++)
-				if (!checked.contains(adjacent[i]) && !a.contains((adjacent[i] % yShift), (adjacent[i] / yShift))) {
-					stack.push(adjacent[i]);
-				}
-			
-		}
 
-		boolean found = false;
-		long i = minX, j = minY;
-		while (i < maxX && !found) {
-			if (!a.contains(i, j) && !checked.contains(i + j * yShift)) {
-				found = true;
-			}
-			
-			if (j < maxY) {
-				j++;
-			} else {
-				j = minY;
-				i++;
-			}
-		}*/
-	}
 	
 	public void actionExecuted() {
 		checkForRules();

@@ -1,11 +1,13 @@
 package com.coursework.editor;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 import com.coursework.figures.FiguresManager;
 import com.coursework.windows.Canvas;
@@ -29,7 +31,8 @@ public class ScenesManager {
 	
 	private JButton deleteButton, undoButton, redoButton; 
 	
-	private Canvas canvas;	
+	private Canvas canvas;
+	private JLabel canvasLabel;	
 	
 	public void setCanvas(Canvas canvas) {
 		this.canvas = canvas;
@@ -145,5 +148,21 @@ public class ScenesManager {
 		currentScene.delete();
 		
 	}
+
+	public void setCanvalLabel(JLabel label) {
+		this.canvasLabel = label;
+	}
 	
+	public void writeOnCanvas(String text, Color color) {
+		canvasLabel.setText(text);
+		canvasLabel.setForeground(color);
+	}
+
+	public int getSceneWidth() {
+		return canvas.getWidth();
+	}
+	
+	public int getSceneHeight() {
+		return canvas.getHeight();
+	}
 }
