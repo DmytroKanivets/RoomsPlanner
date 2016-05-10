@@ -8,7 +8,7 @@ import javax.swing.GroupLayout;
 
 import javax.swing.JPanel;
 
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.ScenesManager;
 import com.coursework.main.Main;
 
 public class Canvas extends JPanel {
@@ -29,7 +29,7 @@ public class Canvas extends JPanel {
 		graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		
-		SceneManager.instance().draw(graphics);
+		ScenesManager.instance().draw(graphics);
 	}
 
 	private void initComponents() {

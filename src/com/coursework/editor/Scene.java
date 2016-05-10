@@ -5,14 +5,12 @@ import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresManager;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLReader;
@@ -24,10 +22,9 @@ import com.coursework.util.PriorityQueue;
 
 //TODO optimize house search? + graphs
 public class Scene {
-	//public static final double ROTATION_STEP = 5.0;
 	public static final int MOVE_STEP = 2;	
 	
-	private boolean lastCommandReversed = false;
+	private boolean clearRedo = true;
 	
 	private int mousePrevX;
 	private int mousePrevY;
@@ -35,8 +32,7 @@ public class Scene {
 	int sceneShiftX = 0;
 	int sceneShiftY = 0;
 	
-	//Figure selectedFigure;
-	Drawable selectedDrawable;
+	private Drawable selectedDrawable;
 	
 	PriorityQueue<Drawable> figures;
 	boolean mouseOnCanvas = false;
@@ -44,35 +40,39 @@ public class Scene {
 	Stack<Command> commands;
 	Stack<Command> reversedCommands;
 	
+	private DrawableCommandFactory addFactory, deleteFactory;
+	
 	int mouseX;
 	int mouseY;
+
+	private boolean commandReversed = false;
 	
 	private void initMouse() {
 		Main.addCanvasMouseListener(new MouseInputAdapter() {
 			@Override
 		    public void mouseDragged(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (!SceneManager.instance().isFigureSelected()) {
-						if (selectedDrawable == null) {
-							sceneShiftX += e.getX() - mousePrevX;
-							sceneShiftY += e.getY() - mousePrevY;
-							mousePrevX = e.getX();
-							mousePrevY = e.getY();
-						}
-					}
-			    }
-				repaint();
-			}
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (!SceneManager.instance().isFigureSelected()) {
-						selectDrawableUnderCursor(e.getX(), e.getY());
+//				System.out.println("move");
+				if (!ScenesManager.instance().isFigureSelected()) {
+					if (selectedDrawable == null) {
+						sceneShiftX += e.getX() - mousePrevX;
+						sceneShiftY += e.getY() - mousePrevY;
 						mousePrevX = e.getX();
 						mousePrevY = e.getY();
 					}
 				}
-				repaint();
+			    
+				actionExecuted();
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					if (!ScenesManager.instance().isFigureSelected()) {
+						selectDrawableAtPosition(e.getX(), e.getY());
+						mousePrevX = e.getX();
+						mousePrevY = e.getY();
+					}
+				}
+				actionExecuted();
 			}		
 		});
 	}
@@ -92,12 +92,13 @@ public class Scene {
 						redo();
 					}
 					
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+						selectedDrawable = null;
+						actionExecuted();
+					}
+					
 					if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-						if (selectedDrawable != null) {
-							getDeleteCommandFactory().getCommand(selectedDrawable).execute();
-							checkForRules();
-							selectedDrawable = null;
-						}
+						delete();
 					}				
 				}
 				return false;
@@ -105,7 +106,15 @@ public class Scene {
 		});
 	}
 	
-	private void selectDrawableUnderCursor(int x, int y) {
+	protected void delete() {
+		if (selectedDrawable != null) {
+			getDeleteCommandFactory().getCommand(selectedDrawable).execute();
+			selectedDrawable = null;
+			actionExecuted();
+		}
+	}
+
+	private void selectDrawableAtPosition(int x, int y) {
 		x -= sceneShiftX;
 		y -= sceneShiftY;
 		
@@ -134,7 +143,6 @@ public class Scene {
 
 	private boolean checkForRules() {
 		boolean unchanged = true;
-		System.out.println("rules");
 
 		for (Drawable d : figures) {
 			Drawable newD = RulesManager.getInstance().processDrawable(d);
@@ -144,13 +152,85 @@ public class Scene {
 		}
 		
 		if (!unchanged) {
-			System.out.println("undo");
+			System.out.println("Can not perform action");
 			undo();
-			//Main.showMessage("You cant perform this action");
 			Debug.log("Can not perform action");
 		}
 		
 		return unchanged;
+	}
+	
+	private void initFactories() {
+		addFactory = new DrawableCommandFactory() {
+		
+			@Override
+			public Command getCommand(Drawable d) {
+				//d.move(-sceneShiftX, -sceneShiftY);
+//				System.out.println(d.getArea().getBounds2D().toString());
+				System.out.println(sceneShiftX + " " + sceneShiftY);
+				Drawable result = RulesManager.getInstance().processDrawable(d);
+	
+				return new Command() {
+					
+					private Drawable drawable;
+					
+					@Override
+					public void reverse() {
+						figures.remove(drawable);
+						commands.remove(this);
+						if (drawable.hasTag("wall"))
+							walls();
+						clearRedo = false;
+						actionExecuted();
+					}	
+					
+					@Override
+					public void execute() {
+						this.drawable = result;
+						if (drawable != null) {
+							commands.add(this);
+							//System.out.println("Adding with " + (-(drawable.getPriority()+1)));
+							figures.add(drawable, -(drawable.getPriority()+1));
+							if (drawable.hasTag("wall"))
+								walls();
+							clearRedo = true;
+							actionExecuted();
+						} else {
+							System.out.println("Deny " + d.toString());
+						}
+					}
+				};
+			}
+		};
+		
+		deleteFactory = new DrawableCommandFactory() {
+			
+			@Override
+			public Command getCommand(Drawable drawable) {
+				return new Command() {
+										
+					@Override
+					public void reverse() {
+						figures.add(drawable, -(drawable.getPriority()+1));
+						commands.remove(this);
+						clearRedo = false;
+						actionExecuted();
+					}
+					
+					@Override
+					public void execute() {
+						if (drawable != null) {
+							commands.add(this);
+							figures.remove(drawable);
+
+							clearRedo = true;
+							actionExecuted();
+						}
+					}
+				};
+			}
+		};
+		
 	}
 
 	private void init() {
@@ -160,8 +240,14 @@ public class Scene {
 		
 		initMouse();
 		initKeyboard();
+		initFactories();
 	}
-
+	
+	Scene() {
+		init();
+		actionExecuted();
+	}
+	
 	void clearCanvas() {
 		figures.clear();		
 		repaint();
@@ -170,27 +256,26 @@ public class Scene {
 		sceneShiftY = 0;
 	}
 	
-	public Scene() {
-		init();
-	}
-	
 	private void repaint() {
-		SceneManager.instance().repaint();
+		ScenesManager.instance().repaint();
 	}
 	
-	private void redo() {
+	void redo() {
 		if (reversedCommands.size() > 0) {
-			lastCommandReversed = true;
+			commandReversed = true;
+			
 			Command c = reversedCommands.pop();
 			c.execute();
 		}
 	}
 	
-	public void undo() {
+	void undo() {
 		if (commands.size() > 0) {
+			System.out.println("reverse");
+			clearRedo = false;
 			Command c = commands.peek();
-			c.reverse();
 			reversedCommands.add(c);
+			c.reverse();
 		}
 	} 
 	
@@ -267,10 +352,18 @@ public class Scene {
 	
 	public void actionExecuted() {
 		checkForRules();
-		if (!lastCommandReversed)
+		if (clearRedo && !commandReversed) {
+			//System.out.println("redo clear");
 			reversedCommands.clear();
-		else 
-			lastCommandReversed = false;
+		} else {
+			commandReversed = false;
+//			clearRedo = true;
+		}
+		repaint();
+		//System.out.println("update " + commands.size());
+		ScenesManager.instance().setUndoEnbled(commands.size() > 0);
+		ScenesManager.instance().setRedoEnbled(reversedCommands.size() > 0);
+		ScenesManager.instance().setDeleteEnbled(selectedDrawable != null);
 	}
 	
 	public void loadFromFile(String filename) throws FileNotFoundException {
@@ -307,76 +400,11 @@ public class Scene {
 	}
 
 	public DrawableCommandFactory getAddCommandFactory() {
-		return new DrawableCommandFactory() {
-			
-			@Override
-			public Command getCommand(Drawable d) {
-
-				Drawable result = RulesManager.getInstance().processDrawable(d);
-				//Drawable result = d;
-				return new Command() {
-					
-					private Drawable drawable;
-					
-					@Override
-					public void reverse() {
-						figures.remove(drawable);
-						repaint();
-						commands.remove(this);
-						if (drawable.hasTag("wall"))
-							walls();
-					}	
-					
-					@Override
-					public void execute() {
-						this.drawable = result;
-						if (drawable != null) {
-							commands.add(this);
-							System.out.println("Adding with " + (-(drawable.getPriority()+1)));
-							figures.add(drawable, -(drawable.getPriority()+1));
-							repaint();
-							if (drawable.hasTag("wall"))
-								walls();
-							actionExecuted();
-						} else {
-							System.out.println("Deny " + d.toString());
-						}
-					}
-				};
-			}
-		};
+		return addFactory;
 	}
 
 	public DrawableCommandFactory getDeleteCommandFactory() {
-		
-		return new DrawableCommandFactory() {
-			
-			@Override
-			public Command getCommand(Drawable drawable) {
-				return new Command() {
-										
-					@Override
-					public void reverse() {
-						figures.add(drawable, -(drawable.getPriority()+1));
-						//System.out.println("remove reverse");
-						commands.remove(this);
-						repaint();
-					}
-					
-					@Override
-					public void execute() {
-						if (drawable != null) {
-							//System.out.println("remove");
-							//System.out.println(drawable.toString());
-							commands.add(this);
-							figures.remove(drawable);
-							repaint();
-							actionExecuted();
-						}
-					}
-				};
-			}
-		};
+		return deleteFactory;
 	}
 
 	public void clearHistory() {
@@ -384,6 +412,11 @@ public class Scene {
 		reversedCommands.clear();
 	}
 
+	public void clearSelection() {
+		selectedDrawable = null;
+		actionExecuted();
+	}
+	
 	public Iterable<Drawable> getDrawables() {
 		return figures;
 	}

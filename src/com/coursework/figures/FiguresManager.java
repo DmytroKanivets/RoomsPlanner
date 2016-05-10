@@ -1,6 +1,5 @@
 package com.coursework.figures;
 
-import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
@@ -13,29 +12,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JTree;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.coursework.main.Main;
 import com.coursework.editor.KeyboardState;
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.ScenesManager;
 import com.coursework.files.FiguresLoader;
 
 public class FiguresManager {
 	
 	private static FiguresManager instance;
-	
-	//private JList<String> figuresViewList;
 	
 	private JTree figuresView;
 	
@@ -53,33 +45,35 @@ public class FiguresManager {
 			instance = new FiguresManager();
 		return instance;
 	}
-	
 
 	private void initMouse() {
 		Main.addCanvasMouseListener(new MouseInputAdapter() {
 			@Override
 		    public void mouseEntered(MouseEvent e) {
 				mouseOnCanvas = true;
-				SceneManager.instance().repaint();
+				ScenesManager.instance().repaint();
 			}
 			@Override
 		    public void mouseExited(MouseEvent e) {
 				mouseOnCanvas = false;
-				SceneManager.instance().repaint();
+				ScenesManager.instance().repaint();
 			}
 			@Override
 		    public void mouseDragged(MouseEvent e){
-				if (selectedFigure != null) {
-					selectedFigure.move(e.getX() - SceneManager.instance().getOffsetX(), e.getY() - SceneManager.instance().getOffsetX());
+				if (selectedFigure != null) {//TODO v2
+					selectedFigure.move(e.getX() - ScenesManager.instance().getOffsetX(), e.getY() - ScenesManager.instance().getOffsetY());
+//					selectedFigure.move(e.getX(), e.getY());
 				}
-				SceneManager.instance().repaint();
+				ScenesManager.instance().repaint();
 			}
 			@Override
 		    public void mouseMoved(MouseEvent e){
 				if (selectedFigure != null) {
-					selectedFigure.move(e.getX() - SceneManager.instance().getOffsetX(), e.getY() - SceneManager.instance().getOffsetX());
+					selectedFigure.move(e.getX() - ScenesManager.instance().getOffsetX(), e.getY() - ScenesManager.instance().getOffsetY());
+
+//					selectedFigure.move(e.getX(), e.getY());
 				}
-				SceneManager.instance().repaint();
+				ScenesManager.instance().repaint();
 			}
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -88,7 +82,7 @@ public class FiguresManager {
 						selectedFigure.drawStart();
 					}
 				}
-				SceneManager.instance().repaint();
+				ScenesManager.instance().repaint();
 			}
 			
 			@Override
@@ -97,25 +91,15 @@ public class FiguresManager {
 					if (e.getButton() == MouseEvent.BUTTON1 )
 						selectedFigure.drawEnd();
 				}
-				SceneManager.instance().repaint();
+				ScenesManager.instance().repaint();
 			}
 
 		    public void mouseWheelMoved(MouseWheelEvent e) {
 		    	if (selectedFigure != null) {
 		    		selectedFigure.rotate(e.getWheelRotation() * ROTATION_STEP);
-		    		SceneManager.instance().repaint();
+		    		ScenesManager.instance().repaint();
 		    	}
-		    }
-			/*
-			  	public void mouseClicked(MouseEvent e)
-			    public void mousePressed(MouseEvent e) {}
-			    public void mouseReleased(MouseEvent e) {}
-			    public void mouseEntered(MouseEvent e) {}
-			    public void mouseExited(MouseEvent e) {}
-			    public void mouseWheelMoved(MouseWheelEvent e){}
-			    public void mouseDragged(MouseEvent e){}
-			    public void mouseMoved(MouseEvent e){}
-			 */			
+		    }	
 		});
 	}
 	
@@ -136,7 +120,7 @@ public class FiguresManager {
 						if (e.getKeyCode() == KeyEvent.VK_E) {
 							selectedFigure.rotate(FiguresManager.ROTATION_STEP);
 						}
-						SceneManager.instance().repaint();
+						ScenesManager.instance().repaint();
 					}					
 				}
 				
@@ -151,7 +135,7 @@ public class FiguresManager {
 					
 					if (selectedFigure != null) {
 						selectedFigure.keyPressed(currentKeyboardState);
-						SceneManager.instance().repaint();
+						ScenesManager.instance().repaint();
 					}
 				}
 				
@@ -179,34 +163,8 @@ public class FiguresManager {
 			
 		});
 	}
-		
-	/*
-	 * Connect list from swing view
-	 */
-	/*
-	public void connectList(JList<String> figuresList) {
-		this.figuresViewList = figuresList;
 
-		figuresList.addListSelectionListener(new ListSelectionListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				int selectedIndex = (((JList<String>)e.getSource()).getSelectedIndex());
-				if (selectedIndex != -1) {
-					//Main.getCurrentScene().selectFigure(figures.get(((JList<String>)e.getSource()).getSelectedIndex()));
-					selectedFigure = figures.get(((JList<String>)e.getSource()).getSelectedIndex());
-				} else {
-					//Main.getCurrentScene().selectFigure(null);
-					selectedFigure = null;
-				}
-			}
-		});
-	}*/
-	
 	public void updateView() {
-		//TODO add
-		System.out.println("update");
-//		DefaultMutableTreeNode root = new DefaultMutableTreeNode("figures_root");
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)figuresView.getModel().getRoot();
 		root.removeAllChildren();
 		
@@ -214,7 +172,6 @@ public class FiguresManager {
 		String currentPackage = "";
 		
 		for (Figure f : figures) {
-			System.out.println("add");
 			if (!f.getPackageName().equals(currentPackage)) {
 				currentNode = new DefaultMutableTreeNode(f.getPackageName());
 				root.add(currentNode);
@@ -222,21 +179,10 @@ public class FiguresManager {
 			}
 			currentNode.add(new DefaultMutableTreeNode(f));
 		}
-		/*
-		DefaultTreeModel model = (DefaultTreeModel) figuresView.getModel();
-		model.nodeChanged(root);*/
 		
 		DefaultTreeModel model = new DefaultTreeModel(root);
 		figuresView.setModel(model);
-		
-		/*
-DefaultListModel<String> model = new DefaultListModel<>();
-		
-		for (Figure f : figures) {
-			model.addElement(f.getName());
-		}
 
-		figuresViewList.setModel(model);*/
 	}
 	
 	public void connectView(JTree figuresView) {
@@ -255,6 +201,7 @@ DefaultListModel<String> model = new DefaultListModel<>();
 					if (node.isLeaf())
 					selectedFigure = (Figure) node.getUserObject();
 				}
+				ScenesManager.instance().clearSelectionAtScene();
 			}
 		});
 	}
@@ -276,9 +223,8 @@ DefaultListModel<String> model = new DefaultListModel<>();
 	
 		figures.addAll(loader.getFigures());
 		
-		//RulesManager.getInstance().loadRules(fileName);
-		
-		updateView();		
+		updateView();	
+		renewFactories();
 	}
 	
 	/*
@@ -294,20 +240,6 @@ DefaultListModel<String> model = new DefaultListModel<>();
 			}
 		}
 	}
-
-	/*
-	 * Update swing list view 
-	 */
-	/*
-	private void updateListView() {
-		DefaultListModel<String> model = new DefaultListModel<>();
-		
-		for (Figure f : figures) {
-			model.addElement(f.getName());
-		}
-
-		figuresViewList.setModel(model);
-	}*/
 	
 	public Figure getFigure(String pack, String name) {		
 		for (Figure f : figures) {
@@ -323,8 +255,14 @@ DefaultListModel<String> model = new DefaultListModel<>();
 	}
 
 	public void drawSelectedFigure(Graphics2D graphics) {
-		if (selectedFigure != null && mouseOnCanvas) {
-			selectedFigure.draw(graphics, SceneManager.instance().getOffsetX(), SceneManager.instance().getOffsetX());
+		if (selectedFigure != null && mouseOnCanvas) {//TODO reverse here
+			selectedFigure.draw(graphics, ScenesManager.instance().getOffsetX(), ScenesManager.instance().getOffsetY());
+//			selectedFigure.draw(graphics, 0, 0);
 		}
+	}
+	
+	public void renewFactories() {
+		for (Figure f: figures)
+			f.setAddToSceneOperation(ScenesManager.instance().getAddCommands());
 	}
 }

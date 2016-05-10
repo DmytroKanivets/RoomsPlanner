@@ -4,7 +4,7 @@
 
 package com.coursework.windows;
 
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.ScenesManager;
 import com.coursework.figures.FiguresManager;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
@@ -38,7 +38,11 @@ public class MainWindow extends JFrame {
 		if (DEBUG_ENABLED) {
 			initDebug();
 		}
-//		figuresList.setFocusable(false);
+		ScenesManager.instance().setDeleteButton(deleteButton);
+		ScenesManager.instance().setUndoButton(undoButton);
+		ScenesManager.instance().setRedoButton(redoButton);
+		
+		
 		Debug.log("Main window initialized");
 	}
 
@@ -84,9 +88,9 @@ public class MainWindow extends JFrame {
 			try {
 				//Main.getCurrentScene().loadFromFile();
 
-				SceneManager.instance().loadSceneFromFile(fileChooser.getSelectedFile().getAbsolutePath());
+				ScenesManager.instance().loadSceneFromFile(fileChooser.getSelectedFile().getAbsolutePath());
 			} catch (FileNotFoundException e1) {
-				Main.showMessage("File not found");
+				//Main.showMessage("File not found");
 				Debug.log("File " + fileChooser.getSelectedFile().getAbsolutePath() + " not found");
 			}
 			Main.redraw();
@@ -102,8 +106,8 @@ public class MainWindow extends JFrame {
 		
 		int result = fileChooser.showSaveDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
-			String fileName = fileChooser.getSelectedFile().getAbsolutePath();
-			SceneManager.instance().saveSceneToFile(fileName + ".scene");
+			String filename = fileChooser.getSelectedFile().getAbsolutePath();
+			ScenesManager.instance().saveSceneToFile(filename + (filename.endsWith(".scene") ? "" : ".scene"));
 			//Main.getCurrentScene().saveToFile(fileName + ".scene");
 		}
 	}
@@ -128,7 +132,7 @@ public class MainWindow extends JFrame {
 			try {
 				FiguresManager.getInstance().addPackage(selectedFile.getAbsolutePath());
 			} catch (FileNotFoundException e1) {
-				Main.showMessage("File not found");
+				//Main.showMessage("File not found");
 			}
 		}
 	}
@@ -145,6 +149,18 @@ public class MainWindow extends JFrame {
 		Main.resetScene();
 	}
 
+	private void redoButtonActionPerformed(ActionEvent e) {
+		ScenesManager.instance().redo();
+	}
+
+	private void deleteButtonActionPerformed(ActionEvent e) {
+		ScenesManager.instance().delete();
+	}
+
+	private void undoButtonActionPerformed(ActionEvent e) {
+		ScenesManager.instance().undo();
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 		// Generated using JFormDesigner Evaluation license - D Pupkin
@@ -158,16 +174,15 @@ public class MainWindow extends JFrame {
 		help = new JMenu();
 		helpAbout = new JMenuItem();
 		buttonPanel = new JPanel();
+		canvas = new Canvas();
+		redoButton = new JButton();
+		undoButton = new JButton();
 		figuresScroll = new JScrollPane();
 		figuresTree = new JTree();
-		redoButton = new JButton();
 		deleteButton = new JButton();
-		undoButton = new JButton();
-		canvas = new Canvas();
 
 		//======== this ========
 		Container contentPane = getContentPane();
-		contentPane.setLayout(new BorderLayout());
 
 		//======== menuBar ========
 		{
@@ -229,61 +244,75 @@ public class MainWindow extends JFrame {
 					javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
 					java.awt.Color.red), buttonPanel.getBorder())); buttonPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
-
-			//======== figuresScroll ========
-			{
-				figuresScroll.setViewportBorder(null);
-
-				//---- figuresTree ----
-				figuresTree.setFocusable(false);
-				figuresScroll.setViewportView(figuresTree);
-			}
-
-			//---- redoButton ----
-			redoButton.setText("Redo");
-			redoButton.setFocusable(false);
-
-			//---- deleteButton ----
-			deleteButton.setText("Delete");
-			deleteButton.setFocusable(false);
-
-			//---- undoButton ----
-			undoButton.setText("Undo");
-			undoButton.setFocusable(false);
-
-			GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-			buttonPanel.setLayout(buttonPanelLayout);
-			buttonPanelLayout.setHorizontalGroup(
-				buttonPanelLayout.createParallelGroup()
-					.addGroup(buttonPanelLayout.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(buttonPanelLayout.createParallelGroup()
-							.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-							.addComponent(redoButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-							.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE))
-						.addGap(18, 18, 18)
-						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
-						.addContainerGap())
-			);
-			buttonPanelLayout.setVerticalGroup(
-				buttonPanelLayout.createParallelGroup()
-					.addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-							.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
-							.addGroup(buttonPanelLayout.createSequentialGroup()
-								.addComponent(figuresScroll, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-								.addGap(18, 18, 18)
-								.addComponent(undoButton)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(redoButton)
-								.addGap(18, 18, 18)
-								.addComponent(deleteButton)))
-						.addContainerGap())
-			);
+			buttonPanel.setLayout(new GridLayout());
 		}
-		contentPane.add(buttonPanel, BorderLayout.WEST);
+
+		//---- redoButton ----
+		redoButton.setText("Redo");
+		redoButton.setFocusable(false);
+		redoButton.addActionListener(e -> redoButtonActionPerformed(e));
+
+		//---- undoButton ----
+		undoButton.setText("Undo");
+		undoButton.setFocusable(false);
+		undoButton.setPreferredSize(new Dimension(58, 23));
+		undoButton.addActionListener(e -> undoButtonActionPerformed(e));
+
+		//======== figuresScroll ========
+		{
+			figuresScroll.setViewportBorder(null);
+
+			//---- figuresTree ----
+			figuresTree.setFocusable(false);
+			figuresScroll.setViewportView(figuresTree);
+		}
+
+		//---- deleteButton ----
+		deleteButton.setText("Delete");
+		deleteButton.setFocusable(false);
+		deleteButton.addActionListener(e -> deleteButtonActionPerformed(e));
+
+		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
+		contentPane.setLayout(contentPaneLayout);
+		contentPaneLayout.setHorizontalGroup(
+			contentPaneLayout.createParallelGroup()
+				.addGroup(contentPaneLayout.createSequentialGroup()
+					.addGroup(contentPaneLayout.createParallelGroup()
+						.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addGap(31, 31, 31)
+							.addGroup(contentPaneLayout.createParallelGroup()
+								.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+								.addComponent(redoButton, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+								.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 867, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		contentPaneLayout.setVerticalGroup(
+			contentPaneLayout.createParallelGroup()
+				.addGroup(contentPaneLayout.createSequentialGroup()
+					.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(0, 0, Short.MAX_VALUE))
+				.addGroup(contentPaneLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(contentPaneLayout.createParallelGroup()
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addComponent(canvas, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addContainerGap())
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 416, GroupLayout.PREFERRED_SIZE)
+							.addGap(18, 18, 18)
+							.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+							.addComponent(redoButton)
+							.addGap(18, 18, 18)
+							.addComponent(deleteButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGap(30, 30, 30))))
+		);
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -307,12 +336,12 @@ public class MainWindow extends JFrame {
 	private JMenu help;
 	private JMenuItem helpAbout;
 	private JPanel buttonPanel;
+	private Canvas canvas;
+	private JButton redoButton;
+	private JButton undoButton;
 	private JScrollPane figuresScroll;
 	private JTree figuresTree;
-	private JButton redoButton;
 	private JButton deleteButton;
-	private JButton undoButton;
-	private Canvas canvas;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	private JMenu debug;
 	private JMenuItem debugShow;

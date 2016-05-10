@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.coursework.editor.Scene;
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.ScenesManager;
 import com.coursework.figures.Figure;
 import com.coursework.figures.ImmutableFigure;
 import com.coursework.figures.LineFigure;
@@ -75,7 +75,6 @@ public class FiguresLoader {
 					//System.out.println(tag.getInnerTag("type").getContent());
 					f.getXMLBuilder().load(tag);
 					//f.setAddToSceneOperation(Main.getCurrentScene().getAddCommandFactory());
-					f.setAddToSceneOperation(SceneManager.instance().getAddCommands());
 					figures.add(f);
 				}				
 			}

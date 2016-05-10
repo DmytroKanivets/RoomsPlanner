@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.coursework.editor.Drawable;
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.ScenesManager;
 import com.coursework.files.RulesLoader;
 import com.coursework.main.Main;
 
@@ -21,7 +21,7 @@ public class RulesManager {
 	
 	public Drawable processDrawable(Drawable d) {
 		//Iterable<Drawable> context = Main.getCurrentScene().getDrawables();
-		Iterable<Drawable> context = SceneManager.instance().getDrawables();
+		Iterable<Drawable> context = ScenesManager.instance().getDrawables();
 		Drawable result = d;
 		for (Rule rule : rules) {
 			result = rule.processDrawable(result, context);

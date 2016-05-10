@@ -24,7 +24,6 @@ public class PriorityRule extends Rule {
 	@Override
 	public Drawable processDrawable(Drawable d, Iterable<Drawable> context) {
 		if (isApplicable(d) && priority > d.getPriority()) {
-			System.out.println("RULE: " + priority);
 			d.setPriority(priority);
 		}
 		return d;

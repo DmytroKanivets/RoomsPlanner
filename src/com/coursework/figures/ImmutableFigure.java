@@ -36,7 +36,7 @@ public class ImmutableFigure extends Figure {
 		}
 		
 		public void draw(Graphics2D g, int x, int y, double rotation) {
-			System.out.println(x + " " + y);
+			//System.out.println(x + " " + y);
 			AffineTransform t = new AffineTransform();
 			
 			//t = new AffineTransform();
@@ -45,7 +45,7 @@ public class ImmutableFigure extends Figure {
 			
 			for (Shape s: shapes) {
 				Shape sx = t.createTransformedShape(s);
-				System.out.println("border: " + sx.getBounds2D().toString());
+				//System.out.println("border: " + sx.getBounds2D().toString());
 				g.draw(sx);
 			
 			}
@@ -59,7 +59,6 @@ public class ImmutableFigure extends Figure {
 	
 	private Area physArea;
 	private DrawArea drawArea;
-	
 	
 	private int posX;
 	private int posY;
@@ -97,10 +96,11 @@ public class ImmutableFigure extends Figure {
 		transform.translate(shiftX, shiftY);
 		current.transform(transform);
 		
-		g.setColor(Color.WHITE);
+		g.setColor(Color.CYAN);
 		g.fill(current);
 		g.setColor(allowed ? Color.BLUE : Color.RED);
 		//g.draw(current);
+		
 		drawArea.draw(g, posX + shiftX, posY + shiftY, rotationDegree);
 	}
 

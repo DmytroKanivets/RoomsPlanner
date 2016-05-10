@@ -1,19 +1,18 @@
 package com.coursework.main;
 
-import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.io.FileNotFoundException;
 
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.editor.Scene;
-import com.coursework.editor.SceneManager;
+import com.coursework.editor.ScenesManager;
 import com.coursework.figures.FiguresManager;
+
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;
@@ -25,10 +24,10 @@ public class Main {
 	static DebugWindow debugWindow;
 	
 	//static Scene currentScene;
-	
+	/*
 	public static void showMessage(String message) {
 		JOptionPane.showMessageDialog(mainWindow, message);
-	}
+	}*/
 	
 	public static void main(String[] args) {
 		
@@ -51,8 +50,10 @@ public class Main {
 	            	Debug.log("Windows created");
             	
 	            	//currentScene = new Scene();
-	            	SceneManager.instance().setCanvas(mainWindow.getCanvas());
-	            	SceneManager.instance().newScene();
+	            	ScenesManager.instance().setCanvas(mainWindow.getCanvas());
+	            	
+	            	int id = ScenesManager.instance().newScene();
+	            	ScenesManager.instance().selectScene(id);
 	            	
 	            	Debug.log("Scene manager initialised");
 	            	
@@ -62,7 +63,9 @@ public class Main {
 	            	try {
 						FiguresManager.getInstance().addPackage("data/default.figures");
 					} catch (FileNotFoundException e) {
-						showMessage("Can not load default pack");
+						//showMessage("Can not load default pack");
+						Debug.log("Can not load default pack");
+						System.out.println("Can not load default pack");
 					}
 	            	Debug.log("Default figures loaded");
 	            	
@@ -83,8 +86,9 @@ public class Main {
 	}
 	
 	public static void resetScene() {
-		SceneManager.instance().removeCurrent();
-    	SceneManager.instance().newScene();
+		ScenesManager.instance().removeCurrent();
+    	int id = ScenesManager.instance().newScene();
+    	ScenesManager.instance().selectScene(id);
 	}
 	/*
 	public static void drawScene(Graphics2D g) {
