@@ -38,7 +38,7 @@ public class MainWindow extends JFrame {
 		if (DEBUG_ENABLED) {
 			initDebug();
 		}
-		figuresList.setFocusable(false);
+//		figuresList.setFocusable(false);
 		Debug.log("Main window initialized");
 	}
 
@@ -132,11 +132,15 @@ public class MainWindow extends JFrame {
 			}
 		}
 	}
-	
+	/*
 	public JList<String> getFiguresList() {
 		return figuresList;
 	}
-
+*/
+	public JTree getFiguresView() {
+		return figuresTree;
+	}
+	
 	private void newFileClick(ActionEvent e) {
 		Main.resetScene();
 	}
@@ -155,7 +159,7 @@ public class MainWindow extends JFrame {
 		helpAbout = new JMenuItem();
 		buttonPanel = new JPanel();
 		figuresScroll = new JScrollPane();
-		figuresList = new JList();
+		figuresTree = new JTree();
 		redoButton = new JButton();
 		deleteButton = new JButton();
 		undoButton = new JButton();
@@ -230,11 +234,9 @@ public class MainWindow extends JFrame {
 			{
 				figuresScroll.setViewportBorder(null);
 
-				//---- figuresList ----
-				figuresList.setEnabled(false);
-				figuresList.setBorder(null);
-				figuresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-				figuresScroll.setViewportView(figuresList);
+				//---- figuresTree ----
+				figuresTree.setFocusable(false);
+				figuresScroll.setViewportView(figuresTree);
 			}
 
 			//---- redoButton ----
@@ -259,9 +261,9 @@ public class MainWindow extends JFrame {
 							.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
 							.addComponent(redoButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
 							.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE))
+							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE))
 						.addGap(18, 18, 18)
-						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
 						.addContainerGap())
 			);
 			buttonPanelLayout.setVerticalGroup(
@@ -286,7 +288,7 @@ public class MainWindow extends JFrame {
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
 		figuresScroll.setBorder(BorderFactory.createEmptyBorder());
-		figuresList.setEnabled(true);
+		//figuresList.setEnabled(true);
 	}
 	
 	public Canvas getCanvas() {
@@ -306,7 +308,7 @@ public class MainWindow extends JFrame {
 	private JMenuItem helpAbout;
 	private JPanel buttonPanel;
 	private JScrollPane figuresScroll;
-	private JList figuresList;
+	private JTree figuresTree;
 	private JButton redoButton;
 	private JButton deleteButton;
 	private JButton undoButton;

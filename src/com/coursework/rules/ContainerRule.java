@@ -2,7 +2,7 @@ package com.coursework.rules;
 
 import java.awt.geom.Area;
 
-import com.coursework.figures.Drawable;
+import com.coursework.editor.Drawable;
 
 public class ContainerRule extends PlacementRule{
 

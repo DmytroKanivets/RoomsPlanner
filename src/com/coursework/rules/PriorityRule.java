@@ -1,6 +1,6 @@
 package com.coursework.rules;
 
-import com.coursework.figures.Drawable;
+import com.coursework.editor.Drawable;
 
 public class PriorityRule extends Rule {
 

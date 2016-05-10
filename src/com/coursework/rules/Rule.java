@@ -3,7 +3,7 @@ package com.coursework.rules;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.coursework.figures.Drawable;
+import com.coursework.editor.Drawable;
 
 public abstract class Rule {
 	protected Set<String> tags;

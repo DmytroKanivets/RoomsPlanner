@@ -6,18 +6,16 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-				"$horizontalGroup": "par l {seq {space :::p, par l {comp deleteButton:::p:80:p, comp redoButton::l:p:80:p, comp undoButton::l:p:80:p, comp figuresScroll::l:p:80:p}, space s:::p, comp canvas::::791:x, space :::p}}"
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp deleteButton:::p:80:p, comp redoButton::l:p:80:p, comp undoButton::l:p:80:p, comp figuresScroll::l:p:149:p}, space s:::p, comp canvas::::722:x, space :::p}}"
 				"$verticalGroup": "par l {seq t {space :::p, par t {comp canvas::::491:x, seq {comp figuresScroll::::380:x, space s:::p, comp undoButton:::p::p, space :::p, comp redoButton:::p::p, space s:::p, comp deleteButton:::p::p}}, space :::p}}"
 			} ) {
 				name: "buttonPanel"
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "figuresScroll"
 					"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					add( new FormComponent( "javax.swing.JList" ) {
-						name: "figuresList"
-						"enabled": false
-						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectionMode": 0
+					add( new FormComponent( "javax.swing.JTree" ) {
+						name: "figuresTree"
+						"focusable": false
 					} )
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {

@@ -56,7 +56,7 @@ public class Main {
 	            	
 	            	Debug.log("Scene manager initialised");
 	            	
-	            	FiguresManager.getInstance().connectList(mainWindow.getFiguresList());
+	            	FiguresManager.getInstance().connectView(mainWindow.getFiguresView());
 	            	
 	            	//TODO move to settings        
 	            	try {

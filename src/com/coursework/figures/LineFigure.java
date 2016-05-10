@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
+import com.coursework.editor.Drawable;
 import com.coursework.editor.KeyboardState;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;

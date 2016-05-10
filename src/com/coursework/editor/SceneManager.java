@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.figures.Drawable;
 import com.coursework.figures.FiguresManager;
 import com.coursework.windows.Canvas;
 

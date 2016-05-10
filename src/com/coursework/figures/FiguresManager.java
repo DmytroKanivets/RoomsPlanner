@@ -1,5 +1,6 @@
 package com.coursework.figures;
 
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
@@ -14,9 +15,16 @@ import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JTree;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeSelectionModel;
 
 import com.coursework.main.Main;
 import com.coursework.editor.KeyboardState;
@@ -27,7 +35,9 @@ public class FiguresManager {
 	
 	private static FiguresManager instance;
 	
-	private JList<String> figuresViewList;
+	//private JList<String> figuresViewList;
+	
+	private JTree figuresView;
 	
 	private Set<String> loadedPackages;
 	private List<Figure> figures;
@@ -162,21 +172,18 @@ public class FiguresManager {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					figuresViewList.clearSelection();
+					figuresView.clearSelection();
 				}
 				return false;
 			}
 			
 		});
 	}
-		/*
-	public void clearSelection() {
-		figuresViewList.clearSelection();
-	}*/
 		
 	/*
 	 * Connect list from swing view
 	 */
+	/*
 	public void connectList(JList<String> figuresList) {
 		this.figuresViewList = figuresList;
 
@@ -191,6 +198,62 @@ public class FiguresManager {
 				} else {
 					//Main.getCurrentScene().selectFigure(null);
 					selectedFigure = null;
+				}
+			}
+		});
+	}*/
+	
+	public void updateView() {
+		//TODO add
+		System.out.println("update");
+//		DefaultMutableTreeNode root = new DefaultMutableTreeNode("figures_root");
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode)figuresView.getModel().getRoot();
+		root.removeAllChildren();
+		
+		DefaultMutableTreeNode currentNode = null;
+		String currentPackage = "";
+		
+		for (Figure f : figures) {
+			System.out.println("add");
+			if (!f.getPackageName().equals(currentPackage)) {
+				currentNode = new DefaultMutableTreeNode(f.getPackageName());
+				root.add(currentNode);
+				currentPackage = f.getPackageName();
+			}
+			currentNode.add(new DefaultMutableTreeNode(f));
+		}
+		/*
+		DefaultTreeModel model = (DefaultTreeModel) figuresView.getModel();
+		model.nodeChanged(root);*/
+		
+		DefaultTreeModel model = new DefaultTreeModel(root);
+		figuresView.setModel(model);
+		
+		/*
+DefaultListModel<String> model = new DefaultListModel<>();
+		
+		for (Figure f : figures) {
+			model.addElement(f.getName());
+		}
+
+		figuresViewList.setModel(model);*/
+	}
+	
+	public void connectView(JTree figuresView) {
+		this.figuresView = figuresView;
+		figuresView.getSelectionModel().setSelectionMode (TreeSelectionModel.SINGLE_TREE_SELECTION);
+		figuresView.setRootVisible(false);
+		figuresView.setShowsRootHandles(true);
+		
+		figuresView.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) figuresView.getLastSelectedPathComponent();
+				if (node == null) {
+					selectedFigure = null;
+				} else {
+					if (node.isLeaf())
+					selectedFigure = (Figure) node.getUserObject();
 				}
 			}
 		});
@@ -215,7 +278,7 @@ public class FiguresManager {
 		
 		//RulesManager.getInstance().loadRules(fileName);
 		
-		updateListView();		
+		updateView();		
 	}
 	
 	/*
@@ -235,6 +298,7 @@ public class FiguresManager {
 	/*
 	 * Update swing list view 
 	 */
+	/*
 	private void updateListView() {
 		DefaultListModel<String> model = new DefaultListModel<>();
 		
@@ -243,7 +307,7 @@ public class FiguresManager {
 		}
 
 		figuresViewList.setModel(model);
-	}
+	}*/
 	
 	public Figure getFigure(String pack, String name) {		
 		for (Figure f : figures) {

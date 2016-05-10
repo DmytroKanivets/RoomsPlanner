@@ -12,7 +12,6 @@ import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresManager;
 import com.coursework.files.XMLBuilder;

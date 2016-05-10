@@ -58,11 +58,15 @@ public abstract class Figure {
 				}
 			}
 		}
-		
 	} 
 	
 	public BuilderFromXML getDrawableLoader() {
 		return new FigureBuilder();
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 	
 	public void drawStart() {}

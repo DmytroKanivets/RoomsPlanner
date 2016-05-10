@@ -12,6 +12,7 @@ import java.awt.geom.Arc2D;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.coursework.editor.Drawable;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;

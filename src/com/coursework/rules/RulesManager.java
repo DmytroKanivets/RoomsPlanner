@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.coursework.editor.Drawable;
 import com.coursework.editor.SceneManager;
-import com.coursework.figures.Drawable;
 import com.coursework.files.RulesLoader;
 import com.coursework.main.Main;
 
