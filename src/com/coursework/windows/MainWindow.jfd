@@ -3,12 +3,45 @@ JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_45" encoding: "UTF-8"
 new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
-		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq {space :0:0:x, par l:::p {comp menuBar:::p:869:p, seq t {space :p:10:p, comp buttonPanel:::::x, space :::p, comp canvas:::p:606:p, space u:::p, comp infoPanel:::p::p}}, space :0:0:x}}"
-			"$verticalGroup": "par l {seq {space :0:0:x, comp menuBar:::p:21:p, par l {seq l {space :::p, comp infoPanel:::p::p}, seq l {space u:::p, comp canvas:::p:491:p}, seq l {space :p:11:p, comp buttonPanel:::p::p}}, space :::x}}"
-		} ) {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
-			add( new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp deleteButton:::p:80:p, comp redoButton::l:p:80:p, comp undoButton::l:p:80:p, comp figuresScroll::l:p:80:p}, space s:::p, comp canvas::::791:x, space :::p}}"
+				"$verticalGroup": "par l {seq t {space :::p, par t {comp canvas::::491:x, seq {comp figuresScroll::::380:x, space s:::p, comp undoButton:::p::p, space :::p, comp redoButton:::p::p, space s:::p, comp deleteButton:::p::p}}, space :::p}}"
+			} ) {
+				name: "buttonPanel"
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "figuresScroll"
+					"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "figuresList"
+						"enabled": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"selectionMode": 0
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "redoButton"
+					"text": "Redo"
+					"focusable": false
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteButton"
+					"text": "Delete"
+					"focusable": false
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "undoButton"
+					"text": "Undo"
+					"focusable": false
+				} )
+				add( new FormComponent( "com.coursework.windows.Canvas" ) {
+					name: "canvas"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "West"
+			} )
+			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
 				name: "menuBar"
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "file"
@@ -60,35 +93,10 @@ new FormModel {
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "helpAboutClick", true ) )
 					} )
 				} )
-			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-				"$horizontalGroup": "par l {comp figuresScroll::t::0:x}"
-				"$verticalGroup": "par l {seq l {comp figuresScroll:::p:139:p, space :0:352:x}}"
-			} ) {
-				name: "buttonPanel"
-				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "figuresScroll"
-					"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					add( new FormComponent( "javax.swing.JList" ) {
-						name: "figuresList"
-						"enabled": false
-						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectionMode": 0
-					} )
-				} )
-			} )
-			add( new FormComponent( "com.coursework.windows.Canvas" ) {
-				name: "canvas"
-			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-				"$horizontalGroup": "par l {space :0:135:x}"
-				"$verticalGroup": "par l {space :0:491:x}"
-			} ) {
-				name: "infoPanel"
-			} )
+			}
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 885, 570 )
+			"size": new java.awt.Dimension( 925, 570 )
 		} )
 	}
 }

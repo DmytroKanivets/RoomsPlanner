@@ -156,11 +156,14 @@ public class MainWindow extends JFrame {
 		buttonPanel = new JPanel();
 		figuresScroll = new JScrollPane();
 		figuresList = new JList();
+		redoButton = new JButton();
+		deleteButton = new JButton();
+		undoButton = new JButton();
 		canvas = new Canvas();
-		infoPanel = new JPanel();
 
 		//======== this ========
 		Container contentPane = getContentPane();
+		contentPane.setLayout(new BorderLayout());
 
 		//======== menuBar ========
 		{
@@ -210,6 +213,7 @@ public class MainWindow extends JFrame {
 			}
 			menuBar.add(help);
 		}
+		setJMenuBar(menuBar);
 
 		//======== buttonPanel ========
 		{
@@ -233,69 +237,51 @@ public class MainWindow extends JFrame {
 				figuresScroll.setViewportView(figuresList);
 			}
 
+			//---- redoButton ----
+			redoButton.setText("Redo");
+			redoButton.setFocusable(false);
+
+			//---- deleteButton ----
+			deleteButton.setText("Delete");
+			deleteButton.setFocusable(false);
+
+			//---- undoButton ----
+			undoButton.setText("Undo");
+			undoButton.setFocusable(false);
+
 			GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
 			buttonPanel.setLayout(buttonPanelLayout);
 			buttonPanelLayout.setHorizontalGroup(
 				buttonPanelLayout.createParallelGroup()
-					.addComponent(figuresScroll, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+					.addGroup(buttonPanelLayout.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(buttonPanelLayout.createParallelGroup()
+							.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+							.addComponent(redoButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+							.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE))
+						.addGap(18, 18, 18)
+						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+						.addContainerGap())
 			);
 			buttonPanelLayout.setVerticalGroup(
 				buttonPanelLayout.createParallelGroup()
-					.addGroup(buttonPanelLayout.createSequentialGroup()
-						.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-						.addGap(0, 352, Short.MAX_VALUE))
+					.addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+							.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+							.addGroup(buttonPanelLayout.createSequentialGroup()
+								.addComponent(figuresScroll, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+								.addGap(18, 18, 18)
+								.addComponent(undoButton)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(redoButton)
+								.addGap(18, 18, 18)
+								.addComponent(deleteButton)))
+						.addContainerGap())
 			);
 		}
-
-		//======== infoPanel ========
-		{
-
-			GroupLayout infoPanelLayout = new GroupLayout(infoPanel);
-			infoPanel.setLayout(infoPanelLayout);
-			infoPanelLayout.setHorizontalGroup(
-				infoPanelLayout.createParallelGroup()
-					.addGap(0, 135, Short.MAX_VALUE)
-			);
-			infoPanelLayout.setVerticalGroup(
-				infoPanelLayout.createParallelGroup()
-					.addGap(0, 491, Short.MAX_VALUE)
-			);
-		}
-
-		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
-		contentPane.setLayout(contentPaneLayout);
-		contentPaneLayout.setHorizontalGroup(
-			contentPaneLayout.createParallelGroup()
-				.addGroup(contentPaneLayout.createSequentialGroup()
-					.addGap(0, 0, Short.MAX_VALUE)
-					.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-						.addComponent(menuBar, GroupLayout.PREFERRED_SIZE, 869, GroupLayout.PREFERRED_SIZE)
-						.addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
-							.addGap(10, 10, 10)
-							.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(canvas, GroupLayout.PREFERRED_SIZE, 606, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-							.addComponent(infoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addGap(0, 0, Short.MAX_VALUE))
-		);
-		contentPaneLayout.setVerticalGroup(
-			contentPaneLayout.createParallelGroup()
-				.addGroup(contentPaneLayout.createSequentialGroup()
-					.addGap(0, 0, Short.MAX_VALUE)
-					.addComponent(menuBar, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-					.addGroup(contentPaneLayout.createParallelGroup()
-						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(infoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-							.addComponent(canvas, GroupLayout.PREFERRED_SIZE, 491, GroupLayout.PREFERRED_SIZE))
-						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addGap(11, 11, 11)
-							.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
+		contentPane.add(buttonPanel, BorderLayout.WEST);
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -321,8 +307,10 @@ public class MainWindow extends JFrame {
 	private JPanel buttonPanel;
 	private JScrollPane figuresScroll;
 	private JList figuresList;
+	private JButton redoButton;
+	private JButton deleteButton;
+	private JButton undoButton;
 	private Canvas canvas;
-	private JPanel infoPanel;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	private JMenu debug;
 	private JMenuItem debugShow;
