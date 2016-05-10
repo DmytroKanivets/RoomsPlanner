@@ -10,12 +10,7 @@ public class PriorityRule extends Rule {
 		this.priority = priority;
 	}
 	
-	/*
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-	*/
-	public boolean isApplicable(Drawable d) {
+	private boolean isApplicable(Drawable d) {
 		if (d == null)
 			return false;
 		
@@ -28,8 +23,10 @@ public class PriorityRule extends Rule {
 	
 	@Override
 	public Drawable processDrawable(Drawable d, Iterable<Drawable> context) {
-		if (isApplicable(d) && priority > d.getPriority())
+		if (isApplicable(d) && priority > d.getPriority()) {
+			System.out.println("RULE: " + priority);
 			d.setPriority(priority);
+		}
 		return d;
 	}
 

@@ -3,42 +3,47 @@ package com.coursework.editor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
-import java.awt.Polygon;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Stack;
 
-import javax.swing.KeyStroke;
 import javax.swing.event.MouseInputAdapter;
 
 import com.coursework.figures.Drawable;
 import com.coursework.figures.Figure;
 import com.coursework.figures.FiguresManager;
 import com.coursework.files.XMLBuilder;
+import com.coursework.files.XMLReader;
+import com.coursework.files.XMLTag;
+import com.coursework.main.Debug;
 import com.coursework.main.Main;
 import com.coursework.rules.RulesManager;
 import com.coursework.util.PriorityQueue;
 
+//TODO optimize house search? + graphs
 public class Scene {
-
-	public static final double ROTATION_STEP = 5.0;
+	//public static final double ROTATION_STEP = 5.0;
+	public static final int MOVE_STEP = 2;	
 	
-	Figure selectedFigure;
+	private boolean lastCommandReversed = false;
+	
+	private int mousePrevX;
+	private int mousePrevY;
+	
+	int sceneShiftX = 0;
+	int sceneShiftY = 0;
+	
+	//Figure selectedFigure;
 	Drawable selectedDrawable;
 	
 	PriorityQueue<Drawable> figures;
 	boolean mouseOnCanvas = false;
 	
-	KeyboardState currentKeyboardState;
-	
 	Stack<Command> commands;
+	Stack<Command> reversedCommands;
 	
 	int mouseX;
 	int mouseY;
@@ -46,76 +51,67 @@ public class Scene {
 	private void initMouse() {
 		Main.addCanvasMouseListener(new MouseInputAdapter() {
 			@Override
-		    public void mouseEntered(MouseEvent e) {
-				mouseOnCanvas = true;
-				redraw();
-			}
-			@Override
-		    public void mouseExited(MouseEvent e) {
-				mouseOnCanvas = false;
-				redraw();
-			}
-			@Override
-		    public void mouseDragged(MouseEvent e){
-				if (selectedFigure != null) {
-					selectedFigure.move(e.getX(), e.getY());
-				}
-				redraw();
-//				mouseX = e.getX();
-//				mouseY = e.getY();
-			}
-			@Override
-		    public void mouseMoved(MouseEvent e){
-				if (selectedFigure != null) {
-					selectedFigure.move(e.getX(), e.getY());
-				}
-				redraw();
-//				mouseX = e.getX();
-//				mouseY = e.getY();
+		    public void mouseDragged(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					if (!SceneManager.instance().isFigureSelected()) {
+						if (selectedDrawable == null) {
+							sceneShiftX += e.getX() - mousePrevX;
+							sceneShiftY += e.getY() - mousePrevY;
+							mousePrevX = e.getX();
+							mousePrevY = e.getY();
+						}
+					}
+			    }
+				repaint();
 			}
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (selectedFigure != null) {
-						selectedFigure.drawStart();
-					} else {
+					if (!SceneManager.instance().isFigureSelected()) {
 						selectDrawableUnderCursor(e.getX(), e.getY());
-						redraw();
+						mousePrevX = e.getX();
+						mousePrevY = e.getY();
 					}
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1 && selectedFigure != null)
-					selectedFigure.drawEnd();
-				
-			}
-
-		    public void mouseWheelMoved(MouseWheelEvent e) {
-		    	//System.out.println("move");
-		    	if (selectedFigure != null) {
-		    		selectedFigure.rotate(e.getWheelRotation() * ROTATION_STEP);
-		    		redraw();
-		    	}
-		    }
-			/*
-			  	public void mouseClicked(MouseEvent e)
-			    public void mousePressed(MouseEvent e) {}
-			    public void mouseReleased(MouseEvent e) {}
-			    public void mouseEntered(MouseEvent e) {}
-			    public void mouseExited(MouseEvent e) {}
-			    public void mouseWheelMoved(MouseWheelEvent e){}
-			    public void mouseDragged(MouseEvent e){}
-			    public void mouseMoved(MouseEvent e){}
-			 */			
+				repaint();
+			}		
 		});
 	}
 	
-	protected void selectDrawableUnderCursor(int x, int y) {
+	private void initKeyboard() {
+		Main.addKeyboardEventDispatcher(new KeyEventDispatcher() {
+			
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+
+				if (e.getID() == KeyEvent.KEY_PRESSED) {
+					if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+						undo();
+					}
+					
+					if ((e.getKeyCode() == KeyEvent.VK_Y) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+						redo();
+					}
+					
+					if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+						if (selectedDrawable != null) {
+							getDeleteCommandFactory().getCommand(selectedDrawable).execute();
+							checkForRules();
+							selectedDrawable = null;
+						}
+					}				
+				}
+				return false;
+			}
+		});
+	}
+	
+	private void selectDrawableUnderCursor(int x, int y) {
+		x -= sceneShiftX;
+		y -= sceneShiftY;
 		
 		Iterator<Drawable> it = figures.iterator();
-		Drawable last =null, newSelected = null;
+		Drawable last = null, newSelected = null;
 		boolean found = false;
 		
 		while (it.hasNext()) {
@@ -137,61 +133,9 @@ public class Scene {
 		}
 	}
 
-	private void initKeyboard() {
-		Main.addKeyboardEventDispatcher(new KeyEventDispatcher() {
-			
-			@Override
-			public boolean dispatchKeyEvent(KeyEvent e) {
-				//Ctrl z keycode
-				int code = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()).getKeyCode();
-				if  (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == code && e.isControlDown()) {
-					undo();
-				}
-				
-				if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_SHIFT) {
-					currentKeyboardState.setShiftState(true);
-				}
-				
-				if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_SHIFT) {
-					currentKeyboardState.setShiftState(false);
-				}
-				
-				if (selectedFigure != null) {
-					if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_Q) {
-						//System.out.println("try to rotate");
-						selectedFigure.rotate(-ROTATION_STEP);
-					}
-					
-					if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_E) {
-						selectedFigure.rotate(ROTATION_STEP);
-					}
-				}
-				
-				if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					FiguresManager.getInstance().clearSelection();
-				}
-				
-				if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_DELETE) {
-					if (selectedDrawable != null) {
-						getDeleteCommand(selectedDrawable).execute();
-						checkForRules();
-						selectedDrawable = null;
-					}
-				}
-				
-				if (selectedFigure != null) {
-					selectedFigure.keyPressed(currentKeyboardState);
-					redraw();
-				}
-				
-				return false;
-			}
-		});
-	}
-	
-	protected boolean checkForRules() {
-		
+	private boolean checkForRules() {
 		boolean unchanged = true;
+		System.out.println("rules");
 
 		for (Drawable d : figures) {
 			Drawable newD = RulesManager.getInstance().processDrawable(d);
@@ -201,88 +145,65 @@ public class Scene {
 		}
 		
 		if (!unchanged) {
+			System.out.println("undo");
 			undo();
-			Main.showMessage("You cant perform this action");
-			//System.out.println("You cant perform this action");
+			//Main.showMessage("You cant perform this action");
+			Debug.log("Can not perform action");
 		}
 		
 		return unchanged;
 	}
-	
-	protected Command getDeleteCommand(Drawable drawable) {
-		return new Command() {
-			
-			//Drawable d;
-			
-			@Override
-			public void reverse() {
-				figures.add(drawable, -(drawable.getPriority()+1));
-				redraw();
-			}
-			
-			@Override
-			public void execute() {
-				//this.d = drawable;
-				if (drawable != null) {
-					//System.out.println("remove");
-					commands.add(this);
-					figures.remove(drawable);
-					redraw();
-				}
-			}
-		};
-	}
 
 	private void init() {
 		commands = new Stack<>();
+		reversedCommands = new Stack<>();
 		figures = new PriorityQueue<Drawable>();
-		currentKeyboardState = new KeyboardState();
 		
 		initMouse();
 		initKeyboard();
 	}
 
-	public void clear() {
-		commands.clear();
-		figures.clear();
+	void clearCanvas() {
+		figures.clear();		
+		repaint();
 		
-		FiguresManager.getInstance().clearSelection();
+		sceneShiftX = 0;
+		sceneShiftY = 0;
 	}
 	
 	public Scene() {
 		init();
 	}
 	
-	private void redraw() {
-		Main.redraw();
+	private void repaint() {
+		SceneManager.instance().repaint();
+	}
+	
+	private void redo() {
+		if (reversedCommands.size() > 0) {
+			lastCommandReversed = true;
+			Command c = reversedCommands.pop();
+			c.execute();
+		}
 	}
 	
 	public void undo() {
 		if (commands.size() > 0) {
-			Command c = commands.pop();
+			Command c = commands.peek();
 			c.reverse();
+			reversedCommands.add(c);
 		}
 	} 
 	
-	public void selectFigure(Figure f) {
-		selectedFigure = f;
-		selectedDrawable = null;
-		redraw();
-	}
-	
 	public void drawScene(Graphics2D g) {
 		for (Drawable d : figures) {
-			//g.setColor(Color.BLACK);
-			d.selfPaint(g, ((d == selectedDrawable) ? Color.BLUE : Color.BLACK));
-		}
-		
-		if (selectedFigure != null && mouseOnCanvas) {
-			g.setColor(Color.BLUE);
-			selectedFigure.draw(g);
+			d.selfPaint(g, ((d == selectedDrawable) ? Color.BLUE : Color.BLACK), sceneShiftX, sceneShiftY);
 		}
 	}
 	
 	private void walls() {
+		//System.out.println("walls");
+		/*
 		//note: bad algorytm
 		Area a = new Area();
 		for (Drawable d : figures)
@@ -328,11 +249,7 @@ public class Scene {
 				}
 			
 		}
-/*
-			for (Long l : checked) {
-				g.drawLine((int)(l % yShift), (int)(l / yShift), (int)(l % yShift), (int)(l / yShift));
-			}
-*/
+
 		boolean found = false;
 		long i = minX, j = minY;
 		while (i < maxX && !found) {
@@ -346,8 +263,34 @@ public class Scene {
 				j = minY;
 				i++;
 			}
+		}*/
+	}
+	
+	public void actionExecuted() {
+		checkForRules();
+		if (!lastCommandReversed)
+			reversedCommands.clear();
+		else 
+			lastCommandReversed = false;
+	}
+	
+	public void loadFromFile(String filename) throws FileNotFoundException {
+		clearCanvas();
+		
+		XMLReader reader = new XMLReader(filename);
+		
+		for (XMLTag tag : reader.getRoot().getInnerTags()) {
+			if (tag.getName().equals("figure")) {
+				
+				FiguresManager.getInstance().getFigure(
+						tag.getInnerTag("figurePackage").getContent(), 
+						tag.getInnerTag("figureName").getContent()).getDrawableLoader().load(tag);
+			} else {
+				Debug.error("Unrecognised tag " + tag.getName());
+			}
 		}
-		System.out.println("---------------- " + found);
+
+		clearHistory();
 	}
 	
 	public void saveToFile(String filename) {
@@ -364,9 +307,8 @@ public class Scene {
 		builder.flush();
 	}
 
-	
-	public DrawCommandFactory getAddFactory() {
-		return new DrawCommandFactory() {
+	public DrawableCommandFactory getAddCommandFactory() {
+		return new DrawableCommandFactory() {
 			
 			@Override
 			public Command getCommand(Drawable d) {
@@ -380,7 +322,8 @@ public class Scene {
 					@Override
 					public void reverse() {
 						figures.remove(drawable);
-						redraw();
+						repaint();
+						commands.remove(this);
 						if (drawable.hasTag("wall"))
 							walls();
 					}	
@@ -389,12 +332,13 @@ public class Scene {
 					public void execute() {
 						this.drawable = result;
 						if (drawable != null) {
-							System.out.println("Load");
 							commands.add(this);
+							System.out.println("Adding with " + (-(drawable.getPriority()+1)));
 							figures.add(drawable, -(drawable.getPriority()+1));
-							redraw();
+							repaint();
 							if (drawable.hasTag("wall"))
 								walls();
+							actionExecuted();
 						} else {
 							System.out.println("Deny " + d.toString());
 						}
@@ -404,8 +348,41 @@ public class Scene {
 		};
 	}
 
-	public void clearUndoStack() {
+	public DrawableCommandFactory getDeleteCommandFactory() {
+		
+		return new DrawableCommandFactory() {
+			
+			@Override
+			public Command getCommand(Drawable drawable) {
+				return new Command() {
+										
+					@Override
+					public void reverse() {
+						figures.add(drawable, -(drawable.getPriority()+1));
+						//System.out.println("remove reverse");
+						commands.remove(this);
+						repaint();
+					}
+					
+					@Override
+					public void execute() {
+						if (drawable != null) {
+							//System.out.println("remove");
+							//System.out.println(drawable.toString());
+							commands.add(this);
+							figures.remove(drawable);
+							repaint();
+							actionExecuted();
+						}
+					}
+				};
+			}
+		};
+	}
+
+	public void clearHistory() {
 		commands.clear();
+		reversedCommands.clear();
 	}
 
 	public Iterable<Drawable> getDrawables() {

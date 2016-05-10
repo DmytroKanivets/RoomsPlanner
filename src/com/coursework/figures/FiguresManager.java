@@ -1,5 +1,10 @@
 package com.coursework.figures;
 
+import java.awt.Graphics2D;
+import java.awt.KeyEventDispatcher;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,10 +16,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
 
 import com.coursework.main.Main;
+import com.coursework.editor.KeyboardState;
+import com.coursework.editor.SceneManager;
 import com.coursework.files.FiguresLoader;
-import com.coursework.rules.RulesManager;
 
 public class FiguresManager {
 	
@@ -25,20 +32,147 @@ public class FiguresManager {
 	private Set<String> loadedPackages;
 	private List<Figure> figures;
 
+	public static final double ROTATION_STEP = 5.0;
+
+	private KeyboardState currentKeyboardState;
+	private boolean mouseOnCanvas = false;
+	private Figure selectedFigure;
+	
 	public static FiguresManager getInstance() {
 		if (instance == null)
 			instance = new FiguresManager();
 		return instance;
 	}
 	
+
+	private void initMouse() {
+		Main.addCanvasMouseListener(new MouseInputAdapter() {
+			@Override
+		    public void mouseEntered(MouseEvent e) {
+				mouseOnCanvas = true;
+				SceneManager.instance().repaint();
+			}
+			@Override
+		    public void mouseExited(MouseEvent e) {
+				mouseOnCanvas = false;
+				SceneManager.instance().repaint();
+			}
+			@Override
+		    public void mouseDragged(MouseEvent e){
+				if (selectedFigure != null) {
+					selectedFigure.move(e.getX() - SceneManager.instance().getOffsetX(), e.getY() - SceneManager.instance().getOffsetX());
+				}
+				SceneManager.instance().repaint();
+			}
+			@Override
+		    public void mouseMoved(MouseEvent e){
+				if (selectedFigure != null) {
+					selectedFigure.move(e.getX() - SceneManager.instance().getOffsetX(), e.getY() - SceneManager.instance().getOffsetX());
+				}
+				SceneManager.instance().repaint();
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					if (selectedFigure != null) {
+						selectedFigure.drawStart();
+					}
+				}
+				SceneManager.instance().repaint();
+			}
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (selectedFigure != null) {
+					if (e.getButton() == MouseEvent.BUTTON1 )
+						selectedFigure.drawEnd();
+				}
+				SceneManager.instance().repaint();
+			}
+
+		    public void mouseWheelMoved(MouseWheelEvent e) {
+		    	if (selectedFigure != null) {
+		    		selectedFigure.rotate(e.getWheelRotation() * ROTATION_STEP);
+		    		SceneManager.instance().repaint();
+		    	}
+		    }
+			/*
+			  	public void mouseClicked(MouseEvent e)
+			    public void mousePressed(MouseEvent e) {}
+			    public void mouseReleased(MouseEvent e) {}
+			    public void mouseEntered(MouseEvent e) {}
+			    public void mouseExited(MouseEvent e) {}
+			    public void mouseWheelMoved(MouseWheelEvent e){}
+			    public void mouseDragged(MouseEvent e){}
+			    public void mouseMoved(MouseEvent e){}
+			 */			
+		});
+	}
+	
+	private void initKeyboard() {
+		currentKeyboardState = new KeyboardState();
+		
+		Main.addKeyboardEventDispatcher(new KeyEventDispatcher() {
+			
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+
+				if (e.getID() == KeyEvent.KEY_PRESSED) {
+					if (selectedFigure != null) {
+						if (e.getKeyCode() == KeyEvent.VK_Q) {
+							selectedFigure.rotate(-FiguresManager.ROTATION_STEP);
+						}
+						
+						if (e.getKeyCode() == KeyEvent.VK_E) {
+							selectedFigure.rotate(FiguresManager.ROTATION_STEP);
+						}
+						SceneManager.instance().repaint();
+					}					
+				}
+				
+				if (e.getKeyCode() == KeyEvent.VK_SHIFT)  {
+					if (e.getID() == KeyEvent.KEY_PRESSED){
+						currentKeyboardState.setShiftState(true);
+					}
+					
+					if (e.getID() == KeyEvent.KEY_RELEASED) {
+						currentKeyboardState.setShiftState(false);
+					}
+					
+					if (selectedFigure != null) {
+						selectedFigure.keyPressed(currentKeyboardState);
+						SceneManager.instance().repaint();
+					}
+				}
+				
+				return false;
+			}
+		});
+	}
+	
 	private FiguresManager() {
+		initMouse();
+		initKeyboard();
+		
 		loadedPackages = new HashSet<String>();
 		figures = new LinkedList<Figure>();
-	}
 		
+		Main.addKeyboardEventDispatcher(new KeyEventDispatcher() {
+
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					figuresViewList.clearSelection();
+				}
+				return false;
+			}
+			
+		});
+	}
+		/*
 	public void clearSelection() {
 		figuresViewList.clearSelection();
-	}
+	}*/
 		
 	/*
 	 * Connect list from swing view
@@ -50,12 +184,13 @@ public class FiguresManager {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				//TODO move to commands
 				int selectedIndex = (((JList<String>)e.getSource()).getSelectedIndex());
 				if (selectedIndex != -1) {
-					Main.getCurrentScene().selectFigure(figures.get(((JList<String>)e.getSource()).getSelectedIndex()));
+					//Main.getCurrentScene().selectFigure(figures.get(((JList<String>)e.getSource()).getSelectedIndex()));
+					selectedFigure = figures.get(((JList<String>)e.getSource()).getSelectedIndex());
 				} else {
-					Main.getCurrentScene().selectFigure(null);
+					//Main.getCurrentScene().selectFigure(null);
+					selectedFigure = null;
 				}
 			}
 		});
@@ -78,7 +213,7 @@ public class FiguresManager {
 	
 		figures.addAll(loader.getFigures());
 		
-		RulesManager.getInstance().loadRules(fileName);
+		//RulesManager.getInstance().loadRules(fileName);
 		
 		updateListView();		
 	}
@@ -117,5 +252,15 @@ public class FiguresManager {
 			}
 		}
 		return null;
+	}
+
+	public Figure getSelectedFigure() {
+		return selectedFigure;
+	}
+
+	public void drawSelectedFigure(Graphics2D graphics) {
+		if (selectedFigure != null && mouseOnCanvas) {
+			selectedFigure.draw(graphics, SceneManager.instance().getOffsetX(), SceneManager.instance().getOffsetX());
+		}
 	}
 }

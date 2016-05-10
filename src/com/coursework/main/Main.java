@@ -3,31 +3,20 @@ package com.coursework.main;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 
-import javax.swing.AbstractAction;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.editor.KeyboardState;
 import com.coursework.editor.Scene;
+import com.coursework.editor.SceneManager;
 import com.coursework.figures.FiguresManager;
 import com.coursework.windows.AboutWindow;
 import com.coursework.windows.DebugWindow;
 import com.coursework.windows.MainWindow;
-
-import sun.management.snmp.jvmmib.JvmCompilationMeta;
 
 public class Main {
 
@@ -35,9 +24,7 @@ public class Main {
 	static AboutWindow aboutWindow;
 	static DebugWindow debugWindow;
 	
-	static Scene currentScene;
-	
-	static KeyboardState currentKeyboardState;	
+	//static Scene currentScene;
 	
 	public static void showMessage(String message) {
 		JOptionPane.showMessageDialog(mainWindow, message);
@@ -45,10 +32,10 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		//Set window style
 		try { 
 		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
+			Debug.log("Can not set system UI style");
 		    e.printStackTrace();
 		}
 		
@@ -56,28 +43,26 @@ public class Main {
 		SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
 	        		Debug.clear();
-	            	Settings.init();
-	            	Debug.log("Settings loaded");
 	            	
 	       		 	debugWindow = new DebugWindow();
 	            	aboutWindow = new AboutWindow();
 	            	mainWindow = new MainWindow();
-	            	
-	            	currentKeyboardState = new KeyboardState();
 	            		            	        	            	
 	            	Debug.log("Windows created");
             	
-	            	currentScene = new Scene();
+	            	//currentScene = new Scene();
+	            	SceneManager.instance().setCanvas(mainWindow.getCanvas());
+	            	SceneManager.instance().newScene();
+	            	
 	            	Debug.log("Scene manager initialised");
 	            	
 	            	FiguresManager.getInstance().connectList(mainWindow.getFiguresList());
-	            	//TODO move to settings        
 	            	
+	            	//TODO move to settings        
 	            	try {
 						FiguresManager.getInstance().addPackage("data/default.figures");
 					} catch (FileNotFoundException e) {
-						showMessage("Cant load defaul pack");
-						//e.printStackTrace();
+						showMessage("Can not load default pack");
 					}
 	            	Debug.log("Default figures loaded");
 	            	
@@ -93,34 +78,24 @@ public class Main {
     	manager.addKeyEventDispatcher(k);
 	}
 	
-	public static KeyboardState getKeyboardState() {
-		return currentKeyboardState;
-	}
-	
 	public static void redraw() {
 		mainWindow.getCanvas().repaint();
 	}
 	
 	public static void resetScene() {
-		currentScene.clear();
-		redraw();
+		SceneManager.instance().removeCurrent();
+    	SceneManager.instance().newScene();
 	}
-	
-	public static void drawFigures(Graphics2D g) {
+	/*
+	public static void drawScene(Graphics2D g) {
 		if (currentScene != null)
 			currentScene.drawScene(g);
-	}
-	
-	public static void addCanvasMouseListener(MouseInputAdapter mouse) {
-		mainWindow.getCanvas().addMouseListener(mouse);
-		mainWindow.getCanvas().addMouseMotionListener(mouse);
-		mainWindow.getCanvas().addMouseWheelListener(mouse);
 	}
 	
 	public static Scene getCurrentScene() {
 		return currentScene;
 	}
-	
+	*/
 	public static void showAboutWindow() {
 		if (aboutWindow != null) {
 			aboutWindow.setVisible(true);
@@ -133,34 +108,12 @@ public class Main {
 		if (debugWindow != null) {
 			debugWindow.renew();
 			debugWindow.setVisible(true);
-		} else {
-			//TODO add debug
-		}
-		
+		}		
 	}
-	
-	/*
-	 
-class CustomKeyListener implements KeyListener {
-		@Override
-		public void keyTyped(KeyEvent e) {
-			// TODO Auto-generated method stub
-		}
-	
-		@Override
-		public void keyPressed(KeyEvent e) {
-			// TODO Auto-generated method stub
-			int keyCode = e.getKeyCode();
-			if (keyCode == KeyEvent.VK_SHIFT) {
-				System.out.println("Shift down");
-			}
-		}
-	
-		@Override
-		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-	} 
-	 */
+
+	public static void addCanvasMouseListener(MouseInputAdapter mouse) {
+		mainWindow.getCanvas().addMouseListener(mouse);
+		mainWindow.getCanvas().addMouseMotionListener(mouse);
+		mainWindow.getCanvas().addMouseWheelListener(mouse);
+	}
 }

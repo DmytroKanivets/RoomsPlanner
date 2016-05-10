@@ -3,14 +3,15 @@ package com.coursework.files;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import com.coursework.main.Debug;
+
 public class XMLWriter {
 	XMLTag root;
 
+	String filename;
 	
-	String fileName;
-	
-	public XMLWriter(String fileName) {
-		this.fileName = fileName; 
+	public XMLWriter(String filename) {
+		this.filename = filename; 
 	}
 	
 	public void setRoot(XMLTag root) {
@@ -28,12 +29,11 @@ public class XMLWriter {
 	public void write() {
 		PrintWriter writer;
 		try {
-			writer = new PrintWriter(fileName);
+			writer = new PrintWriter(filename);
 			writer.write(root.getAsText(0));
 			writer.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Debug.log("Can not find file " + filename);
 		}
 	}
 }

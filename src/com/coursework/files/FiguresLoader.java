@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.coursework.editor.Scene;
+import com.coursework.editor.SceneManager;
 import com.coursework.figures.Figure;
 import com.coursework.figures.ImmutableFigure;
 import com.coursework.figures.LineFigure;
@@ -25,7 +27,7 @@ public class FiguresLoader {
 		this.fileName = fileName;
 		figures = new LinkedList<Figure>();
 
-		Debug.log("Loading " + fileName);
+		Debug.log("Loading figures from " + fileName);
 		
 		loadPackage();
 		RulesManager.getInstance().loadRules(fileName);
@@ -39,25 +41,11 @@ public class FiguresLoader {
 	public List<Figure> getFigures() {
 		return figures;
 	}		
-	/*
-	private PropertyContainer XmlTagToPropertyContainer(XMLTag tag) {
-		Collection<XMLTag> tags = tag.getInnerTags();
-		PropertyContainer container = new PropertyContainer();
-		
-		for (XMLTag t : tags) {
-			if (t.getContent() != null) {
-				container.add(t.getName(), t.getContent());
-			}
-		}
-		
-		return container;
-	}*/
 	
 	private void loadPackage() throws FileNotFoundException {
 		XMLReader reader = new XMLReader(fileName);
 		
 		XMLTag root = reader.getRoot();
-		
 
 		packageName = root.getInnerTag("name").getContent();
 		
@@ -65,7 +53,6 @@ public class FiguresLoader {
 				
 		for (XMLTag tag: figs) {
 			if (tag.getName().equals("figure")) {
-				//TODO its a shit
 				XMLTag pack = new XMLTag(tag, "package");
 				pack.addContent(packageName);
 				tag.addInnerTag(pack);
@@ -85,19 +72,12 @@ public class FiguresLoader {
 				}
 				
 				if (f != null) {
-					System.out.println(tag.getInnerTag("type").getContent());
-					f.getXMLBuilder().build(tag);
-					f.setAddToSceneOperation(Main.getCurrentScene().getAddFactory());
+					//System.out.println(tag.getInnerTag("type").getContent());
+					f.getXMLBuilder().load(tag);
+					//f.setAddToSceneOperation(Main.getCurrentScene().getAddCommandFactory());
+					f.setAddToSceneOperation(SceneManager.instance().getAddCommands());
 					figures.add(f);
-				}
-				/*
-				Figure newFigure = FiguresFactory.getinstance().loadFromXMLTag(packageName, tag);
-				if (newFigure == null) {
-					Debug.error("Can't load figure");
-				} else {
-					figures.add(newFigure);
-				}*/
-				
+				}				
 			}
 		}
 	}

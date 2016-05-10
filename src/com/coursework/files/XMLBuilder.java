@@ -4,26 +4,7 @@ public class XMLBuilder {
 	
 	private XMLWriter writer;
 	
-	/*
-	
-	XMLWriter writer = new XMLWriter(fileName);
-		
-		XMLTag root = new XMLTag(null);
-		root.setName("scene");
-		writer.setRoot(root);
-		
-		XMLTag shTag = new XMLTag(tag);
-			shTag.setName("isStraighten");
-			shTag.addContent(Boolean.toString(isStraighten));
-			tag.addInnerTag(shTag);
-		
-		writer.write();
-		
-		
-	
-	*/
 	XMLTag current;
-	
 	
 	public XMLBuilder(String filename) {
 		writer = new XMLWriter(filename);
@@ -38,7 +19,6 @@ public class XMLBuilder {
 			current.addInnerTag(tag);
 			current = tag;
 		}
-		//current.setName(name);
 	}
 	
 	public void closeTag() {

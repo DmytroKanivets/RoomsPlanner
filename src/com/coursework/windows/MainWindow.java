@@ -4,8 +4,8 @@
 
 package com.coursework.windows;
 
+import com.coursework.editor.SceneManager;
 import com.coursework.figures.FiguresManager;
-import com.coursework.files.SceneLoader;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
@@ -19,23 +19,26 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.coursework.main.Settings;
-
 /**
  * @author D PUpkin
  */
+
+//TODO remove warnings from jlist
 public class MainWindow extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private static final boolean DEBUG_ENABLED = true;
+	
 	public MainWindow() {
 	
 		initComponents();
-		if (Settings.getInstance().get("debug").equals("true")) {
+		if (DEBUG_ENABLED) {
 			initDebug();
 		}
+		figuresList.setFocusable(false);
 		Debug.log("Main window initialized");
 	}
 
@@ -78,7 +81,14 @@ public class MainWindow extends JFrame {
 		
 		int result = fileChooser.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
-			SceneLoader.loadScene(fileChooser.getSelectedFile().getAbsolutePath());
+			try {
+				//Main.getCurrentScene().loadFromFile();
+
+				SceneManager.instance().loadSceneFromFile(fileChooser.getSelectedFile().getAbsolutePath());
+			} catch (FileNotFoundException e1) {
+				Main.showMessage("File not found");
+				Debug.log("File " + fileChooser.getSelectedFile().getAbsolutePath() + " not found");
+			}
 			Main.redraw();
 		}
 	}
@@ -93,7 +103,8 @@ public class MainWindow extends JFrame {
 		int result = fileChooser.showSaveDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			String fileName = fileChooser.getSelectedFile().getAbsolutePath();
-			Main.getCurrentScene().saveToFile(fileName + ".scene");
+			SceneManager.instance().saveSceneToFile(fileName + ".scene");
+			//Main.getCurrentScene().saveToFile(fileName + ".scene");
 		}
 	}
 	
@@ -199,7 +210,6 @@ public class MainWindow extends JFrame {
 			}
 			menuBar.add(help);
 		}
-		setJMenuBar(menuBar);
 
 		//======== buttonPanel ========
 		{
@@ -227,7 +237,7 @@ public class MainWindow extends JFrame {
 			buttonPanel.setLayout(buttonPanelLayout);
 			buttonPanelLayout.setHorizontalGroup(
 				buttonPanelLayout.createParallelGroup()
-					.addComponent(figuresScroll, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+					.addComponent(figuresScroll, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
 			);
 			buttonPanelLayout.setVerticalGroup(
 				buttonPanelLayout.createParallelGroup()
@@ -256,24 +266,35 @@ public class MainWindow extends JFrame {
 		contentPane.setLayout(contentPaneLayout);
 		contentPaneLayout.setHorizontalGroup(
 			contentPaneLayout.createParallelGroup()
-				.addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
-					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(infoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+				.addGroup(contentPaneLayout.createSequentialGroup()
+					.addGap(0, 0, Short.MAX_VALUE)
+					.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+						.addComponent(menuBar, GroupLayout.PREFERRED_SIZE, 869, GroupLayout.PREFERRED_SIZE)
+						.addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
+							.addGap(10, 10, 10)
+							.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+							.addComponent(canvas, GroupLayout.PREFERRED_SIZE, 606, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+							.addComponent(infoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addGap(0, 0, Short.MAX_VALUE))
 		);
 		contentPaneLayout.setVerticalGroup(
 			contentPaneLayout.createParallelGroup()
 				.addGroup(contentPaneLayout.createSequentialGroup()
-					.addContainerGap()
+					.addGap(0, 0, Short.MAX_VALUE)
+					.addComponent(menuBar, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
 					.addGroup(contentPaneLayout.createParallelGroup()
-						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
-						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(infoPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addContainerGap())
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+							.addComponent(infoPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+							.addComponent(canvas, GroupLayout.PREFERRED_SIZE, 491, GroupLayout.PREFERRED_SIZE))
+						.addGroup(contentPaneLayout.createSequentialGroup()
+							.addGap(11, 11, 11)
+							.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		pack();
 		setLocationRelativeTo(getOwner());

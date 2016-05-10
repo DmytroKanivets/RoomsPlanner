@@ -7,24 +7,23 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 import com.coursework.editor.KeyboardState;
-import com.coursework.editor.Scene;
-import com.coursework.files.PropertyContainer;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.rules.RulesManager;
 
-public class LineFigure extends ExtensibleFigure {
-/*
-	public LineFigure(PropertyContainer container) {
-		super(container);
-	}
-*/
-	boolean shiftPressed;
-	/*
-	public LineFigure(String figurePackage, String figureName) {
-		super(figurePackage, figureName);
-	}
-*/
+public class LineFigure extends Figure {
+	
+	private int startX = 0;
+	private int startY = 0;
+	
+	private int currentX = 0;
+	private int currentY = 0;
+	
+	private double width;
+	
+	boolean mouseDown = false;
+	boolean shiftPressed = false;
+
 	private Area getArea() {
 
 		double deltaX = currentX - startX;
@@ -36,7 +35,7 @@ public class LineFigure extends ExtensibleFigure {
 		
 		double theta = Math.atan2(deltaY, deltaX);
 		if (shiftPressed) {
-			double step = Math.toRadians(Scene.ROTATION_STEP);
+			double step = Math.toRadians(FiguresManager.ROTATION_STEP);
 			double proportion = theta/step;
 			theta = Math.round(proportion) * step;
 		}
@@ -48,57 +47,31 @@ public class LineFigure extends ExtensibleFigure {
 	}
 	
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(Graphics2D g, int shiftX, int shiftY) {
 		if (mouseDown) {
 			Area current = getArea();
-		
+
 			Drawable newArea = RulesManager.getInstance().processDrawable(new DrawableRepresentation());
-			if (newArea == null) {
-				g.setColor(new Color(128, 0, 0));
-				g.fill(current);
-			} else {
-				g.setColor(Color.GRAY);
-				g.fill(newArea.getArea());
+			
+			boolean allowed = false;
+			if (newArea != null) {
+				current = newArea.getArea();
+				allowed = true;
 			}
+			
+			AffineTransform transform = new AffineTransform();
+			transform.translate(shiftX, shiftY);
+			current.transform(transform);
+
+			g.setColor(allowed ? Color.GRAY : new Color(128, 0, 0));
+			g.fill(current);
 		}
-		/*
-		g.setColor(Color.GRAY);
-		g.fill(getArea());*/
-	}
-
-	@Override
-	public void loadAtScene(XMLTag t) {
-
-		startX = Integer.parseInt(t.getInnerTag("startX").getContent());
-		startY = Integer.parseInt(t.getInnerTag("startY").getContent());
-		currentX = Integer.parseInt(t.getInnerTag("endX").getContent());
-		currentY = Integer.parseInt(t.getInnerTag("endY").getContent());
-		
-		shiftPressed = Boolean.parseBoolean(t.getInnerTag("isStraighten").getContent());
-
-		Drawable d = new DrawableRepresentation();
-		addCommandFactory.getCommand(d).execute();
-	}
-
-	private int startX = 0;
-	private int startY = 0;
-	
-	private int currentX = 0;
-	private int currentY = 0;
-	
-	private double width;
-	
-	boolean mouseDown = false;
-	
-	@Override
-	public void drawStart() {
-		mouseDown = true;
 	}
 
 	private class LineFigureBuilder extends FigureBuilder {
 		@Override
-		public void build(XMLTag tag) {
-			super.build(tag);
+		public void load(XMLTag tag) {
+			super.load(tag);
 			width = Double.parseDouble(tag.getInnerTag("width").getContent());
 		}
 	}
@@ -106,6 +79,28 @@ public class LineFigure extends ExtensibleFigure {
 	@Override
 	public BuilderFromXML getXMLBuilder() {
 		return new LineFigureBuilder();
+	}
+	
+	private class LineDrawableLoader implements BuilderFromXML {
+
+		@Override
+		public void load(XMLTag tag) {
+			startX = Integer.parseInt(tag.getInnerTag("startX").getContent());
+			startY = Integer.parseInt(tag.getInnerTag("startY").getContent());
+			currentX = Integer.parseInt(tag.getInnerTag("endX").getContent());
+			currentY = Integer.parseInt(tag.getInnerTag("endY").getContent());
+			
+			shiftPressed = Boolean.parseBoolean(tag.getInnerTag("isStraighten").getContent());
+
+			Drawable d = new DrawableRepresentation();
+			addCommandFactory.getCommand(d).execute();
+		}
+		
+	}
+	
+	@Override
+	public BuilderFromXML getDrawableLoader() {
+		return new LineDrawableLoader();
 	}
 	
 	private class DrawableRepresentation extends Drawable {
@@ -130,9 +125,15 @@ public class LineFigure extends ExtensibleFigure {
 		}	
 		
 		@Override
-		public void selfPaint(Graphics2D g, Color primaryColor) { 
+		public void selfPaint(Graphics2D g, Color primaryColor, int shiftX, int shiftY) { 
+			Area a = new Area(area);
+			AffineTransform transform = new AffineTransform();
+			transform.translate(shiftX, shiftY);
+			a.transform(transform);
+			
+			
 			g.setColor(primaryColor);
-			g.fill(area);
+			g.fill(a);
 		}
 		
 		@Override
@@ -173,13 +174,19 @@ public class LineFigure extends ExtensibleFigure {
 		@Override
 		public Area getArea() {
 			return area;
-		}		
+		}
+
+		@Override
+		public void move(int x, int y) {
+			AffineTransform t = new AffineTransform();
+			t.translate(x, y);
+			area.transform(t);
+		}	
 	}
 	
 	@Override
 	public void drawEnd() {
 		Drawable d = new DrawableRepresentation();
-		
 		addCommandFactory.getCommand(d).execute();
 		
 		mouseDown = false;
@@ -204,12 +211,10 @@ public class LineFigure extends ExtensibleFigure {
 	@Override
 	public void rotate(double degree) {
 		//Ignore, rotated by mouse dragging
-	}
-/*
+	}	
+	
 	@Override
-	public BuilderFromXML getXMLBuilder() {
-		// TODO Auto-generated method stub
-		return null;
+	public void drawStart() {
+		mouseDown = true;
 	}
-*/
 }

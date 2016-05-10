@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.coursework.files.XMLBuilder;
-import com.coursework.files.XMLTag;
 
 public abstract class Drawable {
 
@@ -16,18 +15,8 @@ public abstract class Drawable {
 	
 	private Set<String> tags;
 	
-	public abstract void selfPaint(Graphics2D g, Color primaryColor);
-//	TODO needed?
-	public abstract Area getArea();
-	
-	public abstract void save(XMLBuilder builder);
-
 	public Drawable() {
 		tags = new HashSet<>();
-	}
-
-	public boolean hasTag(String tag) {
-		return tags.contains(tag);
 	}
 	
 	public void addTag(String s) {
@@ -38,10 +27,23 @@ public abstract class Drawable {
 		this.tags.addAll(tags);
 	}
 	
-	public int getPriority() {
-		return priority;
+	public boolean hasTag(String tag) {
+		return tags.contains(tag);
 	}
+	
 	public void setPriority(int p) {
 		priority = p;
 	}
+	
+	public int getPriority() {
+		return priority;
+	}
+	
+	public abstract void move(int x, int y);
+	
+	public abstract Area getArea();
+	
+	public abstract void selfPaint(Graphics2D g, Color primaryColor, int shiftX, int shiftY);
+	
+	public abstract void save(XMLBuilder builder);	
 }

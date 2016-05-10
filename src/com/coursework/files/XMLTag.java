@@ -21,10 +21,6 @@ public class XMLTag {
 	public XMLTag getParent() {
 		return parent;
 	}
-	/*
-	public void setName(String name) {
-		this.name = name;
-	}*/
 	
 	public String getName() {
 		return name;

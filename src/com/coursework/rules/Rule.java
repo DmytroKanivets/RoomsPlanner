@@ -15,17 +15,6 @@ public abstract class Rule {
 	public void addTag(String tag) {
 		tags.add(tag);
 	}
-	/*
-	public boolean isApplicable(Drawable d) {
-		if (d == null)
-			return false;
-		
-		boolean result = false;
-		for (String tag : tags) {
-			result |= d.hasTag(tag);
-		}
-		return result;
-	}
-	*/
+
 	public abstract Drawable processDrawable(Drawable d, Iterable<Drawable> context);
 }

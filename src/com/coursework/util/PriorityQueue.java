@@ -96,4 +96,21 @@ public class PriorityQueue<T> implements Iterable<T> {
 		head = null;
 	}
 
+	public int size() {
+		return size;
+	}
+	
+	@Override
+	public String toString() {
+		String result = "--------------------\n" + super.toString();
+		Node current = head;
+		while (current != null) {
+			result += "\n " + current.priority + " " + current.element.toString();
+			
+			current = current.next;
+		}
+		
+		return result + "\n-----------------";
+	}
+
 }
