@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.rules.RulesManager;
+import com.coursework.editor.rules.RulesManager;
 import com.coursework.files.XMLReader;
 import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
@@ -66,9 +66,7 @@ public class FiguresLoader {
 				}
 				
 				if (f != null) {
-					//System.out.println(tag.getInnerTag("type").getContent());
 					f.getXMLBuilder().load(tag);
-					//f.setAddToSceneOperation(Main.getCurrentScene().getAddCommandFactory());
 					figures.add(f);
 				}				
 			}

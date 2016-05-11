@@ -10,8 +10,7 @@ import java.util.Stack;
 import javax.swing.event.MouseInputAdapter;
 
 import com.coursework.main.Debug;
-import com.coursework.rules.RulesManager;
-import com.coursework.files.XMLBuilder;
+//import com.coursework.editor.rules.RulesManager;
 import com.coursework.util.PriorityQueue;
 
 public class Scene {
@@ -27,16 +26,11 @@ public class Scene {
 	
 	private Drawable selectedDrawable;
 	
-	PriorityQueue<Drawable> figures;
+	PriorityQueue<Drawable> drawables;
 	boolean mouseOnCanvas = false;
 	
-	Stack<Command> commands;
-	Stack<Command> reversedCommands;
-	
-	private DrawableCommandFactory addFactory, deleteFactory;
-	
-	int mouseX;
-	int mouseY;
+	private Stack<Command> commands;
+	private Stack<Command> reversedCommands;
 
 	private boolean commandReversed = false;
 	
@@ -44,7 +38,6 @@ public class Scene {
 		ScenesManager.instance().addMouseListener(new MouseInputAdapter() {
 			@Override
 		    public void mouseDragged(MouseEvent e) {
-//				System.out.println("move");
 				if (!ScenesManager.instance().isFigureSelected()) {
 					if (selectedDrawable == null) {
 						sceneShiftX += e.getX() - mousePrevX;
@@ -101,7 +94,7 @@ public class Scene {
 	
 	protected void delete() {
 		if (selectedDrawable != null) {
-			getDeleteCommandFactory().getCommand(selectedDrawable).execute();
+			getDeleteCommand(selectedDrawable).execute();
 			selectedDrawable = null;
 			actionExecuted();
 		}
@@ -114,7 +107,7 @@ public class Scene {
 		Drawable last = null, newSelected = null;
 		boolean found = false;
 		
-		for (Drawable d : figures) {
+		for (Drawable d : drawables) {
 			if (d.getArea().contains(x, y)) {
 				last = d;
 				if (d == selectedDrawable) {
@@ -136,8 +129,8 @@ public class Scene {
 	private boolean checkForRules() {
 		boolean unchanged = true;
 
-		for (Drawable d : figures) {
-			Drawable newD = RulesManager.getInstance().processDrawable(d);
+		for (Drawable d : drawables) {		
+			Drawable newD = ScenesManager.instance().checkForRules(d);			
 			if (newD == null || !newD.getArea().equals(d.getArea())) {
 				unchanged = false;
 			} 
@@ -151,81 +144,14 @@ public class Scene {
 		
 		return unchanged;
 	}
-	
-	private void initFactories() {
-		addFactory = new DrawableCommandFactory() {
-		
-			@Override
-			public Command getCommand(Drawable d) {
-				System.out.println(sceneShiftX + " " + sceneShiftY);
-				Drawable result = RulesManager.getInstance().processDrawable(d);
-	
-				return new Command() {
-					
-					private Drawable drawable;
-					
-					@Override
-					public void reverse() {
-						figures.remove(drawable);
-						commands.remove(this);
-						clearRedo = false;
-						actionExecuted();
-					}	
-					
-					@Override
-					public void execute() {
-						this.drawable = result;
-						if (drawable != null) {
-							commands.add(this);
-							figures.add(drawable, -(drawable.getPriority()+1));
-							clearRedo = true;
-							actionExecuted();
-						} else {
-							System.out.println("Deny " + d.toString());
-						}
-					}
-				};
-			}
-		};
-		
-		deleteFactory = new DrawableCommandFactory() {
-			
-			@Override
-			public Command getCommand(Drawable drawable) {
-				return new Command() {
-										
-					@Override
-					public void reverse() {
-						figures.add(drawable, -(drawable.getPriority()+1));
-						commands.remove(this);
-						clearRedo = false;
-						actionExecuted();
-					}
-					
-					@Override
-					public void execute() {
-						if (drawable != null) {
-							commands.add(this);
-							figures.remove(drawable);
-
-							clearRedo = true;
-							actionExecuted();
-						}
-					}
-				};
-			}
-		};
-		
-	}
 
 	private void init() {
 		commands = new Stack<>();
 		reversedCommands = new Stack<>();
-		figures = new PriorityQueue<Drawable>();
+		drawables = new PriorityQueue<Drawable>();
 		
 		initMouse();
 		initKeyboard();
-		initFactories();
 	}
 	
 	Scene() {
@@ -234,7 +160,7 @@ public class Scene {
 	}
 	
 	void clearCanvas() {
-		figures.clear();		
+		drawables.clear();		
 		repaint();
 		
 		sceneShiftX = 0;
@@ -284,6 +210,7 @@ public class Scene {
 		int width = ScenesManager.instance().getSceneWidth();
 		int height = ScenesManager.instance().getSceneHeight();
 
+		Color bgColor = new Color(240, 240, 240);
 
 		int maxTextWidth = 0;
 		for (int i = sceneShiftY % 50 -50;i < height; i+=50) {
@@ -292,7 +219,7 @@ public class Scene {
 		}
 		maxTextWidth += 8;
 		
-		g.setColor(Color.WHITE);
+		g.setColor(bgColor);
 		g.fillRect(0, 0, width, 15);
 		g.fillRect(0, 0, maxTextWidth, height);
 		g.setColor(Color.BLACK);
@@ -311,16 +238,18 @@ public class Scene {
 		}
 
 		g.setColor(Color.BLACK);
-		g.drawLine(0, 15, width, 15);
-		g.drawLine(maxTextWidth, 0, maxTextWidth, height);
-		g.setColor(Color.WHITE);
+		g.drawLine(maxTextWidth, 15, width, 15);
+		g.drawLine(maxTextWidth, 15, maxTextWidth, height);
+		g.drawLine(maxTextWidth, height-1, width, height-1);
+		g.drawLine(width-1, 15, width-1, height);
+		g.setColor(bgColor);
 		g.fillRect(0, 0, maxTextWidth, 15);
 	} 
 	
 	public void drawScene(Graphics2D g) {
 		drawGrid(g);
 		
-		for (Drawable d : figures) {
+		for (Drawable d : drawables) {
 			d.selfPaint(g, ((d == selectedDrawable) ? Color.BLUE : Color.BLACK), sceneShiftX, sceneShiftY);
 		}
 		
@@ -340,27 +269,59 @@ public class Scene {
 		ScenesManager.instance().setRedoEnbled(reversedCommands.size() > 0);
 		ScenesManager.instance().setDeleteEnbled(selectedDrawable != null);
 	}
+
+	public Command getAddCommand(Drawable d) {
+		Drawable result = ScenesManager.instance().checkForRules(d);
 	
-	public void saveToFile(String filename) {
-
-		XMLBuilder builder = new XMLBuilder(filename);
-		
-		builder.addTag("scene");
-		
-		for (Drawable d : figures) {
-			d.save(builder);
-		}
-		
-		builder.closeTag();
-		builder.flush();
+		return new Command() {
+			
+			private Drawable drawable;
+			
+			@Override
+			public void reverse() {
+				drawables.remove(drawable);
+				commands.remove(this);
+				clearRedo = false;
+				actionExecuted();
+			}	
+			
+			@Override
+			public void execute() {
+				this.drawable = result;
+				if (drawable != null) {
+					commands.add(this);
+					drawables.add(drawable, -(drawable.getPriority()+1));
+					clearRedo = true;
+					actionExecuted();
+				} else {
+					System.out.println("Deny " + d.toString());
+				}
+			}
+		};
 	}
 
-	public DrawableCommandFactory getAddCommandFactory() {
-		return addFactory;
-	}
+	public Command getDeleteCommand(Drawable drawable) {
+				return new Command() {
+										
+					@Override
+					public void reverse() {
+						drawables.add(drawable, -(drawable.getPriority()+1));
+						commands.remove(this);
+						clearRedo = false;
+						actionExecuted();
+					}
+					
+					@Override
+					public void execute() {
+						if (drawable != null) {
+							commands.add(this);
+							drawables.remove(drawable);
 
-	public DrawableCommandFactory getDeleteCommandFactory() {
-		return deleteFactory;
+							clearRedo = true;
+							actionExecuted();
+						}
+					}
+				};
 	}
 
 	public void clearHistory() {
@@ -374,6 +335,6 @@ public class Scene {
 	}
 	
 	public Iterable<Drawable> getDrawables() {
-		return figures;
+		return drawables;
 	}
 }

@@ -8,9 +8,10 @@ import java.awt.geom.Rectangle2D;
 
 import com.coursework.editor.Drawable;
 import com.coursework.editor.KeyboardState;
+import com.coursework.editor.ScenesManager;
+import com.coursework.editor.rules.RulesManager;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
-import com.coursework.rules.RulesManager;
 
 public class LineFigure extends Figure {
 	
@@ -36,7 +37,7 @@ public class LineFigure extends Figure {
 		
 		double theta = Math.atan2(deltaY, deltaX);
 		if (shiftPressed) {
-			double step = Math.toRadians(FiguresManager.ROTATION_STEP);
+			double step = Math.toRadians(Figure.ROTATION_STEP);
 			double proportion = theta/step;
 			theta = Math.round(proportion) * step;
 		}
@@ -93,8 +94,9 @@ public class LineFigure extends Figure {
 			
 			shiftPressed = Boolean.parseBoolean(tag.getInnerTag("isStraighten").getContent());
 
-			Drawable d = new DrawableRepresentation();
-			addCommandFactory.getCommand(d).execute();
+			//Drawable d = ;
+			ScenesManager.instance().getAddCommand(new DrawableRepresentation()).execute();
+			//addCommandFactory.getCommand(d).execute();
 		}
 		
 	}
@@ -187,8 +189,7 @@ public class LineFigure extends Figure {
 	
 	@Override
 	public void drawEnd() {
-		Drawable d = new DrawableRepresentation();
-		addCommandFactory.getCommand(d).execute();
+		ScenesManager.instance().getAddCommand(new DrawableRepresentation()).execute();
 		
 		mouseDown = false;
 	}

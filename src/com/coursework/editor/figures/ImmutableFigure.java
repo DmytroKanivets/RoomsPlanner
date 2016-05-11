@@ -13,10 +13,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.coursework.editor.Drawable;
+import com.coursework.editor.ScenesManager;
+import com.coursework.editor.rules.RulesManager;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
-import com.coursework.rules.RulesManager;
 
 public class ImmutableFigure extends Figure {
 
@@ -36,16 +37,13 @@ public class ImmutableFigure extends Figure {
 		}
 		
 		public void draw(Graphics2D g, int x, int y, double rotation) {
-			//System.out.println(x + " " + y);
 			AffineTransform t = new AffineTransform();
 			
-			//t = new AffineTransform();
 			t.translate(x, y);
 			t.rotate(Math.toRadians(rotation));
 			
 			for (Shape s: shapes) {
 				Shape sx = t.createTransformedShape(s);
-				//System.out.println("border: " + sx.getBounds2D().toString());
 				g.draw(sx);
 			
 			}
@@ -76,8 +74,6 @@ public class ImmutableFigure extends Figure {
 		transform.rotate(Math.toRadians(rotationDegree), posX, posY);
 		a.transform(transform);
 		
-		//System.out.println(a.getBounds2D());
-		
 		return a;
 	}
 	
@@ -95,11 +91,10 @@ public class ImmutableFigure extends Figure {
 		AffineTransform transform = new AffineTransform();
 		transform.translate(shiftX, shiftY);
 		current.transform(transform);
-		
+
 		g.setColor(Color.WHITE);
 		g.fill(current);
 		g.setColor(allowed ? Color.BLUE : Color.RED);
-		//g.draw(current);
 		
 		drawArea.draw(g, posX + shiftX, posY + shiftY, rotationDegree);
 	}
@@ -309,8 +304,12 @@ public class ImmutableFigure extends Figure {
 	}
 	
 	private void addToScene() {
-		Drawable d = new DrawableRepresentation(getArea(), posX, posY);
-		addCommandFactory.getCommand(d).execute();
+		ScenesManager.instance().getAddCommand(new DrawableRepresentation(getArea(), posX, posY)).execute();
+	}
+	
+	@Override 
+	public void selected() {
+		rotationDegree = 0;
 	}
 	
 	private class ImmutableDrawableLoader implements BuilderFromXML {

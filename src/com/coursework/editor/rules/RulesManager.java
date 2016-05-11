@@ -1,4 +1,4 @@
-package com.coursework.rules;
+package com.coursework.editor.rules;
 
 import java.io.FileNotFoundException;
 import java.util.LinkedList;

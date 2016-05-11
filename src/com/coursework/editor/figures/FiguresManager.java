@@ -33,8 +33,6 @@ public class FiguresManager {
 	private Set<String> loadedPackages;
 	private List<Figure> figures;
 
-	public static final double ROTATION_STEP = 5.0;
-
 	private KeyboardState currentKeyboardState;
 	private boolean mouseOnCanvas = false;
 	private Figure selectedFigure;
@@ -92,7 +90,7 @@ public class FiguresManager {
 
 		    public void mouseWheelMoved(MouseWheelEvent e) {
 		    	if (selectedFigure != null) {
-		    		selectedFigure.rotate(e.getWheelRotation() * ROTATION_STEP);
+		    		selectedFigure.rotate(e.getWheelRotation() * Figure.ROTATION_STEP);
 		    		ScenesManager.instance().repaint();
 		    	}
 		    }	
@@ -110,11 +108,11 @@ public class FiguresManager {
 				if (e.getID() == KeyEvent.KEY_PRESSED) {
 					if (selectedFigure != null) {
 						if (e.getKeyCode() == KeyEvent.VK_Q) {
-							selectedFigure.rotate(-FiguresManager.ROTATION_STEP);
+							selectedFigure.rotate(-Figure.ROTATION_STEP);
 						}
 						
 						if (e.getKeyCode() == KeyEvent.VK_E) {
-							selectedFigure.rotate(FiguresManager.ROTATION_STEP);
+							selectedFigure.rotate(Figure.ROTATION_STEP);
 						}
 						ScenesManager.instance().repaint();
 					}					
@@ -196,6 +194,7 @@ public class FiguresManager {
 				} else {
 					if (node.isLeaf())
 					selectedFigure = (Figure) node.getUserObject();
+					selectedFigure.selected();
 				}
 				ScenesManager.instance().clearSelectionAtScene();
 			}
@@ -220,7 +219,7 @@ public class FiguresManager {
 		figures.addAll(loader.getFigures());
 		
 		updateView();	
-		renewFactories();
+		//renewFactories();
 	}
 	
 	/*
@@ -255,9 +254,9 @@ public class FiguresManager {
 			selectedFigure.draw(graphics, ScenesManager.instance().getOffsetX(), ScenesManager.instance().getOffsetY());
 		}
 	}
-	
+	/*
 	public void renewFactories() {
 		for (Figure f: figures)
 			f.setAddToSceneOperation(ScenesManager.instance().getAddCommands());
-	}
+	}*/
 }

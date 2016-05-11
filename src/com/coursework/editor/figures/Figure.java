@@ -5,18 +5,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.DrawableCommandFactory;
 import com.coursework.editor.KeyboardState;
 import com.coursework.files.XMLTag;
 
 public abstract class Figure {
+	public static final double ROTATION_STEP = 5.0;
 	
 	private String figureName;
 	private String figurePackage;
 	
 	private List<String> tags;
-	
-	protected DrawableCommandFactory addCommandFactory;
 	
 	public String getPackageName() {
 		return figurePackage; 
@@ -34,13 +32,11 @@ public abstract class Figure {
 		return tags;
 	}
 	
-	public void setAddToSceneOperation(DrawableCommandFactory factory) {
-		addCommandFactory = factory;
-	}
-	
 	public BuilderFromXML getXMLBuilder() {
 		return new FigureBuilder();
 	}
+	
+	public void selected() {}
 	
 	protected class FigureBuilder implements BuilderFromXML {
 
@@ -60,9 +56,7 @@ public abstract class Figure {
 		}
 	} 
 	
-	public BuilderFromXML getDrawableLoader() {
-		return new FigureBuilder();
-	}
+	public abstract BuilderFromXML getDrawableLoader();
 	
 	@Override
 	public String toString() {

@@ -12,7 +12,6 @@ public class PriorityQueue<T> implements Iterable<T> {
 			this.element = element;
 			this.priority = priority;
 		}
- 		
 		Node next;
 	}
 	

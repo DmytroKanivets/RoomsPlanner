@@ -275,23 +275,24 @@ public class MainWindow extends JFrame {
 		contentPaneLayout.setVerticalGroup(
 			contentPaneLayout.createParallelGroup()
 				.addGroup(contentPaneLayout.createSequentialGroup()
-					.addContainerGap()
+					.addGap(10, 10, 10)
 					.addGroup(contentPaneLayout.createParallelGroup()
 						.addGroup(contentPaneLayout.createSequentialGroup()
-							.addComponent(figuresScroll, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+							.addGap(0, 15, Short.MAX_VALUE)
+							.addComponent(figuresScroll, GroupLayout.PREFERRED_SIZE, 421, GroupLayout.PREFERRED_SIZE)
 							.addGap(18, 18, 18)
 							.addComponent(undoButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addComponent(redoButton)
 							.addGap(18, 18, 18)
 							.addComponent(deleteButton))
-						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE))
+						.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
-		figuresScroll.setBorder(BorderFactory.createEmptyBorder());
+		figuresScroll.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		JLabel label = new JLabel("");
 		label.setHorizontalAlignment(SwingConstants.LEFT);
 		canvas.add(label);

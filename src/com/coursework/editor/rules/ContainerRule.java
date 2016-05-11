@@ -1,15 +1,30 @@
-package com.coursework.rules;
+package com.coursework.editor.rules;
 
 import java.awt.geom.Area;
 
 import com.coursework.editor.Drawable;
 
-public class ContainerRule extends PlacementRule{
+public class ContainerRule extends Rule{
 
+	private boolean allowed;
+	
+	String containerTag;
+	String contentTag;
+	
+	
+	
 	public ContainerRule(boolean allowed) {
-		super(allowed);
+		this.allowed = allowed;
 	}
 
+	@Override 
+	public void addTag(String tag) {
+		if (containerTag == null)
+			containerTag = tag;
+		else 
+			contentTag = tag;	
+	}
+	
 	@Override
 	public String toString() {
 		String result = super.toString();

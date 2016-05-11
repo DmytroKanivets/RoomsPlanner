@@ -1,4 +1,4 @@
-package com.coursework.rules;
+package com.coursework.editor.rules;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -31,24 +31,16 @@ public class RulesLoader {
 		
 		XMLReader reader = new XMLReader(filename);
 		
-//		Collection<XMLTag> rt = reader.getRoot().getInnerTags();
-//		System.out.println(new File(filename).getAbsolutePath());
-//		for (XMLTag t : rt) {
-//			System.out.println(t.getName());
-//		}
-		
 		Collection<XMLTag> rulesTags = reader.getRoot().getInnerTag("rules").getInnerTags();
-		
+	
 		for (XMLTag tag : rulesTags) {
 			if (tag.getName().equals("rule")) {
-				
-//				System.out.println("Loading tag " + tag.getInnerTag("type").getContent());
 				
 				Rule rule = null;
 				
 				switch (tag.getInnerTag("type").getContent()) {
 				case "priority":
-					rule = new PriorityRule(Integer.parseInt(tag.getInnerTag("value").getContent()));
+					rule = new PlacementRule(Integer.parseInt(tag.getInnerTag("value").getContent()));
 					break;
 				
 				case "container":

@@ -5,7 +5,7 @@ new FormModel {
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 			"$horizontalGroup": "par l {seq {par l {seq {space :p:35:p, par t {comp deleteButton::t:p:74:p, comp redoButton::t:p:74:p, comp undoButton::t:p:74:p}}, seq {space :::p, comp figuresScroll:::p:128:p}}, space :::p, comp canvas::::860:x, space :p::p}}"
-			"$verticalGroup": "par l {seq l {space :::p, par l {seq {comp figuresScroll::::435:x, space s:::p, comp undoButton:::p::p, space :::p, comp redoButton:::p::p, space s:::p, comp deleteButton:::p::p}, comp canvas::::546:x}, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :p:10:p, par l {seq l {space :0:15:x, comp figuresScroll:::p:421:p, space s:::p, comp undoButton:::p::p, space :::p, comp redoButton:::p::p, space s:::p, comp deleteButton:::p::p}, comp canvas::::0:x}, space :::p}}"
 		} ) {
 			name: "this"
 			add( new FormComponent( "com.coursework.windows.Canvas" ) {

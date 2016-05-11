@@ -11,7 +11,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.event.MouseInputAdapter;
 
+import com.coursework.editor.figures.Figure;
 import com.coursework.editor.figures.FiguresManager;
+import com.coursework.editor.rules.RulesManager;
+import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLReader;
 import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
@@ -78,7 +81,6 @@ public class ScenesManager {
 	
 	public void selectScene(int id) {
 		currentScene = scenes.get(id);
-		FiguresManager.getInstance().renewFactories();
 	}
 	
 	public int newScene() {
@@ -108,8 +110,8 @@ public class ScenesManager {
 		currentScene.clearSelection();
 	}
 
-	public DrawableCommandFactory getAddCommands() {
-		return currentScene.getAddCommandFactory();
+	public Command getAddCommand(Drawable d) {
+		return currentScene.getAddCommand(d);
 	}
 
 	public void draw(Graphics2D graphics) {
@@ -118,7 +120,17 @@ public class ScenesManager {
 	}
 
 	public void saveSceneToFile(String filename) {
-		currentScene.saveToFile(filename);
+
+		XMLBuilder builder = new XMLBuilder(filename);
+		
+		builder.addTag("scene");
+		
+		for (Drawable d : currentScene.drawables) {
+			d.save(builder);
+		}
+		
+		builder.closeTag();
+		builder.flush();
 		
 	}
 
@@ -130,9 +142,14 @@ public class ScenesManager {
 		for (XMLTag tag : reader.getRoot().getInnerTags()) {
 			if (tag.getName().equals("figure")) {
 				
-				FiguresManager.getInstance().getFigure(
+				Figure f = FiguresManager.getInstance().getFigure(
 						tag.getInnerTag("figurePackage").getContent(), 
-						tag.getInnerTag("figureName").getContent()).getDrawableLoader().load(tag);
+						tag.getInnerTag("figureName").getContent());
+				if (f != null) {
+					f.getDrawableLoader().load(tag);
+				} else {
+					Debug.log("Can not load figure " + tag.getInnerTag("figurePackage").getContent() + '.' + tag.getInnerTag("figureName").getContent());
+				}
 			} else {
 				Debug.error("Unrecognised tag " + tag.getName());
 			}
@@ -193,5 +210,9 @@ public class ScenesManager {
 
 	public void addKeyboardListener(KeyEventDispatcher keyEventDispatcher) {
 		Main.addKeyboardEventDispatcher(keyEventDispatcher);
+	}
+
+	public Drawable checkForRules(Drawable d) {
+		return RulesManager.getInstance().processDrawable(d);
 	}
 }
