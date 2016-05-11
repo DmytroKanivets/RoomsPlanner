@@ -2,14 +2,20 @@ package com.coursework.editor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.KeyEventDispatcher;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.figures.FiguresManager;
+import com.coursework.editor.figures.FiguresManager;
+import com.coursework.files.XMLReader;
+import com.coursework.files.XMLTag;
+import com.coursework.main.Debug;
+import com.coursework.main.Main;
 import com.coursework.windows.Canvas;
 
 public class ScenesManager {
@@ -117,7 +123,22 @@ public class ScenesManager {
 	}
 
 	public void loadSceneFromFile(String path) throws FileNotFoundException {
-		currentScene.loadFromFile(path);
+		currentScene.clearCanvas();
+		
+		XMLReader reader = new XMLReader(path);
+		
+		for (XMLTag tag : reader.getRoot().getInnerTags()) {
+			if (tag.getName().equals("figure")) {
+				
+				FiguresManager.getInstance().getFigure(
+						tag.getInnerTag("figurePackage").getContent(), 
+						tag.getInnerTag("figureName").getContent()).getDrawableLoader().load(tag);
+			} else {
+				Debug.error("Unrecognised tag " + tag.getName());
+			}
+		}
+
+		currentScene.clearHistory();
 	}
 
 	public Iterable<Drawable> getDrawables() {
@@ -164,5 +185,13 @@ public class ScenesManager {
 	
 	public int getSceneHeight() {
 		return canvas.getHeight();
+	}
+
+	public void addMouseListener(MouseInputAdapter mouseInputAdapter) {
+		Main.addCanvasMouseListener(mouseInputAdapter);
+	}
+
+	public void addKeyboardListener(KeyEventDispatcher keyEventDispatcher) {
+		Main.addKeyboardEventDispatcher(keyEventDispatcher);
 	}
 }

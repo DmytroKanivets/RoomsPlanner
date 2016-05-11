@@ -5,7 +5,7 @@
 package com.coursework.windows;
 
 import com.coursework.editor.ScenesManager;
-import com.coursework.figures.FiguresManager;
+import com.coursework.editor.figures.FiguresManager;
 import com.coursework.main.Debug;
 import com.coursework.main.Main;
 
@@ -22,12 +22,12 @@ import java.io.IOException;
  * @author D PUpkin
  */
 
-//TODO remove warnings from jlist
 public class MainWindow extends JFrame {
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4577278481266674054L;
 	
 	private static final boolean DEBUG_ENABLED = true;
 	
@@ -85,11 +85,8 @@ public class MainWindow extends JFrame {
 		int result = fileChooser.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			try {
-				//Main.getCurrentScene().loadFromFile();
-
 				ScenesManager.instance().loadSceneFromFile(fileChooser.getSelectedFile().getAbsolutePath());
 			} catch (FileNotFoundException e1) {
-				//Main.showMessage("File not found");
 				Debug.log("File " + fileChooser.getSelectedFile().getAbsolutePath() + " not found");
 			}
 			Main.redraw();
@@ -107,7 +104,6 @@ public class MainWindow extends JFrame {
 		if (result == JFileChooser.APPROVE_OPTION) {
 			String filename = fileChooser.getSelectedFile().getAbsolutePath();
 			ScenesManager.instance().saveSceneToFile(filename + (filename.endsWith(".scene") ? "" : ".scene"));
-			//Main.getCurrentScene().saveToFile(fileName + ".scene");
 		}
 	}
 	

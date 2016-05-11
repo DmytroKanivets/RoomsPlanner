@@ -1,15 +1,13 @@
-package com.coursework.files;
+package com.coursework.rules;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.coursework.files.XMLReader;
+import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
-import com.coursework.rules.ContainerRule;
-import com.coursework.rules.PriorityRule;
-import com.coursework.rules.Rule;
 
 public class RulesLoader {
 	String filename;

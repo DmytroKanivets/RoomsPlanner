@@ -4,12 +4,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import javax.swing.GroupLayout;
 
 import javax.swing.JPanel;
 
 import com.coursework.editor.ScenesManager;
-import com.coursework.main.Main;
 
 public class Canvas extends JPanel {
 	private static final long serialVersionUID = 5431118052073932479L;
@@ -31,7 +29,7 @@ public class Canvas extends JPanel {
 		
 		ScenesManager.instance().draw(graphics);
 	}
-
+/*
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 		// Generated using JFormDesigner Evaluation license - D Pupkin
@@ -58,6 +56,6 @@ public class Canvas extends JPanel {
 				.addGap(0, 300, Short.MAX_VALUE)
 		);
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
-	}
+	}*/
 }
 

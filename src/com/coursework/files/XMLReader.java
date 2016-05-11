@@ -2,26 +2,9 @@ package com.coursework.files;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
 import java.util.Scanner;
 
 public class XMLReader {
-
-	//TODO remove debug
-		void printTag(XMLTag t, int depth) {
-			String prefix = "";
-			for (int i = 0;i < depth; i++) {
-				prefix += '\t';
-			}
-			System.out.println(prefix + "<"+t.getName()+">");
-
-			System.out.println(prefix + '\t' + t.getContent());
-			Collection<XMLTag> tags = t.getInnerTags();
-			for (XMLTag tag : tags) {
-				printTag(tag, depth + 1);
-			}
-			System.out.println(prefix + "</"+t.getName()+">");
-		}
 	
 	public XMLReader(String filename) throws FileNotFoundException {
 		Scanner s = new Scanner(new File(filename));

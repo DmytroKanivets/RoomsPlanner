@@ -1,20 +1,14 @@
-package com.coursework.files;
+package com.coursework.editor.figures;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.Scene;
-import com.coursework.editor.ScenesManager;
-import com.coursework.figures.Figure;
-import com.coursework.figures.ImmutableFigure;
-import com.coursework.figures.LineFigure;
-
 import com.coursework.rules.RulesManager;
-
+import com.coursework.files.XMLReader;
+import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
-import com.coursework.main.Main;
 
 public class FiguresLoader {
 	

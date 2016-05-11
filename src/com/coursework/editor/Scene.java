@@ -2,27 +2,18 @@ package com.coursework.editor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
+import java.awt.KeyEventDispatcher;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
 
-import com.coursework.figures.FiguresManager;
-import com.coursework.files.XMLBuilder;
-import com.coursework.files.XMLReader;
-import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
-import com.coursework.main.Main;
 import com.coursework.rules.RulesManager;
+import com.coursework.files.XMLBuilder;
 import com.coursework.util.PriorityQueue;
 
-//TODO optimize house search? + graphs
 public class Scene {
 	public static final int MOVE_STEP = 2;	
 	
@@ -50,7 +41,7 @@ public class Scene {
 	private boolean commandReversed = false;
 	
 	private void initMouse() {
-		Main.addCanvasMouseListener(new MouseInputAdapter() {
+		ScenesManager.instance().addMouseListener(new MouseInputAdapter() {
 			@Override
 		    public void mouseDragged(MouseEvent e) {
 //				System.out.println("move");
@@ -80,7 +71,7 @@ public class Scene {
 	}
 	
 	private void initKeyboard() {
-		Main.addKeyboardEventDispatcher(new KeyEventDispatcher() {
+		ScenesManager.instance().addKeyboardListener(new KeyEventDispatcher() {
 			
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
@@ -120,12 +111,10 @@ public class Scene {
 		x -= sceneShiftX;
 		y -= sceneShiftY;
 		
-		Iterator<Drawable> it = figures.iterator();
 		Drawable last = null, newSelected = null;
 		boolean found = false;
 		
-		while (it.hasNext()) {
-			Drawable d = it.next();
+		for (Drawable d : figures) {
 			if (d.getArea().contains(x, y)) {
 				last = d;
 				if (d == selectedDrawable) {
@@ -136,6 +125,7 @@ public class Scene {
 				}
 			}
 		}
+		
 		selectedDrawable = newSelected;
 		
 		if (selectedDrawable == null) {
@@ -307,15 +297,17 @@ public class Scene {
 		g.fillRect(0, 0, maxTextWidth, height);
 		g.setColor(Color.BLACK);
 		
-		
 		for (int i = sceneShiftX % 50 -50;i < width; i+=50) {
 			String s = Integer.toString((i - sceneShiftX) / 50);
 			int size = g.getFontMetrics().stringWidth(s);
 			g.drawString(s, i - size/2, 12);
 		}
 
+		int textWidth = 0;
 		for (int i = sceneShiftY % 50 -50;i < height; i+=50) {
-			g.drawString(Integer.toString((i - sceneShiftY) / 50), 5, i + 5);
+			String s = Integer.toString((i - sceneShiftY) / 50);
+			textWidth = g.getFontMetrics().stringWidth(s);
+			g.drawString(Integer.toString((i - sceneShiftY) / 50), maxTextWidth - textWidth - 3, i + 5);
 		}
 
 		g.setColor(Color.BLACK);
@@ -339,36 +331,14 @@ public class Scene {
 	public void actionExecuted() {
 		checkForRules();
 		if (clearRedo && !commandReversed) {
-			//System.out.println("redo clear");
 			reversedCommands.clear();
 		} else {
 			commandReversed = false;
-//			clearRedo = true;
 		}
 		repaint();
-		//System.out.println("update " + commands.size());
 		ScenesManager.instance().setUndoEnbled(commands.size() > 0);
 		ScenesManager.instance().setRedoEnbled(reversedCommands.size() > 0);
 		ScenesManager.instance().setDeleteEnbled(selectedDrawable != null);
-	}
-	
-	public void loadFromFile(String filename) throws FileNotFoundException {
-		clearCanvas();
-		
-		XMLReader reader = new XMLReader(filename);
-		
-		for (XMLTag tag : reader.getRoot().getInnerTags()) {
-			if (tag.getName().equals("figure")) {
-				
-				FiguresManager.getInstance().getFigure(
-						tag.getInnerTag("figurePackage").getContent(), 
-						tag.getInnerTag("figureName").getContent()).getDrawableLoader().load(tag);
-			} else {
-				Debug.error("Unrecognised tag " + tag.getName());
-			}
-		}
-
-		clearHistory();
 	}
 	
 	public void saveToFile(String filename) {

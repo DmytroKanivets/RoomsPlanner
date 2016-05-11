@@ -1,4 +1,4 @@
-package com.coursework.figures;
+package com.coursework.editor.figures;
 
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
@@ -23,7 +23,6 @@ import javax.swing.tree.TreeSelectionModel;
 import com.coursework.main.Main;
 import com.coursework.editor.KeyboardState;
 import com.coursework.editor.ScenesManager;
-import com.coursework.files.FiguresLoader;
 
 public class FiguresManager {
 	
@@ -60,9 +59,8 @@ public class FiguresManager {
 			}
 			@Override
 		    public void mouseDragged(MouseEvent e){
-				if (selectedFigure != null) {//TODO v2
+				if (selectedFigure != null) {
 					selectedFigure.move(e.getX() - ScenesManager.instance().getOffsetX(), e.getY() - ScenesManager.instance().getOffsetY());
-//					selectedFigure.move(e.getX(), e.getY());
 				}
 				ScenesManager.instance().repaint();
 			}
@@ -70,8 +68,6 @@ public class FiguresManager {
 		    public void mouseMoved(MouseEvent e){
 				if (selectedFigure != null) {
 					selectedFigure.move(e.getX() - ScenesManager.instance().getOffsetX(), e.getY() - ScenesManager.instance().getOffsetY());
-
-//					selectedFigure.move(e.getX(), e.getY());
 				}
 				ScenesManager.instance().repaint();
 			}
@@ -255,9 +251,8 @@ public class FiguresManager {
 	}
 
 	public void drawSelectedFigure(Graphics2D graphics) {
-		if (selectedFigure != null && mouseOnCanvas) {//TODO reverse here
+		if (selectedFigure != null && mouseOnCanvas) {
 			selectedFigure.draw(graphics, ScenesManager.instance().getOffsetX(), ScenesManager.instance().getOffsetY());
-//			selectedFigure.draw(graphics, 0, 0);
 		}
 	}
 	

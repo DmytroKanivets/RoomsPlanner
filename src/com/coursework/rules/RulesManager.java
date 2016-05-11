@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.coursework.editor.Drawable;
 import com.coursework.editor.ScenesManager;
-import com.coursework.files.RulesLoader;
-import com.coursework.main.Main;
 
 public class RulesManager {
 
@@ -20,7 +18,6 @@ public class RulesManager {
 	private List<Rule> rules;
 	
 	public Drawable processDrawable(Drawable d) {
-		//Iterable<Drawable> context = Main.getCurrentScene().getDrawables();
 		Iterable<Drawable> context = ScenesManager.instance().getDrawables();
 		Drawable result = d;
 		for (Rule rule : rules) {

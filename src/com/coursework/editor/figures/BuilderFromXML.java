@@ -1,4 +1,4 @@
-package com.coursework.figures;
+package com.coursework.editor.figures;
 
 import com.coursework.files.XMLTag;
 
