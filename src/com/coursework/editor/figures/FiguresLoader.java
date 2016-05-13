@@ -1,21 +1,21 @@
 package com.coursework.editor.figures;
 
-import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.coursework.editor.rules.RulesManager;
 import com.coursework.files.XMLReader;
 import com.coursework.files.XMLTag;
 import com.coursework.main.Debug;
 
-public class FiguresLoader {
+import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+class FiguresLoader {
 	
-	String fileName;
-	String packageName;
+	private String fileName;
+	private String packageName;
 	
-	List<Figure> figures;
+	private List<Figure> figures;
 	
 	public FiguresLoader(String fileName) throws FileNotFoundException {
 		this.fileName = fileName;
@@ -47,9 +47,11 @@ public class FiguresLoader {
 				
 		for (XMLTag tag: figs) {
 			if (tag.getName().equals("figure")) {
-				XMLTag pack = new XMLTag(tag, "package");
-				pack.addContent(packageName);
-				tag.addInnerTag(pack);
+				if (tag.getInnerTag("package") == null) {
+					XMLTag pack = new XMLTag(tag, "package");
+					pack.addContent(packageName);
+					tag.addInnerTag(pack);
+				}
 				
 				Figure f = null;
 				

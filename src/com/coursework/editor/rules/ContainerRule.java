@@ -2,14 +2,14 @@ package com.coursework.editor.rules;
 
 import java.awt.geom.Area;
 
-import com.coursework.editor.Drawable;
+import com.coursework.editor.figures.Drawable;
 
 public class ContainerRule extends Rule{
 
 	private boolean allowed;
 	
-	String containerTag;
-	String contentTag;
+	private String containerTag;
+	private String contentTag;
 	
 	
 	

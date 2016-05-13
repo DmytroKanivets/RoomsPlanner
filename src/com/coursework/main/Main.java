@@ -17,9 +17,9 @@ import com.coursework.windows.MainWindow;
 
 public class Main {
 
-	static MainWindow mainWindow;
-	static AboutWindow aboutWindow;
-	static DebugWindow debugWindow;
+	private static MainWindow mainWindow;
+	private static AboutWindow aboutWindow;
+	private static DebugWindow debugWindow;
 	
 	public static void main(String[] args) {
 		

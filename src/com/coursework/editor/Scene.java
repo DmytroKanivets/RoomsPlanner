@@ -9,13 +9,11 @@ import java.util.Stack;
 
 import javax.swing.event.MouseInputAdapter;
 
+import com.coursework.editor.figures.Drawable;
 import com.coursework.main.Debug;
-//import com.coursework.editor.rules.RulesManager;
 import com.coursework.util.PriorityQueue;
 
-public class Scene {
-	public static final int MOVE_STEP = 2;	
-	
+class Scene {
 	private boolean clearRedo = true;
 	
 	private int mousePrevX;
@@ -27,13 +25,12 @@ public class Scene {
 	private Drawable selectedDrawable;
 	
 	PriorityQueue<Drawable> drawables;
-	boolean mouseOnCanvas = false;
 	
 	private Stack<Command> commands;
 	private Stack<Command> reversedCommands;
 
 	private boolean commandReversed = false;
-	
+
 	private void initMouse() {
 		ScenesManager.instance().addMouseListener(new MouseInputAdapter() {
 			@Override
@@ -265,9 +262,9 @@ public class Scene {
 			commandReversed = false;
 		}
 		repaint();
-		ScenesManager.instance().setUndoEnbled(commands.size() > 0);
-		ScenesManager.instance().setRedoEnbled(reversedCommands.size() > 0);
-		ScenesManager.instance().setDeleteEnbled(selectedDrawable != null);
+		ScenesManager.instance().setUndoEnabled(commands.size() > 0);
+		ScenesManager.instance().setRedoEnabled(reversedCommands.size() > 0);
+		ScenesManager.instance().setDeleteEnabled(selectedDrawable != null);
 	}
 
 	public Command getAddCommand(Drawable d) {
@@ -301,7 +298,7 @@ public class Scene {
 	}
 
 	public Command getDeleteCommand(Drawable drawable) {
-				return new Command() {
+		return new Command() {
 										
 					@Override
 					public void reverse() {

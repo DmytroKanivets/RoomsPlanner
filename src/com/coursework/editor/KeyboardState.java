@@ -2,7 +2,8 @@ package com.coursework.editor;
 
 public class KeyboardState {
 	
-	boolean shiftPressed, controlPressed;
+	private boolean shiftPressed;
+	private boolean controlPressed;
 	
 	public boolean isShiftPressed() {
 		return shiftPressed;

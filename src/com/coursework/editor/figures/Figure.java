@@ -1,12 +1,12 @@
 package com.coursework.editor.figures;
 
-import java.awt.Graphics2D;
+import com.coursework.editor.KeyboardState;
+import com.coursework.files.XMLTag;
+
+import java.awt.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.coursework.editor.KeyboardState;
-import com.coursework.files.XMLTag;
 
 public abstract class Figure {
 	public static final double ROTATION_STEP = 5.0;
@@ -28,7 +28,7 @@ public abstract class Figure {
 		return tags.contains(tag);
 	}
 	
-	public List<String> getTags() {
+	List<String> getTags() {
 		return tags;
 	}
 	
@@ -55,7 +55,11 @@ public abstract class Figure {
 			}
 		}
 	} 
-	
+
+	protected abstract class DrawableLoader implements BuilderFromXML {
+
+	}
+
 	public abstract BuilderFromXML getDrawableLoader();
 	
 	@Override

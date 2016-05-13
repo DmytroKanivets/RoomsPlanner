@@ -1,28 +1,23 @@
 package com.coursework.editor.figures;
 
-import java.awt.Graphics2D;
-import java.awt.KeyEventDispatcher;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import com.coursework.editor.KeyboardState;
+import com.coursework.editor.ScenesManager;
+import com.coursework.main.Main;
 
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
-
-import com.coursework.main.Main;
-import com.coursework.editor.KeyboardState;
-import com.coursework.editor.ScenesManager;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.io.FileNotFoundException;
+import java.util.*;
+import java.util.List;
 
 public class FiguresManager {
 	
@@ -158,7 +153,7 @@ public class FiguresManager {
 		});
 	}
 
-	public void updateView() {
+	private void updateView() {
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)figuresView.getModel().getRoot();
 		root.removeAllChildren();
 		
@@ -225,7 +220,7 @@ public class FiguresManager {
 	/*
 	 * Remove package with specified name
 	 */
-	public void removePackage(String packageName) {
+	private void removePackage(String packageName) {
 		Iterator<Figure> it = figures.iterator();
 		
 		while (it.hasNext()) {

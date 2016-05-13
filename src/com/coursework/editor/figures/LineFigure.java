@@ -1,17 +1,15 @@
 package com.coursework.editor.figures;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
-
-import com.coursework.editor.Drawable;
 import com.coursework.editor.KeyboardState;
 import com.coursework.editor.ScenesManager;
 import com.coursework.editor.rules.RulesManager;
 import com.coursework.files.XMLBuilder;
 import com.coursework.files.XMLTag;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
 
 public class LineFigure extends Figure {
 	
@@ -23,8 +21,8 @@ public class LineFigure extends Figure {
 	
 	private double width;
 	
-	boolean mouseDown = false;
-	boolean shiftPressed = false;
+	private boolean mouseDown = false;
+	private boolean shiftPressed = false;
 
 	private Area getArea() {
 
@@ -83,7 +81,7 @@ public class LineFigure extends Figure {
 		return new LineFigureBuilder();
 	}
 	
-	private class LineDrawableLoader implements BuilderFromXML {
+	private class LineDrawableLoader extends DrawableLoader {
 
 		@Override
 		public void load(XMLTag tag) {
@@ -141,37 +139,17 @@ public class LineFigure extends Figure {
 		
 		@Override
 		public void save(XMLBuilder builder) {
-			builder.addTag("figure");
+			builder.beginProperty("figure");
 
-			builder.addTag("figureName");
-			builder.addContent(getName());
-			builder.closeTag();
-			
-			builder.addTag("figurePackage");
-			builder.addContent(getPackageName());
-			builder.closeTag();
-			
-			builder.addTag("startX");
-			builder.addContent(Integer.toString(startX));
-			builder.closeTag();
-			
-			builder.addTag("startY");
-			builder.addContent(Integer.toString(startY));
-			builder.closeTag();
-			
-			builder.addTag("endX");
-			builder.addContent(Integer.toString(endX));
-			builder.closeTag();
-			
-			builder.addTag("endY");
-			builder.addContent(Integer.toString(endY));
-			builder.closeTag();
-			
-			builder.addTag("isStraighten");
-			builder.addContent(Boolean.toString(isStraighten));
-			builder.closeTag();
-			
-			builder.closeTag();
+			builder.addProperty("figureName", getName());
+			builder.addProperty("figurePackage", getPackageName());
+			builder.addProperty("startX", startX);
+			builder.addProperty("startY", startY);
+			builder.addProperty("endX", endX);
+			builder.addProperty("endY", endY);
+			builder.addProperty("isStraighten", isStraighten);
+
+			builder.endProperty("figure");
 		}
 
 		@Override

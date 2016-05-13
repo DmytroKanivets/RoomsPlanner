@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.coursework.editor.Drawable;
+import com.coursework.editor.figures.Drawable;
 import com.coursework.editor.ScenesManager;
 
 public class RulesManager {

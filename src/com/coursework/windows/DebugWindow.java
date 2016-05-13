@@ -6,7 +6,6 @@ package com.coursework.windows;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.GroupLayout;
 
 import com.coursework.main.Debug;
 

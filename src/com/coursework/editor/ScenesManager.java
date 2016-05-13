@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.event.MouseInputAdapter;
 
+import com.coursework.editor.figures.Drawable;
 import com.coursework.editor.figures.Figure;
 import com.coursework.editor.figures.FiguresManager;
 import com.coursework.editor.rules.RulesManager;
@@ -59,15 +60,15 @@ public class ScenesManager {
 		this.undoButton = button;
 	}
 	
-	public void setDeleteEnbled(boolean enabled) {
+	public void setDeleteEnabled(boolean enabled) {
 		deleteButton.setEnabled(enabled);
 	}
 	
-	public void setUndoEnbled(boolean enabled) {
+	public void setUndoEnabled(boolean enabled) {
 		undoButton.setEnabled(enabled);
 	}
 	
-	public void setRedoEnbled(boolean enabled) {
+	public void setRedoEnabled(boolean enabled) {
 		redoButton.setEnabled(enabled);
 	}
 	
@@ -122,14 +123,15 @@ public class ScenesManager {
 	public void saveSceneToFile(String filename) {
 
 		XMLBuilder builder = new XMLBuilder(filename);
-		
-		builder.addTag("scene");
-		
+
+		builder.beginProperty("scene");
+
 		for (Drawable d : currentScene.drawables) {
 			d.save(builder);
 		}
-		
-		builder.closeTag();
+
+		builder.endProperty("scene");
+
 		builder.flush();
 		
 	}

@@ -1,4 +1,4 @@
-package com.coursework.editor;
+package com.coursework.editor.figures;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
