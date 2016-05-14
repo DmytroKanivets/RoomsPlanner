@@ -73,12 +73,6 @@ public class Main {
 	public static void redraw() {
 		mainWindow.getCanvas().repaint();
 	}
-	
-	public static void resetScene() {
-		ScenesManager.instance().removeCurrent();
-    	int id = ScenesManager.instance().newScene();
-    	ScenesManager.instance().selectScene(id);
-	}
 
 	public static void showAboutWindow() {
 		if (aboutWindow != null) {

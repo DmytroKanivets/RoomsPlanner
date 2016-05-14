@@ -2,11 +2,11 @@ package com.coursework.editor.rules;
 
 import com.coursework.editor.figures.Drawable;
 
-public class PlacementRule extends Rule {
+public class PriorityRule extends Rule {
 
 	private int priority;
 	
-	public PlacementRule(int priority) {
+	public PriorityRule(int priority) {
 		this.priority = priority;
 	}
 	

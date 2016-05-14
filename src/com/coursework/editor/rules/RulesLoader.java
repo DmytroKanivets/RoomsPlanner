@@ -40,7 +40,7 @@ public class RulesLoader {
 				
 				switch (tag.getInnerTag("type").getContent()) {
 				case "priority":
-					rule = new PlacementRule(Integer.parseInt(tag.getInnerTag("value").getContent()));
+					rule = new PriorityRule(Integer.parseInt(tag.getInnerTag("value").getContent()));
 					break;
 				
 				case "container":

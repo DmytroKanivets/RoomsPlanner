@@ -69,7 +69,7 @@ public class MainWindow extends JFrame {
 		debug.setText("Debug");
 
 		debugShow.setText("Show");
-		debugShow.addActionListener(e -> debugShowClick(e));
+		debugShow.addActionListener((e) -> debugShowClick(e));
 		debug.add(debugShow);
 		
 		menuBar.add(debug);
@@ -141,7 +141,9 @@ public class MainWindow extends JFrame {
 	}
 	
 	private void newFileClick(ActionEvent e) {
-		Main.resetScene();
+		ScenesManager.instance().removeCurrent();
+    	int id = ScenesManager.instance().newScene();
+    	ScenesManager.instance().selectScene(id);
 	}
 
 	private void redoButtonActionPerformed(ActionEvent e) {
